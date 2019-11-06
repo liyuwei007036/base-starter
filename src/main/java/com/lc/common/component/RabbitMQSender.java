@@ -26,7 +26,7 @@ public class RabbitMQSender {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private RedisService redisService;
+    private RedisService<String, JSONObject> redisService;
 
     @Value("${spring.profiles.active}")
     private String env;

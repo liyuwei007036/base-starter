@@ -2,7 +2,14 @@ package com.lc.common.commonenums;
 
 import lombok.Getter;
 
+/**
+ * @author l5990
+ */
+
 public enum ResponseEnums {
+    /**
+     *
+     */
     LOAD("load", "text/html"),
     A123("123", "application/vnd.lotus-1-2-3"),
     A3DS("3ds", "image/x-3ds"),
