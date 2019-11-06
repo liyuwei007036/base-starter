@@ -1,6 +1,6 @@
 package com.lc.common.aspect;
 
-import com.lc.common.annotations.TC5UCache;
+import com.lc.common.annotations.Cache;
 import com.lc.common.service.RedisService;
 import com.lc.common.utils.ObjectUtil;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +37,7 @@ public class CacheAopConfig {
     public Object around(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        TC5UCache cache = method.getAnnotation(TC5UCache.class);
+        Cache cache = method.getAnnotation(Cache.class);
         String class_name = method.getDeclaringClass().getName();
         String method_name = method.getName();
         int db = cache.db();
