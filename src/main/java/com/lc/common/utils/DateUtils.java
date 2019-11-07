@@ -1,5 +1,7 @@
 package com.lc.common.utils;
 
+import org.springframework.util.StringUtils;
+
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,13 +9,19 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by zhulx on 2016/10/23.
+ * @author zhulx
+ * @date 2016/10/23
  */
 public class DateUtils {
 
-    static SimpleDateFormat YMDHMS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    static SimpleDateFormat YMDHM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    static SimpleDateFormat YMD = new SimpleDateFormat("yyyy-MM-dd");
+    private static String YMDHMS = "yyyy-MM-dd HH:mm:ss";
+    private static String YMDHM = "yyyy-MM-dd HH:mm";
+    private static String YMD = "yyyy-MM-dd";
+
+
+    private static SimpleDateFormat getDateFormat(String rule) {
+        return new SimpleDateFormat(rule);
+    }
 
     /**
      * 格式化日期
@@ -31,18 +39,18 @@ public class DateUtils {
         }
     }
 
-    public static String dateToStr(Date date, String fmt, String default_value) {
+    public static String dateToStr(Date date, String fmt, String defaultValue) {
         if (date != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(fmt);
             return sdf.format(date);
         } else {
-            return default_value;
+            return defaultValue;
         }
     }
 
     public static String dateToStr(Date date) {
         if (date != null) {
-            return YMD.format(date);
+            return getDateFormat(YMD).format(date);
         } else {
             return null;
         }
@@ -50,45 +58,41 @@ public class DateUtils {
 
     public static String datetimeToStr(Date date) {
         if (date != null) {
-            return YMDHM.format(date);
-        } else {
-            return null;
-        }
-    }
-
-    public static String datetimesToStr(Date date) {
-        if (date != null) {
-            return YMDHMS.format(date);
+            return getDateFormat(YMDHM).format(date);
         } else {
             return null;
         }
     }
 
     public static String now() {
-        return YMDHMS.format(new Date());
+        return getDateFormat(YMDHMS).format(new Date());
     }
 
     public static String dateString() {
-        return YMD.format(new Date());
+        return getDateFormat(YMD).format(new Date());
     }
 
     public static String format(Date date) {
-        if (null == date)
+        if (null == date) {
             return null;
+        }
 
-        return YMDHMS.format(date);
+        return getDateFormat(YMDHMS).format(date);
     }
 
     public static Date parseDateString(String str) {
         Date d = null;
-        if (str != null) {
+        if (!StringUtils.isEmpty(str)) {
+            int ymdLength = 10;
+            int ymdhmsLength = 19;
+            int ymdhmLength = 16;
             try {
-                if (str.length() == 10) {
-                    d = YMD.parse(str);
-                } else if (str.length() == 19) {
-                    d = YMDHMS.parse(str);
-                } else if (str.length() == 16) {
-                    d = YMDHM.parse(str);
+                if (str.length() == ymdLength) {
+                    d = getDateFormat(YMD).parse(str);
+                } else if (str.length() == ymdhmsLength) {
+                    d = getDateFormat(YMDHMS).parse(str);
+                } else if (str.length() == ymdhmLength) {
+                    d = getDateFormat(YMDHM).parse(str);
                 }
             } catch (ParseException e) {
                 throw new RuntimeException(e.getMessage());
@@ -128,7 +132,7 @@ public class DateUtils {
             cal.set(Calendar.MILLISECOND, 0);
             return cal.getTime();
         }
-        return date;
+        return null;
     }
 
     /**
@@ -144,7 +148,7 @@ public class DateUtils {
             cal.set(Calendar.MILLISECOND, 0);
             return cal.getTime();
         }
-        return date;
+        return null;
     }
 
     /**
@@ -162,45 +166,6 @@ public class DateUtils {
         return (int) ((date1.getTime() - date2.getTime()) / millSecondsInOneDay);
     }
 
-    /**
-     * 获取该季度起始月
-     *
-     * @param month
-     * @return
-     */
-    public static int quarterFrom(int month) {
-        if (month <= 3) {
-            return 0;
-        } else if (month == 4 || month == 5 || month == 6) {
-            return 3;
-        } else if (month == 7 || month == 8 || month == 9) {
-            return 6;
-        } else if (month == 10 || month == 11 || month == 12) {
-            return 9;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * 获取该季度终止月
-     *
-     * @param month
-     * @return
-     */
-    public static int quarterTo(int month) {
-        if (month <= 3) {
-            return 3;
-        } else if (month == 4 || month == 5 || month == 6) {
-            return 6;
-        } else if (month == 7 || month == 8 || month == 9) {
-            return 9;
-        } else if (month == 10 || month == 11 || month == 12) {
-            return 12;
-        } else {
-            return 3;
-        }
-    }
 
     /**
      * 获取指定月份的总天数
@@ -209,7 +174,11 @@ public class DateUtils {
      * @return
      */
     public static int getTotalDays(int year, int month) {
-        if (month > 12 || month <= 0 || year <= 1970) return 0;
+        int monthNum = 12;
+        int yearBegin = 1970;
+        if (month > monthNum || month <= 0 || year <= yearBegin) {
+            return 0;
+        }
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month);
@@ -224,7 +193,7 @@ public class DateUtils {
      * @param date2
      * @return
      */
-    public static int getDaySiff(Date date1, Date date2) {
+    public static int getDaysSeconds(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
             throw new InvalidParameterException("date1 and date2 cannot be null!");
         }

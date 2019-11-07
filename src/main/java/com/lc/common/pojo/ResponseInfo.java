@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * @author l5990
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseInfo<T extends Serializable> implements Serializable {

@@ -2,7 +2,7 @@ package com.lc.common.utils;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * excel 导入工具
+ * @author l5990
  */
 @Data
 @Log4j2
@@ -73,8 +74,10 @@ public class ExcelImporter {
     }
 
     public String getColumnName(int colIndex) {
-        String strResult = ""; // result
-        int iRest = 0;         // remainder
+        // result
+        StringBuilder strResult = new StringBuilder();
+        // remainder
+        int iRest = 0;
         while (colIndex != 0) {
             iRest = colIndex % 26;
             char ch = ' ';
@@ -83,24 +86,26 @@ public class ExcelImporter {
             } else {
                 ch = (char) (iRest - 1 + 'A');
             }
-            strResult = String.valueOf(ch) + strResult;
+            strResult.insert(0, String.valueOf(ch));
             if (strResult.charAt(0) == 'Z') {
                 colIndex = colIndex / 26 - 1;
             } else {
                 colIndex /= 26;
             }
         }
-        return strResult;
+        return strResult.toString();
     }
 
     public List<Map<String, Object>> getData() {
         Sheet sheet = workbook.getSheetAt(0);
-        if (sheet == null) return null;
+        if (sheet == null) {
+            return null;
+        }
         boolean blankRowBreak = false;
         int blankRowCount = 0;
         List<Map<String, Object>> returnList = new ArrayList<>();
         for (int rowIndex = startRow; (rowIndex < endRow || ((endRow == -1)) && !blankRowBreak); rowIndex++) {
-            Map<String, Object> returnParams = getOneRowData(sheet, rowIndex);
+            HashedMap<String, Object> returnParams = getOneRowData(sheet, rowIndex);
             if ((returnParams == null) || (returnParams.size() < 1)) {
                 blankRowCount += 1;
             } else {
@@ -112,10 +117,12 @@ public class ExcelImporter {
         return returnList;
     }
 
-    public Map<String, Object> getOneRowData(Sheet currentSheet, int rowIndex) {
-        Map<String, Object> returnParams = new HashedMap();
+    public HashedMap<String, Object> getOneRowData(Sheet currentSheet, int rowIndex) {
+        HashedMap<String, Object> returnParams = new HashedMap<>();
         Row row = currentSheet.getRow(rowIndex);
-        if (row == null) return returnParams;
+        if (row == null) {
+            return returnParams;
+        }
         for (Map.Entry<String, String> entry : columnMap.entrySet()) {
             String k = entry.getKey();
             String v = entry.getValue();
@@ -127,7 +134,9 @@ public class ExcelImporter {
     public String getCellValueByColName(Row row, String columnName) {
         int colIndex = CellReference.convertColStringToIndex(columnName);
         Cell cell = row.getCell(colIndex);
-        if (cell == null) return null;
+        if (cell == null) {
+            return null;
+        }
         if (evaluator != null) {
             cell = evaluator.evaluateInCell(cell);
         }
@@ -142,7 +151,9 @@ public class ExcelImporter {
                     return df.format(value);
                 }
             case BOOLEAN:
-                if (cell.getBooleanCellValue()) return "T";
+                if (cell.getBooleanCellValue()) {
+                    return "T";
+                }
                 return "F";
             default:
                 return cell.getStringCellValue();

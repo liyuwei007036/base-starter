@@ -7,8 +7,10 @@ import java.util.Date;
 
 /**
  * 身份证号码校验工具
+ *
+ * @author l5990
  */
-public class IdcardValidatorUtils {
+public class IdCardValidatorUtils {
     /**
      * <pre>
      * 省、直辖市代码表：
@@ -23,7 +25,7 @@ public class IdcardValidatorUtils {
      *     91 : 国外
      * </pre>
      */
-    private static String cityCode[] = {"11", "12", "13", "14", "15", "21",
+    private static String[] CITY_CODE = {"11", "12", "13", "14", "15", "21",
             "22", "23", "31", "32", "33", "34", "35", "36", "37", "41", "42",
             "43", "44", "45", "46", "50", "51", "52", "53", "54", "61", "62",
             "63", "64", "65", "71", "81", "82", "91"};
@@ -31,23 +33,23 @@ public class IdcardValidatorUtils {
     /**
      * 每位加权因子
      */
-    private static int power[] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5,
+    private static int[] POWER = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5,
             8, 4, 2};
 
     /**
      * 验证所有的身份证的合法性
      *
-     * @param idcard 身份证
+     * @param idCard 身份证
      * @return 合法返回true，否则返回false
      */
-    public static boolean isValidatedAllIdcard(String idcard) {
-        if (idcard == null || "".equals(idcard)) {
+    public static boolean isValidatedAllidCard(String idCard) {
+        if (idCard == null || "".equals(idCard)) {
             return false;
         }
-        if (idcard.length() == 15) {
-            return validate15IDCard(idcard);
+        if (idCard.length() == 15) {
+            return validate15idCard(idCard);
         }
-        return validate18Idcard(idcard);
+        return validate18idCard(idCard);
     }
 
     /**
@@ -81,34 +83,34 @@ public class IdcardValidatorUtils {
      * 5.通过上面得知如果余数是2，就会在身份证的第18位数字上出现罗马数字的Ⅹ。如果余数是10，身份证的最后一位号码就是2。
      * </p>
      *
-     * @param idcard
+     * @param idCard
      * @return
      */
-    public static boolean validate18Idcard(String idcard) {
-        if (idcard == null) {
+    public static boolean validate18idCard(String idCard) {
+        if (idCard == null) {
             return false;
         }
 
         // 非18位为假
-        if (idcard.length() != 18) {
+        if (idCard.length() != 18) {
             return false;
         }
         // 获取前17位
-        String idcard17 = idcard.substring(0, 17);
+        String idCard17 = idCard.substring(0, 17);
 
         // 前17位全部为数字
-        if (!isDigital(idcard17)) {
+        if (!isDigital(idCard17)) {
             return false;
         }
 
-        String provinceid = idcard.substring(0, 2);
+        String provinceid = idCard.substring(0, 2);
         // 校验省份
-        if (!checkProvinceid(provinceid)) {
+        if (!checkProvinceId(provinceid)) {
             return false;
         }
 
         // 校验出生日期
-        String birthday = idcard.substring(6, 14);
+        String birthday = idCard.substring(6, 14);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
@@ -125,9 +127,9 @@ public class IdcardValidatorUtils {
         }
 
         // 获取第18位
-        String idcard18Code = idcard.substring(17, 18);
+        String idCard18Code = idCard.substring(17, 18);
 
-        char c[] = idcard17.toCharArray();
+        char c[] = idCard17.toCharArray();
 
         int bit[] = converCharToInt(c);
 
@@ -141,7 +143,7 @@ public class IdcardValidatorUtils {
             return false;
         }
         // 将身份证的第18位与算出来的校码进行匹配，不相等就为假
-        if (!idcard18Code.equalsIgnoreCase(checkCode)) {
+        if (!idCard18Code.equalsIgnoreCase(checkCode)) {
             return false;
         }
 
@@ -155,37 +157,38 @@ public class IdcardValidatorUtils {
      * 只校验省份和出生年月日
      * </pre>
      *
-     * @param idcard
+     * @param idCard
      * @return
      */
-    public static boolean validate15IDCard(String idcard) {
-        if (idcard == null) {
+    public static boolean validate15idCard(String idCard) {
+        if (idCard == null) {
             return false;
         }
         // 非15位为假
-        if (idcard.length() != 15) {
+        if (idCard.length() != 15) {
             return false;
         }
 
         // 15全部为数字
-        if (!isDigital(idcard)) {
+        if (!isDigital(idCard)) {
             return false;
         }
 
-        String provinceid = idcard.substring(0, 2);
+        String provinceid = idCard.substring(0, 2);
         // 校验省份
-        if (!checkProvinceid(provinceid)) {
+        if (!checkProvinceId(provinceid)) {
             return false;
         }
 
-        String birthday = idcard.substring(6, 12);
+        String birthday = idCard.substring(6, 12);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
 
         try {
             Date birthDate = sdf.parse(birthday);
             String tmpDate = sdf.format(birthDate);
-            if (!tmpDate.equals(birthday)) {// 身份证日期错误
+            // 身份证日期错误
+            if (!tmpDate.equals(birthday)) {
                 return false;
             }
 
@@ -200,39 +203,41 @@ public class IdcardValidatorUtils {
     /**
      * 将15位的身份证转成18位身份证
      *
-     * @param idcard
+     * @param idCard
      * @return
      */
-    public static String convertIdcarBy15bit(String idcard) {
-        if (idcard == null) {
+    public static String convertIdCarBy15bit(String idCard) {
+        if (idCard == null) {
             return null;
         }
 
         // 非15位身份证
-        if (idcard.length() != 15) {
+        int max = 15;
+        if (idCard.length() != max) {
             return null;
         }
 
         // 15全部为数字
-        if (!isDigital(idcard)) {
+        if (!isDigital(idCard)) {
             return null;
         }
 
-        String provinceid = idcard.substring(0, 2);
+        String provinceId = idCard.substring(0, 2);
         // 校验省份
-        if (!checkProvinceid(provinceid)) {
+        if (!checkProvinceId(provinceId)) {
             return null;
         }
 
-        String birthday = idcard.substring(6, 12);
+        String birthday = idCard.substring(6, 12);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
 
-        Date birthdate = null;
+        Date birthDate;
         try {
-            birthdate = sdf.parse(birthday);
-            String tmpDate = sdf.format(birthdate);
-            if (!tmpDate.equals(birthday)) {// 身份证日期错误
+            birthDate = sdf.parse(birthday);
+            String tmpDate = sdf.format(birthDate);
+            // 身份证日期错误
+            if (!tmpDate.equals(birthday)) {
                 return null;
             }
 
@@ -240,17 +245,17 @@ public class IdcardValidatorUtils {
             return null;
         }
 
-        Calendar cday = Calendar.getInstance();
-        cday.setTime(birthdate);
-        String year = String.valueOf(cday.get(Calendar.YEAR));
+        Calendar cDay = Calendar.getInstance();
+        cDay.setTime(birthDate);
+        String year = String.valueOf(cDay.get(Calendar.YEAR));
 
-        String idcard17 = idcard.substring(0, 6) + year + idcard.substring(8);
+        String idCard17 = idCard.substring(0, 6) + year + idCard.substring(8);
 
-        char c[] = idcard17.toCharArray();
+        char[] c = idCard17.toCharArray();
         String checkCode = "";
 
         // 将字符数组转为整型数组
-        int bit[] = converCharToInt(c);
+        int[] bit = converCharToInt(c);
 
         int sum17 = 0;
         sum17 = getPowerSum(bit);
@@ -263,19 +268,19 @@ public class IdcardValidatorUtils {
             return null;
         }
         // 将前17位与第18位校验码拼接
-        idcard17 += checkCode;
-        return idcard17;
+        idCard17 += checkCode;
+        return idCard17;
     }
 
     /**
      * 校验省份
      *
-     * @param provinceid
+     * @param provinceId
      * @return 合法返回TRUE，否则返回FALSE
      */
-    private static boolean checkProvinceid(String provinceid) {
-        for (String id : cityCode) {
-            if (id.equals(provinceid)) {
+    private static boolean checkProvinceId(String provinceId) {
+        for (String id : CITY_CODE) {
+            if (id.equals(provinceId)) {
                 return true;
             }
         }
@@ -299,17 +304,14 @@ public class IdcardValidatorUtils {
      * @return
      */
     private static int getPowerSum(int[] bit) {
-
         int sum = 0;
-
-        if (power.length != bit.length) {
+        if (POWER.length != bit.length) {
             return sum;
         }
-
         for (int i = 0; i < bit.length; i++) {
-            for (int j = 0; j < power.length; j++) {
+            for (int j = 0; j < POWER.length; j++) {
                 if (i == j) {
-                    sum = sum + bit[i] * power[j];
+                    sum = sum + bit[i] * POWER[j];
                 }
             }
         }
@@ -357,6 +359,8 @@ public class IdcardValidatorUtils {
                 break;
             case 0:
                 checkCode = "1";
+                break;
+            default:
                 break;
         }
         return checkCode;

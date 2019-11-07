@@ -19,7 +19,9 @@ public class PinyinUtils {
      * @return
      */
     public static String getPingYin(String inputString) {
-        if (StringUtils.isEmpty(inputString)) return "";
+        if (StringUtils.isEmpty(inputString)) {
+            return "";
+        }
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
         format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
@@ -29,12 +31,12 @@ public class PinyinUtils {
         StringBuilder output = new StringBuilder();
 
         try {
-            for (int i = 0; i < input.length; i++) {
-                if (Character.toString(input[i]).matches("[\\u4E00-\\u9FA5]+")) {
-                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(input[i], format);
+            for (char c : input) {
+                if (Character.toString(c).matches("[\\u4E00-\\u9FA5]+")) {
+                    String[] temp = PinyinHelper.toHanyuPinyinStringArray(c, format);
                     output.append(temp[0]);
                 } else {
-                    output.append(Character.toString(input[i]));
+                    output.append(Character.toString(c));
                 }
             }
         } catch (BadHanyuPinyinOutputFormatCombination e) {
@@ -55,8 +57,10 @@ public class PinyinUtils {
      * @return 汉语拼音首字母
      */
     public static String getFirstSpell(String chinese) {
-        if (StringUtils.isEmpty(chinese)) return "";
-        StringBuffer pybf = new StringBuffer();
+        if (StringUtils.isEmpty(chinese)) {
+            return "";
+        }
+        StringBuilder pybf = new StringBuilder();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
         defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
@@ -85,7 +89,7 @@ public class PinyinUtils {
      * @return 汉语拼音
      */
     public static String getFullSpell(String chinese) {
-        StringBuffer pybf = new StringBuffer();
+        StringBuilder pybf = new StringBuilder();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
         defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);

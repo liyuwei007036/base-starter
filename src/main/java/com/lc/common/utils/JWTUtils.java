@@ -25,7 +25,7 @@ public class JWTUtils {
     public static JSONObject createToken(Object data, String secret) {
         JSONObject object = new JSONObject();
         try {
-            Map<String, Object> payloadMap = new HashMap<>();
+            Map<String, Object> payloadMap = new HashMap<>(3);
             Calendar c = Calendar.getInstance();
 
             //生成时间
@@ -59,7 +59,7 @@ public class JWTUtils {
             jwsObject.sign(jwsSigner);
             String token = jwsObject.serialize();
             object.put("token", token);
-            object.put("expires", c.getTimeInMillis() - new Date().getTime());
+            object.put("expires", c.getTimeInMillis() - System.currentTimeMillis());
             object.put("is_error", false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,7 +99,7 @@ public class JWTUtils {
             //判断token是否过期
             if (jsonObject.containsKey("exp_date")) {
                 Long expTime = Long.valueOf(jsonObject.get("exp_date").toString());
-                Long nowTime = new Date().getTime();
+                Long nowTime = System.currentTimeMillis();
                 //判断是否过期
                 if (nowTime > expTime) {
                     //已经过期
@@ -117,7 +117,7 @@ public class JWTUtils {
     public static Boolean validSign(String MD5KEY, Map<Object, Object> parameters) {
         SortedMap<Object, Object> sortedMap = new TreeMap<>(parameters);
         StringBuffer sbkey = new StringBuffer();
-        String sign_data = "";
+        String signData = "";
         Long timestamp = 0L;
         Map<Object, Object> data = new HashMap<>();
 
@@ -126,7 +126,7 @@ public class JWTUtils {
             Object v = m.getValue();
             //空值不传递，不参与签名组串
             if (k.equals("sign")) {
-                sign_data = ObjectUtil.getString(v);
+                signData = ObjectUtil.getString(v);
                 continue;
             }
             if (k.equals("timestamp")) {
@@ -146,9 +146,9 @@ public class JWTUtils {
             Object v = m.getValue();
             if (null != v && !"".equals(v)) {
                 if (i != sortedMap.size()) {
-                    sbkey.append(k + "=" + v + "&");
+                    sbkey.append(k).append("=").append(v).append("&");
                 } else {
-                    sbkey.append(k + "=" + v);
+                    sbkey.append(k).append("=").append(v);
                 }
             }
         }
@@ -159,13 +159,13 @@ public class JWTUtils {
             log.debug("签名验证失败, 时间错误");
             return false;
         }
-        String new_sbkey = sbkey.toString() + MD5KEY;
-        String sign = DigestUtils.md5DigestAsHex(new_sbkey.getBytes()).toUpperCase();
-        if (sign_data.equals(sign)) {
+        String newSbkey = sbkey.toString() + MD5KEY;
+        String sign = DigestUtils.md5DigestAsHex(newSbkey.getBytes()).toUpperCase();
+        if (signData.equals(sign)) {
             log.debug("签名验证,成功");
             return true;
         } else {
-            log.debug(sign_data);
+            log.debug(signData);
             log.debug("-------------------------------------");
             log.debug(sign);
             log.debug("签名验证失败, Sign 值不匹配");

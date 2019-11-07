@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * @author l5990
+ */
 @Log4j2
 public class FileUtils {
 
@@ -36,48 +39,27 @@ public class FileUtils {
     }
 
     public static String readString(File file) {
-        ByteArrayOutputStream baos = null;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
-            baos = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(file)) {
+
             byte[] buffer = new byte[1024];
             for (int len; (len = fis.read(buffer)) > 0; ) {
                 baos.write(buffer, 0, len);
             }
             return new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        } catch (Exception e) {
-        } finally {
-            close(fis, baos);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
     public static void writeString(File file, String string) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file, false);
+        try (FileOutputStream fos = new FileOutputStream(file, false)) {
             fos.write(string.getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-        } finally {
-            close(null, fos);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private static void close(InputStream is, OutputStream os) {
-        if (is != null)
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        if (os != null)
-            try {
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-    }
 
     public static void unzip(String zipFilePath) throws IOException {
         String targetPath = zipFilePath.substring(0, zipFilePath.lastIndexOf("."));
@@ -96,21 +78,25 @@ public class FileUtils {
                         if (!zipEntry.isDirectory()) {
                             File targetFile = new File(targetPath + File.separator + zipEntry.getName());
                             if (!targetFile.getParentFile().exists()) {
-                                targetFile.getParentFile().mkdirs();
+                                boolean mkdirs = targetFile.getParentFile().mkdirs();
+                                log.info(mkdirs);
                             }
                             os = new BufferedOutputStream(new FileOutputStream(targetFile));
                             is = zipFile.getInputStream(zipEntry);
                             byte[] buffer = new byte[4096];
-                            int readLen = 0;
-                            while ((readLen = is.read(buffer, 0, 4096)) > 0) {
+                            int readLen;
+                            int maxLength = 4096;
+                            while ((readLen = is.read(buffer, 0, maxLength)) > 0) {
                                 os.write(buffer, 0, readLen);
                             }
                         }
                     } finally {
-                        if (is != null)
+                        if (is != null) {
                             is.close();
-                        if (os != null)
+                        }
+                        if (os != null) {
                             os.close();
+                        }
                     }
                 }
             }
@@ -127,57 +113,64 @@ public class FileUtils {
         return filename;
     }
 
-    public static String getMD5(String file_path) throws IOException {
-        File file = new File(file_path);
-        return getMD5(file);
+    public static String getMd5(String filePath) throws IOException {
+        File file = new File(filePath);
+        return getMd5(file);
     }
 
-    public static String getMD5(File file) throws IOException {
+    public static String getMd5(File file) throws IOException {
         FileInputStream ins = new FileInputStream(file);
-        String md5 = getMD5(ins);
+        String md5 = getMd5(ins);
         ins.close();
         return md5;
     }
 
-    public static String getMD5(FileInputStream inputStream) throws IOException {
+    public static String getMd5(FileInputStream inputStream) throws IOException {
         return DigestUtils.md5Hex(inputStream);
     }
 
-    public static boolean delAllFile(String path) {
-        boolean flag = false;
+    public static void delAllFile(String path) {
         File file = new File(path);
         if (!file.exists()) {
-            return flag;
+            return;
         }
         if (!file.isDirectory()) {
-            return flag;
+            return;
         }
         String[] tempList = file.list();
         File temp;
-        for (int i = 0; i < tempList.length; i++) {
+        assert tempList != null;
+        for (String s : tempList) {
             if (path.endsWith(File.separator)) {
-                temp = new File(path + tempList[i]);
+                temp = new File(path + s);
             } else {
-                temp = new File(path + File.separator + tempList[i]);
+                temp = new File(path + File.separator + s);
             }
             if (temp.isFile()) {
-                temp.delete();
+                boolean delete = temp.delete();
+                if (!delete) {
+                    log.error("文件删除失败");
+                }
             }
             if (temp.isDirectory()) {
-                delAllFile(path + File.separator + tempList[i]);// 先删除文件夹里面的文件
-                delFolder(path + File.separator + tempList[i]);// 再删除空文件夹
-                flag = true;
+                // 先删除文件夹里面的文件
+                delAllFile(path + File.separator + s);
+                // 再删除空文件夹
+                delFolder(path + File.separator + s);
             }
         }
-        return flag;
     }
 
     public static void delFolder(String folderPath) {
         try {
-            delAllFile(folderPath); // 删除完里面所有内容
-            String filePath = folderPath;
-            File myFilePath = new File(filePath);
-            myFilePath.delete(); // 删除空文件夹
+            // 删除完里面所有内容
+            delAllFile(folderPath);
+            File myFilePath = new File(folderPath);
+            // 删除空文件夹
+            boolean delete = myFilePath.delete();
+            if (!delete) {
+                log.error("文件删除失败");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,7 +188,7 @@ public class FileUtils {
 
     }
 
-    public static void InputStreamToFile(@NotNull File f, InputStream input) throws IOException {
+    public static void inputStreamToFile(File f, InputStream input) throws IOException {
         FileOutputStream os = new FileOutputStream(f);
         int index;
         byte[] bytes = new byte[1024];
@@ -207,7 +200,7 @@ public class FileUtils {
         os.close();
     }
 
-    public static InputStream downloadFileFromURL(String urlString) {
+    public static InputStream downloadFileFromUrl(String urlString) {
         try {
             // 构造URL
             URL url = new URL(urlString);
@@ -235,6 +228,9 @@ public class FileUtils {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+            if (br == null) {
+                throw new RuntimeException("文件不存在");
+            }
         } catch (FileNotFoundException e) {
             log.error("文件不存在");
             throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
@@ -243,7 +239,7 @@ public class FileUtils {
         List<Object[]> result = new ArrayList<>();
         try {
             while ((line = br.readLine()) != null) {
-                result.add(line.split("\\,"));
+                result.add(line.split(","));
             }
         } catch (IOException e) {
             log.error("文件读取出错");

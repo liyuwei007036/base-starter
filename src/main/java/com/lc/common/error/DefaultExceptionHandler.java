@@ -1,7 +1,7 @@
 package com.lc.common.error;
 
-import com.lc.common.utils.ObjectUtil;
 import com.lc.common.pojo.ResponseInfo;
+import com.lc.common.utils.ObjectUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.dao.DataAccessException;
@@ -18,6 +18,7 @@ import java.sql.SQLException;
 
 /**
  * 全局错误处理
+ *
  * @author l5990
  */
 @Log4j2
@@ -81,7 +82,7 @@ public class DefaultExceptionHandler {
         String requestURI = request.getRequestURI();
         log.error(exception);
         log.error("occurs error when execute url ={} ,message {}", requestURI, exception);
-        return new ResponseInfo(ObjectUtil.getInteger(exception.getErr_code()), exception.getMessage());
+        return new ResponseInfo(ObjectUtil.getInteger(exception.getErrCode()), exception.getMessage());
     }
 
     /**
@@ -119,7 +120,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseBody
-    public ResponseInfo notAllowedMethod(Exception e) throws Exception {
+    public ResponseInfo notAllowedMethod(Exception e) {
         log.error("HttpRequestMethodNotSupportedException {}", e);
         return new ResponseInfo(BaseErrorEnums.BAD_REQUEST_TYPE);
     }

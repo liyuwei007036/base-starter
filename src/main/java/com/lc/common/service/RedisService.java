@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author l5990
+ */
 public class RedisService<HK, V> {
 
     // 在构造器中获取redisTemplate实例, key(not hashKey) 默认使用String类型
@@ -18,64 +21,64 @@ public class RedisService<HK, V> {
     }
 
     public Boolean hasKey(String key, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return redisTemplate.hasKey(key);
     }
 
     public void hashPut(String key, HK hashKey, V value, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         redisTemplate.opsForHash().put(key, hashKey, value);
     }
 
     public void put(String key, V value, int dbIndex, long timeout) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(timeout));
     }
 
     public V get(String key, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return (V) redisTemplate.opsForValue().get(key);
     }
 
     public void setPut(String key, V values, int dbIndex, long timeout) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         redisTemplate.opsForSet().add(key, values);
         redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     }
 
     public V setGet(String key, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return (V) redisTemplate.opsForSet().members(key);
     }
 
     public Boolean hashPutIfAbsent(String key, HK hashKey, V value, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return redisTemplate.opsForHash().putIfAbsent(key, hashKey, value);
     }
 
     public Map<HK, V> hashFindAll(String key, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return (Map<HK, V>) redisTemplate.opsForHash().entries(key);
     }
 
     public V hashGet(String key, HK hashKey, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return (V) redisTemplate.opsForHash().get(key, hashKey);
     }
 
     public void hashRemove(String key, HK hashKey, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         redisTemplate.opsForHash().delete(key, hashKey);
     }
 
 
     public Boolean remove(String key, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return redisTemplate.delete(key);
     }
 
     public boolean expire(String key, long timeout, int dbIndex) {
-        redisTemplate.indexdb.set(dbIndex);
+        redisTemplate.indexed.set(dbIndex);
         return redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
     }
 

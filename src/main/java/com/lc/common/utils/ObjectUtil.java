@@ -6,7 +6,7 @@ import java.util.*;
 
 public class ObjectUtil {
     public static Object[] nullFilter(Object... ps) {
-        List<Object> pls = new ArrayList<Object>();
+        List<Object> pls = new ArrayList<>();
         for (Object p : ps) {
             if (p != null) {
                 pls.add(p);
@@ -21,10 +21,7 @@ public class ObjectUtil {
 
 
     public static <T> Set<T> array2Set(T[] args) {
-        Set<T> ret = new HashSet<T>();
-        for (T t : args) {
-            ret.add(t);
-        }
+        Set<T> ret = new HashSet<T>(Arrays.asList(args));
         return ret;
     }
 
@@ -37,8 +34,12 @@ public class ObjectUtil {
      */
     static public int getInteger(Object o) {
         try {
-            if (o instanceof Integer) return (Integer) o;
-            if (o == null) return 0;
+            if (o instanceof Integer) {
+                return (Integer) o;
+            }
+            if (o == null) {
+                return 0;
+            }
             return Integer.parseInt(o.toString());
         } catch (Exception e) {
             return 0;
@@ -53,8 +54,12 @@ public class ObjectUtil {
      */
     static public short getShort(Object o) {
         try {
-            if (o instanceof Short) return (Short) o;
-            if (o == null) return 0;
+            if (o instanceof Short) {
+                return (Short) o;
+            }
+            if (o == null) {
+                return 0;
+            }
             return Short.parseShort(o.toString());
         } catch (Exception e) {
             return 0;
@@ -84,7 +89,9 @@ public class ObjectUtil {
             if (o == null) {
                 return false;
             } else {
-                if (o instanceof Boolean) return (Boolean) o;
+                if (o instanceof Boolean) {
+                    return (Boolean) o;
+                }
                 String s = o.toString().toLowerCase().trim();
                 return ("T".equals(s) || "1".equals(s) || "true".equals(s) || "yes".equals(s) || "on".equals(s) || "是".equals(s));
             }
@@ -101,8 +108,12 @@ public class ObjectUtil {
      */
     static public long getLong(Object o) {
         try {
-            if (o instanceof Long) return (Long) o;
-            if (o == null) return 0;
+            if (o instanceof Long) {
+                return (Long) o;
+            }
+            if (o == null) {
+                return 0;
+            }
             return Long.parseLong(o.toString());
         } catch (Exception e) {
             return 0;
@@ -118,9 +129,13 @@ public class ObjectUtil {
      */
     static public float getFloat(Object o) {
         try {
-            if (o instanceof Float) return (Float) o;
-            if (o == null) return 0;
-            return Float.valueOf(o.toString());
+            if (o instanceof Float) {
+                return (Float) o;
+            }
+            if (o == null) {
+                return 0;
+            }
+            return Float.parseFloat(o.toString());
         } catch (Exception e) {
             return 0;
         }
@@ -134,9 +149,13 @@ public class ObjectUtil {
      */
     static public double getDouble(Object o) {
         try {
-            if (o instanceof Double) return (Double) o;
-            if (o == null) return 0;
-            return Double.valueOf(o.toString());
+            if (o instanceof Double) {
+                return (Double) o;
+            }
+            if (o == null) {
+                return 0;
+            }
+            return Double.parseDouble(o.toString());
         } catch (Exception e) {
             return 0;
         }
@@ -150,9 +169,13 @@ public class ObjectUtil {
      */
     static public BigDecimal getBigDecimal(Object o) {
         try {
-            if (o instanceof BigDecimal) return (BigDecimal) o;
-            if (o == null) return BigDecimal.ZERO;
-            return BigDecimal.valueOf(Double.valueOf(o.toString()));
+            if (o instanceof BigDecimal) {
+                return (BigDecimal) o;
+            }
+            if (o == null) {
+                return BigDecimal.ZERO;
+            }
+            return BigDecimal.valueOf(Double.parseDouble(o.toString()));
         } catch (Exception e) {
             return BigDecimal.ZERO;
         }
@@ -167,7 +190,7 @@ public class ObjectUtil {
     static public float getFloat(Object o, int precision) {
         try {
             int p = (int) Math.pow(10, precision);
-            int v = (int) Math.round(Float.valueOf(o.toString()) * p);
+            int v = Math.round(Float.parseFloat(o.toString()) * p);
             return ((float) v) / p;
         } catch (Exception e) {
             return 0;
@@ -187,7 +210,9 @@ public class ObjectUtil {
             int l = Math.min(6, d.length);
             Calendar date = Calendar.getInstance();
             int[] di = {0, 0, 0, 0, 0, 0};
-            for (int i = 0; i < l; i++) di[i] = Integer.parseInt(d[i]);
+            for (int i = 0; i < l; i++) {
+                di[i] = Integer.parseInt(d[i]);
+            }
             date.set(di[0], di[1] - 1, di[2], di[3], di[4], di[5]);
             date.set(Calendar.MILLISECOND, 0);
             return date.getTime();
@@ -198,16 +223,35 @@ public class ObjectUtil {
 
     static public Object getValue(Object val, Class clazz) {
         try {
-            if (val.getClass().equals(clazz)) return val;
-            if (clazz.equals(String.class)) return getString(val);
-            if (clazz.equals(Long.class)) return getLong(val);
-            if (clazz.equals(Boolean.class)) return getBoolean(val);
-            if (clazz.equals(Date.class)) return getDate(val);
-            if (clazz.equals(Double.class)) return getDouble(val);
-            if (clazz.equals(BigDecimal.class)) return getBigDecimal(val);
-            if (clazz.equals(Float.class)) return getFloat(val);
-            if (clazz.equals(Short.class)) return getShort(val);
-        } catch (Exception e) {
+            if (val.getClass().equals(clazz)) {
+                return val;
+            }
+            if (clazz.equals(String.class)) {
+                return getString(val);
+            }
+            if (clazz.equals(Long.class)) {
+                return getLong(val);
+            }
+            if (clazz.equals(Boolean.class)) {
+                return getBoolean(val);
+            }
+            if (clazz.equals(Date.class)) {
+                return getDate(val);
+            }
+            if (clazz.equals(Double.class)) {
+                return getDouble(val);
+            }
+            if (clazz.equals(BigDecimal.class)) {
+                return getBigDecimal(val);
+            }
+            if (clazz.equals(Float.class)) {
+                return getFloat(val);
+            }
+            if (clazz.equals(Short.class)) {
+                return getShort(val);
+            }
+        } catch (Exception ignored) {
+
         }
         return val;
     }
@@ -228,9 +272,9 @@ public class ObjectUtil {
             array[index] = array[i - 1];
             array[i - 1] = tmp;
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            result = result.append(array[i]);
+            result.append(array[i]);
         }
         return result.toString();
     }

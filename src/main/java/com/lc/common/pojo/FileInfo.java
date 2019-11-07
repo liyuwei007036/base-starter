@@ -10,9 +10,11 @@ import java.io.Serializable;
 
 /**
  * 文件信息
+ * @author l5990
  */
 @Data
 public class FileInfo implements Serializable {
+    
     // 原文件名
     private String file_name;
 

@@ -20,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author l5990
+ */
 @Log4j2
 public final class HttpUtils {
     private static RestTemplate restTemplate = new RestTemplate();
@@ -54,13 +57,11 @@ public final class HttpUtils {
     public static String post(String url, Map<String, Object> data, Map<String, String> head) {
         restTemplate.setErrorHandler(getResponseErrorHandler());
         HttpHeaders headers = new HttpHeaders();
-        for (String m : head.keySet()) {
-            headers.add(m, head.get(m));
-        }
+        head.forEach(headers::add);
         String ct = ObjectUtil.getString(head.get("Content-Type"));
         HttpEntity r;
         // 根据不同的请求头发送
-        if (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(ct)) {
+        if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(ct)) {
             MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
             for (String m : data.keySet()) {
                 postParameters.add(m, data.get(m));

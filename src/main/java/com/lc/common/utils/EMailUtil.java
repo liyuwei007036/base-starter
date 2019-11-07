@@ -14,11 +14,14 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * @author l5990
+ */
 @Log4j2
 public class EMailUtil {
 
-    private static Set<String> rule_file = new HashSet<>();
-    private static Set<String> rule_re = new HashSet<>();
+    private static Set<String> RULE_FILE = new HashSet<>();
+    private static Set<String> RULE_RE = new HashSet<>();
 
     public interface Mail {
         void parseMail(List<InputStream> inputStreams);
@@ -28,27 +31,29 @@ public class EMailUtil {
      * 接收邮件
      */
     public static void receive(String account, String passwd, Set<String> ruleFile, Set<String> ruleRe, Mail mail) throws Exception {
-        if (rule_file != null) {
-            EMailUtil.rule_file.addAll(ruleFile);
+        if (RULE_FILE != null) {
+            EMailUtil.RULE_FILE.addAll(ruleFile);
         }
         if (ruleRe != null) {
-            EMailUtil.rule_re.addAll(ruleRe);
+            EMailUtil.RULE_RE.addAll(ruleRe);
         }
 
         /*
          * 因为现在使用的是163邮箱 而163的 pop地址是pop3.163.com 端口是110
          * 比如使用好未来企业邮箱 就需要换成 好未来邮箱的 pop服务器地址 pop.263.net  和   端口 110
          */
-        String duankou = "993";   // 端口号
-        String servicePath = "imap.exmail.qq.com";   // 服务器地址
-        final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
+        // 端口号
+        String port = "993";
+        // 服务器地址
+        String servicePath = "imap.exmail.qq.com";
+        final String sSLFACTORY = "javax.net.ssl.SSLSocketFactory";
 
         // 准备连接服务器的会话信息
         Properties props = new Properties();
         props.setProperty("mail.store.protocol", "imap");
         props.setProperty("mail.imap.host", servicePath);
-        props.setProperty("mail.imap.port", duankou);
-        props.setProperty("mail.imap.socketFactory.class", SSL_FACTORY);
+        props.setProperty("mail.imap.port", port);
+        props.setProperty("mail.imap.socketFactory.class", sSLFACTORY);
         props.setProperty("mail.imap.socketFactory.fallback", "false");
         props.setProperty("mail.imap.socketFactory.port", "993");
         props.setProperty("mail.imap.auth", "true");
@@ -61,8 +66,8 @@ public class EMailUtil {
 
         // 获得收件箱
         Folder folder = store.getFolder("INBOX");
-        folder.open(Folder.READ_ONLY); //打开收件箱
-
+        //打开收件箱
+        folder.open(Folder.READ_ONLY);
         // 如果未读数量大于0
         if (folder.getUnreadMessageCount() > 0) {
             Message[] messages = folder.getMessages();
@@ -95,13 +100,14 @@ public class EMailUtil {
             }
 
             String s = getSubject(msg);
-            if (!rule_re.contains(s) && !rule_re.contains("*")) {
+            if (!RULE_RE.contains(s) && !RULE_RE.contains("*")) {
                 continue;
             }
 
             boolean isContainerAttachment = isContainAttachment(msg);
             if (isContainerAttachment) {
-                List<InputStream> inputStreams = saveAttachment(msg);//保存附件
+                //保存附件
+                List<InputStream> inputStreams = saveAttachment(msg);
                 mail.parseMail(inputStreams);
             }
             StringBuffer content = new StringBuffer(30);
@@ -117,18 +123,21 @@ public class EMailUtil {
      * @param messages 要解析的邮件列表
      */
     public static void deleteMessage(Message... messages) throws MessagingException, IOException {
-        if (messages == null || messages.length < 1)
+        if (messages == null || messages.length < 1) {
             throw new MessagingException("未找到要解析的邮件!");
+        }
         // 解析所有邮件
-        for (int i = 0, count = messages.length; i < count; i++) {
+        /**
+         *   邮件删除
+         */
+        for (Message message : messages) {
             /**
              *   邮件删除
              */
-            Message message = messages[i];
             String subject = message.getSubject();
             // set the DELETE flag to true
             message.setFlag(Flags.Flag.DELETED, true);
-            System.out.println("Marked DELETE for message: " + subject);
+           log.error("Marked DELETE for message: " + subject);
         }
     }
 
@@ -139,7 +148,9 @@ public class EMailUtil {
      * @return 解码后的邮件主题
      */
     public static String getSubject(MimeMessage msg) throws UnsupportedEncodingException, MessagingException {
-        if (msg == null || msg.getSubject() == null) return "";
+        if (msg == null || msg.getSubject() == null) {
+            return "";
+        }
         return MimeUtility.decodeText(msg.getSubject());
     }
 
@@ -181,7 +192,7 @@ public class EMailUtil {
      * @throws MessagingException
      */
     public static String getReceiveAddress(MimeMessage msg, Message.RecipientType type) throws MessagingException {
-        StringBuffer receiveAddress = new StringBuffer();
+        StringBuilder receiveAddress = new StringBuilder();
         Address[] addresss;
         if (type == null) {
             addresss = msg.getAllRecipients();
@@ -197,8 +208,8 @@ public class EMailUtil {
             receiveAddress.append(internetAddress.toUnicodeString()).append(",");
         }
 
-        receiveAddress.deleteCharAt(receiveAddress.length() - 1); //删除最后一个逗号
-
+        //删除最后一个逗号
+        receiveAddress.deleteCharAt(receiveAddress.length() - 1);
         return receiveAddress.toString();
     }
 
@@ -241,10 +252,10 @@ public class EMailUtil {
                     flag = isContainAttachment(bodyPart);
                 } else {
                     String contentType = bodyPart.getContentType();
-                    if (contentType.indexOf("application") != -1) {
+                    if (contentType.contains("application")) {
                         flag = true;
                     }
-                    if (contentType.indexOf("name") != -1) {
+                    if (contentType.contains("name")) {
                         flag = true;
                     }
                 }
@@ -277,8 +288,9 @@ public class EMailUtil {
     public static boolean isReplySign(MimeMessage msg) throws MessagingException {
         boolean replySign = false;
         String[] headers = msg.getHeader("Disposition-Notification-To");
-        if (headers != null)
+        if (headers != null) {
             replySign = true;
+        }
         return replySign;
     }
 
@@ -294,12 +306,13 @@ public class EMailUtil {
         String[] headers = msg.getHeader("X-Priority");
         if (headers != null) {
             String headerPriority = headers[0];
-            if (headerPriority.indexOf("1") != -1 || headerPriority.indexOf("High") != -1)
+            if (headerPriority.contains("1") || headerPriority.contains("High")) {
                 priority = "紧急";
-            else if (headerPriority.indexOf("5") != -1 || headerPriority.indexOf("Low") != -1)
+            } else if (headerPriority.contains("5") || headerPriority.contains("Low")) {
                 priority = "低";
-            else
+            } else {
                 priority = "普通";
+            }
         }
         return priority;
     }
@@ -353,7 +366,7 @@ public class EMailUtil {
                     String file_name = bodyPart.getFileName();
                     file_name = MimeUtility.decodeText(file_name);
                     String suffix = FileUtils.getSuffix(file_name);
-                    if (!rule_file.contains(suffix) && !rule_re.contains("*")) {
+                    if (!RULE_FILE.contains(suffix) && !RULE_RE.contains("*")) {
                         log.info("文件格式不匹配：" + file_name);
                         continue;
                     }

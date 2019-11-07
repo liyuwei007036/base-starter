@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author l5990
+ */
 @Log4j2
 @Component
 public class SessionService<HK, HV> {
@@ -20,17 +23,17 @@ public class SessionService<HK, HV> {
     /**
      * 设置 Session 值
      *
-     * @param session_id
-     * @param hash_key
-     * @param hash_value
+     * @param sessionId
+     * @param hashKey
+     * @param hashValue
      */
-    public void setSessionValue(String session_id, HK hash_key, HV hash_value, int time_out, int dbIndex) {
+    public void setSessionValue(String sessionId, HK hashKey, HV hashValue, int timeOut, int dbIndex) {
         try {
-            if (!redisService.hasKey(session_id, dbIndex)) {
-                redisService.hashPut(session_id, "create_date", new Date(), dbIndex);
-                redisService.expire(session_id, time_out, dbIndex);
+            if (!redisService.hasKey(sessionId, dbIndex)) {
+                redisService.hashPut(sessionId, "create_date", new Date(), dbIndex);
+                redisService.expire(sessionId, timeOut, dbIndex);
             }
-            redisService.hashPut(session_id, hash_key, hash_value, dbIndex);
+            redisService.hashPut(sessionId, hashKey, hashValue, dbIndex);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("插入session 失败", e);
@@ -41,17 +44,17 @@ public class SessionService<HK, HV> {
     /**
      * 设置 Session 值 只有key 不存在才能设置成功
      *
-     * @param session_id
-     * @param hash_key
-     * @param hash_value
+     * @param sessionId
+     * @param hashKey
+     * @param hashValue
      */
-    public Boolean setSessionValueIfAbsent(String session_id, HK hash_key, HV hash_value, int time_out, int dbIndex) {
+    public Boolean setSessionValueIfAbsent(String sessionId, HK hashKey, HV hashValue, int timeOut, int dbIndex) {
         try {
-            if (!redisService.hasKey(session_id, dbIndex)) {
-                redisService.hashPut(session_id, "create_date", new Date(), dbIndex);
-                redisService.expire(session_id, time_out, dbIndex);
+            if (!redisService.hasKey(sessionId, dbIndex)) {
+                redisService.hashPut(sessionId, "create_date", new Date(), dbIndex);
+                redisService.expire(sessionId, timeOut, dbIndex);
             }
-            return redisService.hashPutIfAbsent(session_id, hash_key, hash_value, dbIndex);
+            return redisService.hashPutIfAbsent(sessionId, hashKey, hashValue, dbIndex);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("插入session 失败", e);
@@ -81,28 +84,28 @@ public class SessionService<HK, HV> {
     /**
      * 取得指定 Session 集合
      *
-     * @param session_id
+     * @param sessionId
      * @return
      */
-    public Map<String, Object> getSessionMapBySessionId(String session_id, int time_out, int dbIndex) {
-        Map<String, Object> map = null;
-        if (redisService.hasKey(session_id, dbIndex)) {
-            map = redisService.hashFindAll(session_id, dbIndex);
+    public Map<String, Object> getSessionMapBySessionId(String sessionId, int timeOut, int dbIndex) {
+        Map map = null;
+        if (redisService.hasKey(sessionId, dbIndex)) {
+            map = redisService.hashFindAll(sessionId, dbIndex);
         }
         if (map == null) {
-            map = new HashMap<>();
+            map = new HashMap<>(1);
         } else {
-            updateAccessTime(session_id, time_out, dbIndex);
+            updateAccessTime(sessionId, timeOut, dbIndex);
         }
         return map;
     }
 
 
-    public Boolean updateAccessTime(String session_id, int time_out, int dbIndex) {
-        return redisService.expire(session_id, time_out, dbIndex);
+    public Boolean updateAccessTime(String session_id, int timeOut, int dbIndex) {
+        return redisService.expire(session_id, timeOut, dbIndex);
     }
 
-    public Map<String, Object> getSessionList(int dbIndex) {
+    public HashMap getSessionList(int dbIndex) {
         return redisService.hashGetAll(dbIndex);
     }
 
