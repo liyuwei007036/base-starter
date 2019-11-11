@@ -25,6 +25,7 @@
             <name>Nexus Release Repository</name>
             <url>http://lumia.live:9999/repository/maven-releases/</url>
         </repository>
+
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>Nexus Snapshot Repository</name>
