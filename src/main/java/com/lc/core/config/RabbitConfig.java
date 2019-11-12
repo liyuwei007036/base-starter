@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     // 发送短信 企业微信通知 推送交换机
-    public static final String DIRECT_MSG_EXCHANGE = "direct.msg";
+    public sdddtatic final String DIRECT_MSG_EXCHANGE = "direct.msg";
     public static final String QUEUE_SHORTMSG = "msg.short";
     public static final String QUEUE_WXMSG = "msg.wx";
     public static final String QUEUE_PUSHMSG = "msg.push";
