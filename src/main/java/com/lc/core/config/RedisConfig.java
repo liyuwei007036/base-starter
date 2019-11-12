@@ -63,12 +63,12 @@ public class RedisConfig {
         }).collect(Collectors.toList());
         redisSentinelConfiguration.setSentinels(nodes);
 //
-        JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder()
-                .usePooling().poolConfig(jedisPoolConfig).and()
+        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder()
                 .connectTimeout(Duration.ofMillis(redisConfigSetting.getConnectTimeout()))
-                .readTimeout(Duration.ofSeconds(redisConfigSetting.getReadTimeout()));
+                .readTimeout(Duration.ofSeconds(redisConfigSetting.getReadTimeout()))
+                .usePooling().poolConfig(jedisPoolConfig).build();
 
-        return new JedisConnectionFactory(redisSentinelConfiguration, jedisClientConfiguration.build());
+        return new JedisConnectionFactory(redisSentinelConfiguration, jedisClientConfiguration);
     }
 
     @Bean
