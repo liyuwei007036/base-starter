@@ -5,19 +5,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.lc.core.config.CommonConstant;
 import com.lc.core.service.RedisService;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @Component
 @EnableScheduling
 public class ScheduleTask {
@@ -34,7 +34,7 @@ public class ScheduleTask {
     /**
      * MQ 消息失败检测定时任务
      */
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(cron = "* */2 * * *?")
     private void configureTasks() {
         String taskName = env + "_MQ_FAiL_CHECK_TASK".toUpperCase();
         boolean f = redisService.hashPutIfAbsent(taskName, taskName, taskName, CommonConstant.REDIS_DB_TASK);
@@ -48,13 +48,10 @@ public class ScheduleTask {
         for (Map.Entry<String, JSONObject> msg : msgs.entrySet()) {
             String msgId = msg.getKey();
             JSONObject obj = msg.getValue();
-            Date sendData = obj.getDate("date");
-            long sendSecond = sendData.getTime() + 1000 * 60;
-            // 如果超过一分钟还没有投递至MQ 则表示投递失败
-            if (System.currentTimeMillis() >= sendSecond) {
-                obj.put("date", new Date());
+            int num = obj.getInteger("num");
+            if (num < 4) {
                 redisService.hashRemove(env + "MQMSG", msgId, CommonConstant.REDIS_DB_OTHER);
-                rabbitMQSender.sendMsg(obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")));
+                rabbitMQSender.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
             }
         }
     }

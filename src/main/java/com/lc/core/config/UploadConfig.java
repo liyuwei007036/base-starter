@@ -1,6 +1,6 @@
 package com.lc.core.config;
 
-import com.lc.core.pojo.FileInfo;
+import com.lc.core.dto.FileInfo;
 
 import java.io.File;
 import java.util.Set;

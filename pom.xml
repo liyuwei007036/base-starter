@@ -56,8 +56,16 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.49</version>
+            <version>1.2.62</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.coverity.security</groupId>
+            <artifactId>coverity-escapers</artifactId>
+            <version>1.1.1</version>
+            <type>pom</type>
+        </dependency>
+
 
 
         <dependency>

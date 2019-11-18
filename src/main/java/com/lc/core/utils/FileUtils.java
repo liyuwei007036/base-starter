@@ -40,7 +40,6 @@ public class FileUtils {
 
     public static String readString(File file) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(file)) {
-
             byte[] buffer = new byte[1024];
             for (int len; (len = fis.read(buffer)) > 0; ) {
                 baos.write(buffer, 0, len);

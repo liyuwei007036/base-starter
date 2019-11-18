@@ -3,16 +3,20 @@ package com.lc.core.component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lc.core.config.CommonConstant;
-import com.lc.core.utils.SpringUtil;
 import com.lc.core.service.RedisService;
+import com.lc.core.utils.SpringUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -55,26 +59,42 @@ public class RabbitMQSender {
 
     };
 
+    public void sendMsg(String exchange, String routingKey, String msg) {
+        sendMsg(null, exchange, routingKey, msg, 1);
+    }
+
     /**
      * 发送消息
      *
-     * @param exchange   交换机名称
-     * @param routingKey 路由键
-     * @param msg        消息内容
+     * @param msgId
+     * @param exchange
+     * @param routingKey
+     * @param msg
+     * @param num
      */
-    public <T extends Serializable> void sendMsg(String exchange, String routingKey, T msg) {
+    void sendMsg(String msgId, String exchange, String routingKey, String msg, int num) {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         rabbitTemplate.setReturnCallback(returnCallback);
-        CorrelationData cd = new CorrelationData(UUID.randomUUID().toString());
+        if (StringUtils.isEmpty(msgId)) {
+            msgId = UUID.randomUUID().toString();
+        }
+
+        Message message = MessageBuilder.withBody(msg.getBytes(StandardCharsets.UTF_8))
+                .setContentType(MessageProperties.CONTENT_TYPE_JSON)
+                .setContentEncoding("utf-8")
+                .setMessageId(msgId)
+                .build();
+        CorrelationData cd = new CorrelationData(msgId);
         // 存放至redis 默认为未投递
         JSONObject rk = new JSONObject();
         rk.put("routingKey", routingKey);
         rk.put("exchange", exchange);
         rk.put("msg", msg);
         rk.put("date", new Date());
+        rk.put("num", num);
         String key = SpringUtil.getProperty("spring.profiles.active");
-        redisService.hashPut(key + "MQMSG", cd.getId(), rk, CommonConstant.REDIS_DB_OTHER);
-        rabbitTemplate.convertAndSend(exchange, routingKey, msg, cd);
+        redisService.hashPut(key + "MQMSG", msgId, rk, CommonConstant.REDIS_DB_OTHER);
+        rabbitTemplate.convertAndSend(exchange, routingKey, message, cd);
         log.info("【MQ投递消息】 exchange :" + exchange + " routingKey : " + routingKey + " msg : " + JSON.toJSONString(msg) + " msgId: " + cd.getId());
     }
 

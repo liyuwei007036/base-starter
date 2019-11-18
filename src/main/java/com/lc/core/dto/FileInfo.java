@@ -1,10 +1,7 @@
-package com.lc.core.pojo;
+package com.lc.core.dto;
 
 import lombok.Data;
-import lombok.NonNull;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**

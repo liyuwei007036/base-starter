@@ -1,16 +1,18 @@
 package com.lc.core.controller;
 
 
-import com.lc.core.service.SessionService;
+import com.lc.core.commonenums.SessionConstants;
+import com.lc.core.dto.User;
+import com.lc.core.service.BaseSessionService;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author l5990
@@ -18,7 +20,7 @@ import java.util.UUID;
 public abstract class BaseController {
 
     @Autowired
-    private SessionService SessionService;
+    private BaseSessionService<String, Object> baseSessionService;
 
     private static final String UNIQUE_ID = "sessionId";
 
@@ -50,23 +52,51 @@ public abstract class BaseController {
 
     public void loadSessionId() {
         SESSION_ID.set(getSessionId(LOCAL_REQUEST.get(), getSessionType()));
-        checkSession();
-        Map map = SessionService.getSessionMapBySessionId(SESSION_ID.get(), this.getTimeOut(), getDbIndex());
+        Map<String, Object> map = baseSessionService.getSessionMapBySessionId(SESSION_ID.get(), this.getTimeOut(), getDbIndex());
         TMP_SESSION_MAP.set(map);
+        checkSession();
     }
 
-    public String getSessionId(HttpServletRequest request, String sessionType) {
-        String session_id = request.getHeader(sessionType);
-        if (session_id != null) {
-            session_id = session_id.toLowerCase().trim();
+    /**
+     * 从请求中获取sessionId
+     *
+     * @param request
+     * @param sessionType
+     * @return
+     */
+    private String getSessionId(HttpServletRequest request, String sessionType) {
+        Optional<String> first = Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(getSessionType()))
+                .map(Cookie::getValue).findFirst();
+        String sessionId = first.orElse(null);
+        if (StringUtils.isEmpty(sessionId)) {
+            sessionId = request.getHeader(sessionType);
         }
-        return session_id;
+        if (!StringUtils.isEmpty(sessionId)) {
+            sessionId = sessionId.toLowerCase().trim();
+        }
+        return sessionId;
     }
 
+    /**
+     * session 类型
+     *
+     * @return
+     */
     public abstract String getSessionType();
 
+    /**
+     * 超时时间
+     *
+     * @return
+     */
     public abstract int getTimeOut();
 
+    /**
+     * 默认session db
+     *
+     * @return
+     */
     public abstract int getDbIndex();
 
     /**
@@ -78,21 +108,36 @@ public abstract class BaseController {
     public void setSessionAttr(String key, Object value) {
         checkSession();
         if (value != null) {
-            Map<String, Object> session_map = TMP_SESSION_MAP.get();
-            session_map.put(key, value);
-            TMP_SESSION_MAP.set(session_map);
-            SessionService.setSessionValue(SESSION_ID.get(), key, value, getTimeOut(), getDbIndex());
+            Map<String, Object> sessionMap = TMP_SESSION_MAP.get();
+            sessionMap.put(key, value);
+            TMP_SESSION_MAP.set(sessionMap);
+            baseSessionService.setSessionValue(SESSION_ID.get(), key, value, getTimeOut(), getDbIndex());
         }
     }
 
     private void checkSession() {
-        if (StringUtils.isEmpty(SESSION_ID.get())) {
-            String session_id = UUID.randomUUID().toString().toLowerCase();
-            SESSION_ID.set(session_id);
-            this.getResponse().setHeader(getSessionType(), session_id);
+        boolean addSession = true;
+        if (!StringUtils.isEmpty(SESSION_ID.get()) && userHasLogin()) {
+            addSession = false;
+        }
+        if (addSession) {
+            String sessionId = UUID.randomUUID().toString().toLowerCase();
+            SESSION_ID.set(sessionId);
+            this.getResponse().setHeader(getSessionType(), sessionId);
+            Cookie cookie = new Cookie(getSessionType(), sessionId);
+            cookie.setPath("/");
+            this.getResponse().addCookie(cookie);
         }
     }
 
+
+    public User getCurrentUser() {
+        return getSessionAttr(SessionConstants.USER);
+    }
+
+    public boolean userHasLogin() {
+        return Objects.nonNull(getCurrentUser());
+    }
 
     public HttpServletRequest getRequest() {
         return LOCAL_REQUEST.get();
@@ -127,7 +172,7 @@ public abstract class BaseController {
      * @param key
      */
     public void removeSession(String key) {
-        SessionService.removeSessionKey(getSessionId(), key, getDbIndex());
+        baseSessionService.removeSessionKey(getSessionId(), key, getDbIndex());
     }
 
 
@@ -135,7 +180,7 @@ public abstract class BaseController {
      * 删除session
      */
     public void removeSession() {
-        SessionService.removeSessionId(getSessionId(), getDbIndex());
+        baseSessionService.removeSessionId(getSessionId(), getDbIndex());
     }
 
 

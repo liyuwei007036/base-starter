@@ -81,9 +81,9 @@ public final class HttpUtils {
      * @return
      */
     public static String post(String url, Map<String, Object> data) {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        return post(url, data, headers);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return post(url, data, headers.toSingleValueMap());
     }
 
     public static String readData(HttpServletRequest request) {

@@ -4,25 +4,17 @@ import java.math.BigDecimal;
 import java.util.*;
 
 
+/**
+ * @author l5990
+ */
 public class ObjectUtil {
     public static Object[] nullFilter(Object... ps) {
-        List<Object> pls = new ArrayList<>();
-        for (Object p : ps) {
-            if (p != null) {
-                pls.add(p);
-            }
-        }
-        Object[] parray = new Object[pls.size()];
-        for (int i = 0; i < pls.size(); i++) {
-            parray[i] = pls.get(i);
-        }
-        return parray;
+        return Arrays.stream(ps).filter(Objects::nonNull).toArray();
     }
 
 
     public static <T> Set<T> array2Set(T[] args) {
-        Set<T> ret = new HashSet<T>(Arrays.asList(args));
-        return ret;
+        return new HashSet<T>(Arrays.asList(args));
     }
 
 

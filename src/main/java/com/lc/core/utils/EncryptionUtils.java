@@ -27,17 +27,15 @@ public class EncryptionUtils {
      * @throws Exception
      */
     public static String md5(String data, String md5Secret, boolean isUpper) throws Exception {
-        data += md5Secret;
         MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] bytes = md.digest(data.getBytes(StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (byte item : bytes) {
-            sb.append(Integer.toHexString((item & 0xFF) | 0x100), 1, 3);
-        }
+        md.update(data.getBytes(StandardCharsets.UTF_8));
+        md.update(md5Secret.getBytes(StandardCharsets.UTF_8));
+        byte[] digest = md.digest();
+        String result = new String(digest, StandardCharsets.UTF_8);
         if (isUpper) {
-            return sb.toString().toUpperCase();
+            return result.toUpperCase();
         } else {
-            return sb.toString().toLowerCase();
+            return result;
         }
     }
 

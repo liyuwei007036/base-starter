@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Log4j2
 @Component
-public class SessionService<HK, HV> {
+public class BaseSessionService<HK, HV> {
 
     @Autowired
     private RedisService redisService;

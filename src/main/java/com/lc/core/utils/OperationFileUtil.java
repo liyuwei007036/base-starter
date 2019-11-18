@@ -5,7 +5,7 @@ import com.lc.core.commonenums.ResponseEnums;
 import com.lc.core.config.UploadConfig;
 import com.lc.core.error.BaseErrorEnums;
 import com.lc.core.error.BaseException;
-import com.lc.core.pojo.FileInfo;
+import com.lc.core.dto.FileInfo;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.util.StringUtils;
@@ -207,10 +207,10 @@ public class OperationFileUtil {
             }
             String separateUuid = pathObj.getString("separateUuid");
             String uuid = pathObj.getString("uuid");
-            String dirU = uuid.substring(0, 2);
+            String substring = uuid.substring(0, 2);
             String fileName = pathObj.getString("fileName");
             if (isDev) {
-                String filePath = config.basePath() + File.separator + separateUuid + File.separator + dirU + File.separator + uuid + File.separator;
+                String filePath = config.basePath() + File.separator + separateUuid + File.separator + substring + File.separator + uuid + File.separator;
                 FileUtils.delAllFile(filePath);
             } else {
                 String filePath = separateUuid + "/" + fileName;
