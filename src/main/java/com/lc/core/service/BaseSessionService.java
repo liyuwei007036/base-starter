@@ -1,6 +1,6 @@
 package com.lc.core.service;
 
-import com.lc.core.error.BaseErrorEnums;
+import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.error.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

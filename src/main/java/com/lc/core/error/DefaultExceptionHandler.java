@@ -1,6 +1,7 @@
 package com.lc.core.error;
 
 import com.lc.core.dto.ResponseInfo;
+import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.utils.ObjectUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.bind.BindException;

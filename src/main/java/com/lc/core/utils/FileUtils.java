@@ -2,11 +2,10 @@ package com.lc.core.utils;
 
 
 import com.lc.core.error.BaseException;
-import com.lc.core.error.BaseErrorEnums;
+import com.lc.core.enums.BaseErrorEnums;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;

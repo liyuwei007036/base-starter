@@ -1,6 +1,6 @@
 package com.lc.core.dto;
 
-import com.lc.core.error.BaseErrorEnums;
+import com.lc.core.enums.BaseErrorEnums;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 

@@ -3,7 +3,7 @@ package com.lc.core.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.lc.core.enums.ResponseEnums;
 import com.lc.core.config.UploadConfig;
-import com.lc.core.error.BaseErrorEnums;
+import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.error.BaseException;
 import com.lc.core.dto.FileInfo;
 import lombok.extern.log4j.Log4j2;
