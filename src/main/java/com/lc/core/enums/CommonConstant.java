@@ -1,4 +1,4 @@
-package com.lc.core.config;
+package com.lc.core.enums;
 
 public class CommonConstant {
     //REDIS数据库

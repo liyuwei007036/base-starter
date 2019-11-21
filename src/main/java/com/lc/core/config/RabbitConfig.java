@@ -15,35 +15,30 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     /**
-     * 发送通知 推送交换机
+     * 请求交换机
      */
-    public static final String DIRECT_MSG_EXCHANGE = "direct.msg";
+    public static final String REQUEST_EXCHANGE = "request";
     /**
-     * 发送通知 推送交换机
+     * 请求队列
      */
-    public static final String QUEUE_SHORTMSG = "msg.short";
+    public static final String REQUEST_QUEUE = "request.log";
 
 
-    /**
-     * 发送短信队列
-     *
-     * @return
-     */
     @Bean
-    public Queue queueShortMsg() {
-        return new Queue(QUEUE_SHORTMSG, true);
+    public Queue requestQueue() {
+        return new Queue(REQUEST_QUEUE, true);
     }
 
 
     @Bean
-    public DirectExchange directExchange() {
-        return new DirectExchange(DIRECT_MSG_EXCHANGE);
+    public DirectExchange requestExchange() {
+        return new DirectExchange(REQUEST_EXCHANGE);
     }
 
 
     @Bean
-    public Binding bindingDirectExchange2Short() {
-        return BindingBuilder.bind(queueShortMsg()).to(directExchange()).with(QUEUE_SHORTMSG);
+    public Binding bindingRequestExchange() {
+        return BindingBuilder.bind(requestQueue()).to(requestExchange()).with(REQUEST_QUEUE);
     }
 
 

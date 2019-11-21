@@ -21,5 +21,11 @@ public class BaseException extends RuntimeException {
         this.errCode = errorEnums.getCode();
         this.errMsg = errorEnums.getMsg();
     }
+
+    public BaseException(IErrorInterface errorEnums, Exception e) {
+        super(e);
+        this.errCode = errorEnums.getCode();
+        this.errMsg = errorEnums.getMsg();
+    }
 }
 

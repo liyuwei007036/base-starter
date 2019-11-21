@@ -3,6 +3,7 @@ package com.lc.core.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lc.core.config.properties.RedisConfigProperties;
 import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
 import lombok.extern.log4j.Log4j2;
@@ -26,25 +27,25 @@ import java.util.stream.Collectors;
  * @author l5990
  */
 @Log4j2
-@EnableConfigurationProperties(RedisConfigSetting.class)
+@EnableConfigurationProperties(RedisConfigProperties.class)
 public class RedisConfig {
 
     @Autowired
-    private RedisConfigSetting redisConfigSetting;
+    private RedisConfigProperties redisConfigProperties;
 
     @ConditionalOnProperty(prefix = "redis", name = "model", havingValue = "standalone")
     @Bean("jedisConnectionFactory")
     public JedisConnectionFactory standaloneJedisConnectionFactory(JedisPoolConfig jedisPoolConfig) {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(redisConfigSetting.getHostName());
-        redisStandaloneConfiguration.setPort(redisConfigSetting.getPort());
+        redisStandaloneConfiguration.setHostName(redisConfigProperties.getHostName());
+        redisStandaloneConfiguration.setPort(redisConfigProperties.getPort());
         //由于我们使用了动态配置库,所以此处省略
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisConfigSetting.getPassword()));
+        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisConfigProperties.getPassword()));
 
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder()
                 .usePooling().poolConfig(jedisPoolConfig).and()
-                .connectTimeout(Duration.ofMillis(redisConfigSetting.getConnectTimeout()))
-                .readTimeout(Duration.ofSeconds(redisConfigSetting.getReadTimeout()));
+                .connectTimeout(Duration.ofMillis(redisConfigProperties.getConnectTimeout()))
+                .readTimeout(Duration.ofSeconds(redisConfigProperties.getReadTimeout()));
 
 
         return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
@@ -54,9 +55,9 @@ public class RedisConfig {
     @Bean("jedisConnectionFactory")
     public JedisConnectionFactory sentinelJedisConnectionFactory(JedisPoolConfig jedisPoolConfig) {
         RedisSentinelConfiguration redisSentinelConfiguration = new RedisSentinelConfiguration();
-        redisSentinelConfiguration.setMaster(redisConfigSetting.getMasterName());
-        redisSentinelConfiguration.setPassword(RedisPassword.of(redisConfigSetting.getPassword()));
-        List<RedisNode> nodes = redisConfigSetting.getNodes().parallelStream().map(x -> {
+        redisSentinelConfiguration.setMaster(redisConfigProperties.getMasterName());
+        redisSentinelConfiguration.setPassword(RedisPassword.of(redisConfigProperties.getPassword()));
+        List<RedisNode> nodes = redisConfigProperties.getNodes().parallelStream().map(x -> {
             String host = x.split(":")[0];
             int port = ObjectUtil.getInteger(x.split(":")[1]);
             return new RedisNode(host, port);
@@ -64,8 +65,8 @@ public class RedisConfig {
         redisSentinelConfiguration.setSentinels(nodes);
 //
         JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder()
-                .connectTimeout(Duration.ofMillis(redisConfigSetting.getConnectTimeout()))
-                .readTimeout(Duration.ofSeconds(redisConfigSetting.getReadTimeout()))
+                .connectTimeout(Duration.ofMillis(redisConfigProperties.getConnectTimeout()))
+                .readTimeout(Duration.ofSeconds(redisConfigProperties.getReadTimeout()))
                 .usePooling().poolConfig(jedisPoolConfig).build();
 
         return new JedisConnectionFactory(redisSentinelConfiguration, jedisClientConfiguration);
@@ -74,15 +75,15 @@ public class RedisConfig {
     @Bean
     public JedisPoolConfig jedisPoolConfig() {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxIdle(redisConfigSetting.getMaxIdle());
-        jedisPoolConfig.setMaxTotal(redisConfigSetting.getMaxTotal());
-        jedisPoolConfig.setMaxWaitMillis(redisConfigSetting.getMaxWaitMillis());
-        jedisPoolConfig.setMinIdle(redisConfigSetting.getMinIdle());
-        jedisPoolConfig.setTimeBetweenEvictionRunsMillis(redisConfigSetting.getTimeBetweenEvictionRunsMillis());
-        jedisPoolConfig.setNumTestsPerEvictionRun(redisConfigSetting.getNumTestsPerEvictionRun());
-        jedisPoolConfig.setTestOnBorrow(redisConfigSetting.getTestOnBorrow());
-        jedisPoolConfig.setTestWhileIdle(redisConfigSetting.getTestWhileIdle());
-        jedisPoolConfig.setTestOnReturn(redisConfigSetting.getTestIbOnReturn());
+        jedisPoolConfig.setMaxIdle(redisConfigProperties.getMaxIdle());
+        jedisPoolConfig.setMaxTotal(redisConfigProperties.getMaxTotal());
+        jedisPoolConfig.setMaxWaitMillis(redisConfigProperties.getMaxWaitMillis());
+        jedisPoolConfig.setMinIdle(redisConfigProperties.getMinIdle());
+        jedisPoolConfig.setTimeBetweenEvictionRunsMillis(redisConfigProperties.getTimeBetweenEvictionRunsMillis());
+        jedisPoolConfig.setNumTestsPerEvictionRun(redisConfigProperties.getNumTestsPerEvictionRun());
+        jedisPoolConfig.setTestOnBorrow(redisConfigProperties.getTestOnBorrow());
+        jedisPoolConfig.setTestWhileIdle(redisConfigProperties.getTestWhileIdle());
+        jedisPoolConfig.setTestOnReturn(redisConfigProperties.getTestIbOnReturn());
         // 连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true
         jedisPoolConfig.setBlockWhenExhausted(true);
         // 是否启用pool的jmx管理功能, 默认true

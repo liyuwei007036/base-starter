@@ -2,7 +2,7 @@ package com.lc.core.component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.config.CommonConstant;
+import com.lc.core.enums.CommonConstant;
 import com.lc.core.service.RedisService;
 import com.lc.core.utils.SpringUtil;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +36,7 @@ public class RabbitMQSender {
     @Autowired
     private RedisService<String, JSONObject> redisService;
 
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:dev}")
     private String env;
 
     /**
@@ -56,11 +57,13 @@ public class RabbitMQSender {
      * 不可达消息：指定的路由key路由不到。
      */
     private final RabbitTemplate.ReturnCallback returnCallback = (message, replyCode, replyText, exchange, routingKey) -> {
-
+        log.error("【消息投递失败】 {},{},{},{}", message, replyCode, exchange, routingKey);
     };
 
+
+    @Async
     public void sendMsg(String exchange, String routingKey, String msg) {
-        sendMsg(null, exchange, routingKey, msg, 1);
+        sendMsg(null, exchange, routingKey, msg, 0);
     }
 
     /**
@@ -78,7 +81,6 @@ public class RabbitMQSender {
         if (StringUtils.isEmpty(msgId)) {
             msgId = UUID.randomUUID().toString();
         }
-
         Message message = MessageBuilder.withBody(msg.getBytes(StandardCharsets.UTF_8))
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
                 .setContentEncoding("utf-8")
@@ -92,8 +94,8 @@ public class RabbitMQSender {
         rk.put("msg", msg);
         rk.put("date", new Date());
         rk.put("num", num);
-        String key = SpringUtil.getProperty("spring.profiles.active");
-        redisService.hashPut(key + "MQMSG", msgId, rk, CommonConstant.REDIS_DB_OTHER);
+        String env = SpringUtil.getProperty("spring.profiles.active");
+        redisService.hashPut(env + "MQMSG", msgId, rk, CommonConstant.REDIS_DB_OTHER);
         rabbitTemplate.convertAndSend(exchange, routingKey, message, cd);
         log.info("【MQ投递消息】 exchange :" + exchange + " routingKey : " + routingKey + " msg : " + JSON.toJSONString(msg) + " msgId: " + cd.getId());
     }

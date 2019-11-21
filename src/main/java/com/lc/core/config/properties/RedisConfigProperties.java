@@ -1,4 +1,4 @@
-package com.lc.core.config;
+package com.lc.core.config.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Data
 @ConfigurationProperties(prefix = "redis")
-public class RedisConfigSetting {
+public class RedisConfigProperties {
 
     /**
      * 模式

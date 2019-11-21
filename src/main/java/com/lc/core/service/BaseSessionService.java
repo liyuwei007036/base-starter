@@ -66,13 +66,13 @@ public class BaseSessionService<HK, HV> {
      * 取得 Session
      *
      * @param
-     * @param session_id
-     * @param hash_key
+     * @param sessionId
+     * @param hashKey
      * @return
      */
-    public HV getSessionValue(String session_id, HK hash_key, int dbIndex) {
+    public HV getSessionValue(String sessionId, HK hashKey, int dbIndex) {
         try {
-            Object v = redisService.hashGet(session_id, hash_key, dbIndex);
+            Object v = redisService.hashGet(sessionId, hashKey, dbIndex);
             return (HV) v;
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,8 +101,8 @@ public class BaseSessionService<HK, HV> {
     }
 
 
-    public Boolean updateAccessTime(String session_id, int timeOut, int dbIndex) {
-        return redisService.expire(session_id, timeOut, dbIndex);
+    public Boolean updateAccessTime(String sessionId, int timeOut, int dbIndex) {
+        return redisService.expire(sessionId, timeOut, dbIndex);
     }
 
     public HashMap getSessionList(int dbIndex) {
@@ -113,12 +113,12 @@ public class BaseSessionService<HK, HV> {
     /**
      * 删除指定 Session
      *
-     * @param session_id
+     * @param sessionId
      * @return
      */
-    public Boolean removeSessionId(String session_id, int dbIndex) {
+    public Boolean removeSessionId(String sessionId, int dbIndex) {
         try {
-            return redisService.remove(session_id, dbIndex);
+            return redisService.remove(sessionId, dbIndex);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("error: removeSessionId", e);
@@ -129,13 +129,13 @@ public class BaseSessionService<HK, HV> {
     /**
      * 删除指定 Session
      *
-     * @param session_id
-     * @param hash_key
+     * @param sessionId
+     * @param hashKey
      * @return
      */
-    public void removeSessionKey(String session_id, HK hash_key, int dbIndex) {
+    public void removeSessionKey(String sessionId, HK hashKey, int dbIndex) {
         try {
-            redisService.hashRemove(session_id, hash_key, dbIndex);
+            redisService.hashRemove(sessionId, hashKey, dbIndex);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("error: removeSessionKey", e);

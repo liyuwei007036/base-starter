@@ -1,7 +1,7 @@
 package com.lc.core.controller;
 
 
-import com.lc.core.commonenums.SessionConstants;
+import com.lc.core.enums.SessionConstants;
 import com.lc.core.dto.User;
 import com.lc.core.service.BaseSessionService;
 import org.slf4j.MDC;

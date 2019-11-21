@@ -1,4 +1,4 @@
-package com.lc.core.commonenums;
+package com.lc.core.enums;
 
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
 package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.commonenums.ResponseEnums;
+import com.lc.core.enums.ResponseEnums;
 import com.lc.core.config.UploadConfig;
 import com.lc.core.error.BaseErrorEnums;
 import com.lc.core.error.BaseException;

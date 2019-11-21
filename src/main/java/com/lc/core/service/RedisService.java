@@ -5,6 +5,7 @@ import com.lc.core.config.RedisTemplate;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -86,11 +87,11 @@ public class RedisService<K, V> {
 
     public HashMap<String, Object> hashGetAll(int dbIndex) {
         Set<String> keys = redisTemplate.keys("*");
-        HashMap<String, Object> map = new HashMap<>();
-        for (String key : keys) {
-            Map<K, V> v = hashFindAll(key, dbIndex);
-            map.put(key, v);
+        HashMap<String, Object> map = new HashMap<>(15);
+        if (Objects.isNull(keys)) {
+            return map;
         }
+        keys.parallelStream().forEach(x -> map.put(x, hashFindAll(x, dbIndex)));
         return map;
     }
 

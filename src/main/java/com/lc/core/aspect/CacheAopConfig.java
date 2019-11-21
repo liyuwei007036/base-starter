@@ -3,7 +3,9 @@ package com.lc.core.aspect;
 import com.lc.core.annotations.Cache;
 import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
+import com.lc.core.utils.SpringElUtils;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -24,7 +26,7 @@ import java.util.Objects;
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @Aspect
 @Component
 public class CacheAopConfig {
@@ -56,9 +58,9 @@ public class CacheAopConfig {
         RedisDataType redisDataType = cache.dataType();
         boolean condition = true;
         if (!StringUtils.isEmpty(conditionEl)) {
-            condition = ObjectUtil.getBoolean(generateKeyBySpel(conditionEl, joinPoint));
+            condition = ObjectUtil.getBoolean(SpringElUtils.generateKeyBySpel(conditionEl, joinPoint));
         }
-        String key = ObjectUtil.getString(generateKeyBySpel(keyEl, joinPoint));
+        String key = ObjectUtil.getString(SpringElUtils.generateKeyBySpel(keyEl, joinPoint));
         switch (type) {
             case ADD:
                 return addCache(joinPoint, db, key, condition, name, redisDataType, timeout);
@@ -89,7 +91,7 @@ public class CacheAopConfig {
                         break;
                 }
             } catch (Exception e) {
-                log.error(e);
+                log.error("addCache fail", e);
             }
 
         }
@@ -115,7 +117,7 @@ public class CacheAopConfig {
                         break;
                 }
             } catch (Exception e) {
-                log.error(e);
+                log.error("removeCache error", e);
             }
         }
         return joinPoint.proceed();
@@ -152,34 +154,8 @@ public class CacheAopConfig {
                 }
             }
         } catch (Exception e) {
-            log.error(e);
+            log.error("setCacheByType error", e);
         }
     }
 
-    private SpelExpressionParser parser = new SpelExpressionParser();
-
-    private DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
-
-    private Object generateKeyBySpel(String spElString, ProceedingJoinPoint joinPoint) {
-        try {
-            if (StringUtils.isEmpty(spElString)) {
-                return null;
-            }
-            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-            String[] paramNames = nameDiscoverer.getParameterNames(methodSignature.getMethod());
-            if (Objects.isNull(paramNames)) {
-                return null;
-            }
-            Expression expression = parser.parseExpression(spElString);
-            EvaluationContext context = new StandardEvaluationContext();
-            Object[] args = joinPoint.getArgs();
-            for (int i = 0; i < args.length; i++) {
-                context.setVariable(paramNames[i], args[i]);
-            }
-            return expression.getValue(context);
-        } catch (Exception e) {
-            log.error(e);
-            return spElString;
-        }
-    }
 }
