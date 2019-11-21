@@ -1,11 +1,11 @@
 package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.enums.ResponseEnums;
 import com.lc.core.config.UploadConfig;
-import com.lc.core.enums.BaseErrorEnums;
-import com.lc.core.error.BaseException;
 import com.lc.core.dto.FileInfo;
+import com.lc.core.enums.BaseErrorEnums;
+import com.lc.core.enums.ResponseEnums;
+import com.lc.core.error.BaseException;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.util.StringUtils;
@@ -107,9 +107,9 @@ public class OperationFileUtil {
             }
             String uuid = UUID.randomUUID().toString().replaceAll("-", "");
             info = new FileInfo();
-            info.setSeparate_uuid(separateUuid);
-            info.setFile_name(f.getName());
-            info.setFile_type(extensionName);
+            info.setSeparateUuid(separateUuid);
+            info.setFileName(f.getName());
+            info.setFileType(extensionName);
             info.setUuid(uuid);
 
             // 开发环境
@@ -146,7 +146,7 @@ public class OperationFileUtil {
         try {
             FileUtils.file2File(file, savedFile);
             // 保存文件
-            info.setFile_size(savedFile.length());
+            info.setFileSize(savedFile.length());
             // 生成文件缩略图
             if (config.photoSize() != null && isImg(extensionName)) {
                 // 如果图片大小超过2M 进行0.5倍质量压缩
