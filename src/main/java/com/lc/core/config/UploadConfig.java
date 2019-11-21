@@ -10,26 +10,61 @@ import java.util.Set;
  */
 public interface UploadConfig {
 
-    // 文件上传根目录
+    /**
+     * 文件上传根目录
+     *
+     * @return
+     */
     String basePath();
 
-    // 上传成功后执行方法
+    /**
+     * 上传成功后执行方法
+     *
+     * @param info
+     */
     void uploadSuccess(FileInfo info);
 
-    // 上传至OSS的图片最大高度
-    int max_height();
+    /**
+     * 上传至OSS的图片最大高度
+     *
+     * @return
+     */
+    int maxHeight();
 
-    // 上传至OSS的图片最大宽度
-    int max_width();
+    /**
+     * 上传至OSS的图片最大宽度
+     *
+     * @return
+     */
+    int maxWidth();
 
-    // 图片缩略图尺寸
+    /**
+     * 图片缩略图尺寸
+     *
+     * @return
+     */
     Set<String> photoSize();
 
-    // 允许上传的文件类型
+    /**
+     * 允许上传的文件类型
+     *
+     * @return
+     */
     Set<String> fileTypes();
 
-    Boolean beforeDeleteFile();
+    /**
+     * 删除前操作
+     *
+     * @return
+     */
+    boolean beforeDeleteFile();
 
+    /**
+     * 上传前操作
+     *
+     * @param file
+     * @return
+     */
     FileInfo beforeUpload(File file);
 
     /**
@@ -37,5 +72,5 @@ public interface UploadConfig {
      *
      * @return
      */
-    Boolean md5Path();
+    boolean md5Path();
 }

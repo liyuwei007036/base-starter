@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lc.core.enums.CommonConstant;
 import com.lc.core.service.RedisService;
 import com.lc.core.utils.SpringUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
@@ -26,7 +26,7 @@ import java.util.UUID;
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @Component
 public class RabbitMQSender {
 

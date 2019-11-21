@@ -1,8 +1,8 @@
 package com.lc.core.service;
 
-import com.lc.core.error.BaseException;
 import com.lc.core.error.BaseErrorEnums;
-import lombok.extern.log4j.Log4j2;
+import com.lc.core.error.BaseException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @Component
 public class BaseSessionService<HK, HV> {
 

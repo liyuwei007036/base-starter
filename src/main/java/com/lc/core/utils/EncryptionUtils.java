@@ -1,5 +1,8 @@
 package com.lc.core.utils;
 
+import org.apache.commons.codec.cli.Digest;
+import org.springframework.util.DigestUtils;
+
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
@@ -21,21 +24,18 @@ public class EncryptionUtils {
      * 生成 MD5
      *
      * @param data
-     * @param md5Secret
+     * @param salt
      * @param isUpper
      * @return
      * @throws Exception
      */
-    public static String md5(String data, String md5Secret, boolean isUpper) throws Exception {
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(data.getBytes(StandardCharsets.UTF_8));
-        md.update(md5Secret.getBytes(StandardCharsets.UTF_8));
-        byte[] digest = md.digest();
-        String result = new String(digest, StandardCharsets.UTF_8);
+    public static String md5(String data, String salt, boolean isUpper) throws Exception {
+        data += salt;
+        data = DigestUtils.md5DigestAsHex(data.getBytes(StandardCharsets.UTF_8));
         if (isUpper) {
-            return result.toUpperCase();
+            return data.toUpperCase();
         } else {
-            return result;
+            return data;
         }
     }
 
@@ -55,7 +55,7 @@ public class EncryptionUtils {
         byte[] array = sha256HMAC.doFinal(data.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
         for (byte item : array) {
-            sb.append(Integer.toHexString((item & 0xFF) | 0x100).substring(1, 3));
+            sb.append(Integer.toHexString((item & 0xFF) | 0x100), 1, 3);
         }
         return sb.toString().toUpperCase();
     }
@@ -68,7 +68,7 @@ public class EncryptionUtils {
      *
      * @return 返回经 BASE64 处理之后的密钥字符串
      */
-    public static String getStrKeyAes() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getStrKeyAes() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         SecureRandom secureRandom = new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
         // 这里可以是 128、192、256、越大越安全

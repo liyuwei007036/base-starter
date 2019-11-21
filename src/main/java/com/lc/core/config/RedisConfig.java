@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lc.core.config.properties.RedisConfigProperties;
 import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @EnableConfigurationProperties(RedisConfigProperties.class)
 public class RedisConfig {
 
