@@ -29,7 +29,22 @@ import java.util.Objects;
 @Slf4j
 @Aspect
 @Component
-public class CacheAopConfig {
+public class CacheAspect {
+
+    public enum CacheMethod {
+        /**
+         *
+         */
+        ADD, REMOVE, UPDATE
+    }
+
+    public enum RedisDataType {
+        /**
+         *
+         */
+        HASH, STRING, SET
+    }
+
 
     @Autowired
     private RedisService<String, Object> redisService;

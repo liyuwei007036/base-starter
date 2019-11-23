@@ -28,7 +28,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Component
-public class RabbitMQSender {
+public class RabbitMqSend {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;

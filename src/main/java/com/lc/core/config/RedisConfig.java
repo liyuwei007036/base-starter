@@ -41,7 +41,6 @@ public class RedisConfig {
         redisStandaloneConfiguration.setPort(redisConfigProperties.getPort());
         //由于我们使用了动态配置库,所以此处省略
         redisStandaloneConfiguration.setPassword(RedisPassword.of(redisConfigProperties.getPassword()));
-
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder()
                 .usePooling().poolConfig(jedisPoolConfig).and()
                 .connectTimeout(Duration.ofMillis(redisConfigProperties.getConnectTimeout()))
@@ -63,12 +62,10 @@ public class RedisConfig {
             return new RedisNode(host, port);
         }).collect(Collectors.toList());
         redisSentinelConfiguration.setSentinels(nodes);
-//
         JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder()
                 .connectTimeout(Duration.ofMillis(redisConfigProperties.getConnectTimeout()))
                 .readTimeout(Duration.ofSeconds(redisConfigProperties.getReadTimeout()))
                 .usePooling().poolConfig(jedisPoolConfig).build();
-
         return new JedisConnectionFactory(redisSentinelConfiguration, jedisClientConfiguration);
     }
 

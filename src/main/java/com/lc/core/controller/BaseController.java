@@ -31,6 +31,13 @@ public abstract class BaseController {
     private static final ThreadLocal<Map<String, Object>> TMP_SESSION_MAP = new ThreadLocal<>();
 
 
+    public void removeThread() {
+        SESSION_ID.remove();
+        LOCAL_REQUEST.remove();
+        LOCAL_RESPONSE.remove();
+        TMP_SESSION_MAP.remove();
+    }
+
     @ModelAttribute
     public void setHttp(HttpServletRequest request, HttpServletResponse response) {
         LOCAL_REQUEST.set(request);

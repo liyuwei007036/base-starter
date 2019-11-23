@@ -1,8 +1,7 @@
 package com.lc.core.annotations;
 
 
-import com.lc.core.aspect.CacheMethod;
-import com.lc.core.aspect.RedisDataType;
+import com.lc.core.aspect.CacheAspect;
 
 import java.lang.annotation.*;
 
@@ -24,9 +23,9 @@ public @interface Cache {
 
     int timeout() default 5000;
 
-    RedisDataType dataType() default RedisDataType.STRING;
+    CacheAspect.RedisDataType dataType() default CacheAspect.RedisDataType.STRING;
 
     String condition() default "";
 
-    CacheMethod type() default CacheMethod.ADD;
+    CacheAspect.CacheMethod type() default CacheAspect.CacheMethod.ADD;
 }

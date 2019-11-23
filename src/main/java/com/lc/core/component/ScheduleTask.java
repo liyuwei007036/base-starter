@@ -22,7 +22,7 @@ import java.util.Map;
 public class ScheduleTask {
 
     @Autowired
-    private RabbitMQSender rabbitMQSender;
+    private RabbitMqSend rabbitMqSend;
 
     @Autowired
     private RedisService redisService;
@@ -53,7 +53,7 @@ public class ScheduleTask {
                 int num = obj.getInteger("num");
                 if (num < maxTime) {
                     redisService.hashRemove(env + "MQMSG", msgId, CommonConstant.REDIS_DB_OTHER);
-                    rabbitMQSender.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
+                    rabbitMqSend.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
                 } else {
                     log.error("消息投递失败3次放弃投递{}", obj.toJSONString());
                 }
