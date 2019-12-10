@@ -1,7 +1,7 @@
 package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,13 +17,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 public final class HttpUtils {
     private static RestTemplate restTemplate = new RestTemplate();
 
@@ -86,48 +85,5 @@ public final class HttpUtils {
         return post(url, data, headers.toSingleValueMap());
     }
 
-    public static String readData(HttpServletRequest request) {
-        BufferedReader br = null;
-        try {
-            br = request.getReader();
-            String line = br.readLine();
-            String var4;
-            if (line == null) {
-                var4 = "";
-                return var4;
-            } else {
-                StringBuilder ret = new StringBuilder();
-                ret.append(line);
 
-                while ((line = br.readLine()) != null) {
-                    ret.append('\n').append(line);
-                }
-
-                var4 = ret.toString();
-                return var4;
-            }
-        } catch (IOException var14) {
-            throw new RuntimeException(var14);
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException var13) {
-                    log.error(var13.getMessage(), var13);
-                }
-            }
-
-        }
-    }
-
-    public static JSONObject readData(ServletInputStream ris) throws IOException {
-        ByteArrayOutputStream sout = new ByteArrayOutputStream();
-        int b;
-        while ((b = ris.read()) != -1) {
-            sout.write(b);
-        }
-        byte[] temp = sout.toByteArray();
-        String sOk = new String(temp, StandardCharsets.UTF_8);
-        return JSONObject.parseObject(sOk);
-    }
 }
