@@ -8,9 +8,11 @@ import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
  * @author l5990
  */
 @Slf4j
+@Configuration
 @EnableConfigurationProperties(RedisConfigProperties.class)
 public class RedisConfig {
 
