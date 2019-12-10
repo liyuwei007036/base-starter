@@ -54,6 +54,11 @@ public class RedisService<K, V> {
         return (V) redisTemplate.opsForSet().members(key);
     }
 
+    public boolean putIfAbsent(String key, V value, int dbIndex, long timeOut) {
+        redisTemplate.indexed.set(dbIndex);
+        return redisTemplate.opsForValue().setIfPresent(key, value, timeOut, TimeUnit.SECONDS);
+    }
+
     public boolean hashPutIfAbsent(String key, K hasKey, V value, int dbIndex) {
         redisTemplate.indexed.set(dbIndex);
         return redisTemplate.opsForHash().putIfAbsent(key, hasKey, value);

@@ -10,9 +10,11 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,6 +29,7 @@ import java.util.UUID;
  * @author l5990
  */
 @Slf4j
+@ConditionalOnClass(RabbitAdmin.class)
 @Component
 public class RabbitMqSend {
 
@@ -49,6 +52,23 @@ public class RabbitMqSend {
             log.info("【消息投递成功】 " + correlationData.getId());
         } else {
             log.error("【消息投递失败】 ");
+            if (correlationData == null) {
+                return;
+            }
+
+            Message returnedMessage = correlationData.getReturnedMessage();
+            if (Objects.isNull(returnedMessage)) {
+                return;
+            }
+            MessageProperties messageProperties = returnedMessage.getMessageProperties();
+            JSONObject rk = new JSONObject();
+            rk.put("routingKey", messageProperties.getReceivedRoutingKey());
+            rk.put("exchange", messageProperties.getExpiration());
+            rk.put("msg", returnedMessage);
+            rk.put("date", new Date());
+            rk.put("num", messageProperties.getHeader("num"));
+            String env = SpringUtil.getProperty("spring.profiles.active");
+            redisService.hashPut(env + "MQMSG", correlationData.getId(), rk, CommonConstant.REDIS_DB_OTHER);
         }
     };
 
@@ -85,17 +105,9 @@ public class RabbitMqSend {
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
                 .setContentEncoding("utf-8")
                 .setMessageId(msgId)
+                .setHeader("num", num)
                 .build();
         CorrelationData cd = new CorrelationData(msgId);
-        // 存放至redis 默认为未投递
-        JSONObject rk = new JSONObject();
-        rk.put("routingKey", routingKey);
-        rk.put("exchange", exchange);
-        rk.put("msg", msg);
-        rk.put("date", new Date());
-        rk.put("num", num);
-        String env = SpringUtil.getProperty("spring.profiles.active");
-        redisService.hashPut(env + "MQMSG", msgId, rk, CommonConstant.REDIS_DB_OTHER);
         rabbitTemplate.convertAndSend(exchange, routingKey, message, cd);
         log.info("【MQ投递消息】 exchange :" + exchange + " routingKey : " + routingKey + " msg : " + JSON.toJSONString(msg) + " msgId: " + cd.getId());
     }

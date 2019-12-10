@@ -36,14 +36,13 @@ public class ScheduleTask {
     @Scheduled(cron = "* */2 * * *?")
     private void configureTasks() {
         String taskName = env + "_MQ_FAiL_CHECK_TASK".toUpperCase();
-        boolean f = redisService.hashPutIfAbsent(taskName, taskName, taskName, CommonConstant.REDIS_DB_TASK);
+        boolean f = redisService.putIfAbsent(taskName, 1, CommonConstant.REDIS_DB_TASK, 60);
         if (!f) {
             log.info("【跳过执行定时任务】{}", taskName);
             return;
         }
         log.info("【执行定时任务】{}", taskName);
         try {
-            redisService.expire(taskName, 30, CommonConstant.REDIS_DB_TASK);
             // 取出所有消息
             Map<String, JSONObject> msgs = redisService.hashFindAll(env + "MQMSG", CommonConstant.REDIS_DB_OTHER);
             int maxTime = 3;
