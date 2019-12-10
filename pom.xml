@@ -48,6 +48,13 @@
         </dependency>
 
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.10</version>
+        </dependency>
+
+
         <!-- 拼音工具依赖包-->
         <dependency>
             <groupId>com.belerweb</groupId>
@@ -89,7 +96,7 @@
             <version>0.4.8</version>
         </dependency>
 
-        <!-- kafka -->
+        <!-- spring-kafka -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
