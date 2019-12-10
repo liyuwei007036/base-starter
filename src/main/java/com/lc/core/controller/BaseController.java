@@ -1,6 +1,7 @@
 package com.lc.core.controller;
 
 
+import com.lc.core.enums.CommonConstant;
 import com.lc.core.enums.SessionConstants;
 import com.lc.core.dto.User;
 import com.lc.core.service.BaseSessionService;
@@ -90,21 +91,29 @@ public abstract class BaseController {
      *
      * @return
      */
-    public abstract String getSessionType();
+    public String getSessionType() {
+        return CommonConstant.SESSION_NAME;
+    }
 
     /**
      * 超时时间
      *
      * @return
      */
-    public abstract int getTimeOut();
+    public int getTimeOut() {
+        return CommonConstant.SESSION_TIME_OUT;
+    }
 
     /**
      * 默认session db
      *
      * @return
      */
-    public abstract int getDbIndex();
+    public int getDbIndex() {
+        return CommonConstant.REDIS_DB_DEFAULT;
+    }
+
+    ;
 
     /**
      * 设置 session 变量
