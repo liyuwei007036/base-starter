@@ -1,6 +1,7 @@
 package com.lc.core.service;
 
 import com.lc.core.config.RedisTemplate;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -65,6 +66,9 @@ public class RedisService<K, V> {
     }
 
     public Map<K, V> hashFindAll(String key, int dbIndex) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
         redisTemplate.indexed.set(dbIndex);
         return (Map<K, V>) redisTemplate.opsForHash().entries(key);
     }
