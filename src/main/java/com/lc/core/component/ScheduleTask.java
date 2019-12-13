@@ -33,7 +33,7 @@ public class ScheduleTask {
     /**
      * MQ 消息失败检测定时任务
      */
-    @Scheduled(cron = "0 0/2 * * * ? *")
+    @Scheduled(cron = "0 0/2 * * * ?")
     private void configureTasks() {
         String taskName = env + "_MQ_FAiL_CHECK_TASK".toUpperCase();
         boolean f = redisService.putIfAbsent(taskName, 1, CommonConstant.REDIS_DB_TASK, 60);
