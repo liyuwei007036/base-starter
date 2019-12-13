@@ -51,8 +51,8 @@ public class ScheduleTask {
                 JSONObject obj = msg.getValue();
                 int num = obj.getInteger("num");
                 if (num < maxTime) {
-                    redisService.hashRemove(env + "MQMSG", msgId, CommonConstant.REDIS_DB_OTHER);
                     rabbitMqSend.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
+                    redisService.hashRemove(env + "MQMSG", msgId, CommonConstant.REDIS_DB_OTHER);
                 } else {
                     log.error("消息投递失败3次放弃投递{}", obj.toJSONString());
                 }
