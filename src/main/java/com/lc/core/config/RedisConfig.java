@@ -8,7 +8,6 @@ import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +17,7 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
@@ -43,13 +43,13 @@ public class RedisConfig {
         redisStandaloneConfiguration.setHostName(redisConfigProperties.getHostName());
         redisStandaloneConfiguration.setPort(redisConfigProperties.getPort());
         //由于我们使用了动态配置库,所以此处省略
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisConfigProperties.getPassword()));
+        if (!StringUtils.isEmpty(redisConfigProperties.getPassword())) {
+            redisStandaloneConfiguration.setPassword(RedisPassword.of(redisConfigProperties.getPassword()));
+        }
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder()
                 .usePooling().poolConfig(jedisPoolConfig).and()
                 .connectTimeout(Duration.ofMillis(redisConfigProperties.getConnectTimeout()))
                 .readTimeout(Duration.ofSeconds(redisConfigProperties.getReadTimeout()));
-
-
         return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
     }
 

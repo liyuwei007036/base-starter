@@ -5,6 +5,7 @@ import com.lc.core.error.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -88,12 +89,15 @@ public class BaseSessionService<HK, HV> {
      * @return
      */
     public Map<String, Object> getSessionMapBySessionId(String sessionId, int timeOut, int dbIndex) {
+        if (StringUtils.isEmpty(sessionId)) {
+            return new HashMap<>(16);
+        }
         Map map = null;
         if (redisService.hasKey(sessionId, dbIndex)) {
             map = redisService.hashFindAll(sessionId, dbIndex);
         }
         if (map == null) {
-            map = new HashMap<>(1);
+            map = new HashMap<>(16);
         } else {
             updateAccessTime(sessionId, timeOut, dbIndex);
         }
