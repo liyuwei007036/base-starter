@@ -7,6 +7,7 @@ import com.lc.core.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,9 @@ public class ScheduleTask {
     /**
      * MQ 消息失败检测定时任务
      */
+    @Async
     @Scheduled(cron = "0 0/2 * * * ?")
-    private void configureTasks() {
+    public void configureTasks() {
         String taskName = env + "_MQ_FAiL_CHECK_TASK".toUpperCase();
         boolean f = redisService.putIfAbsent(taskName, 1, CommonConstant.REDIS_DB_TASK, 60);
         if (!f) {
