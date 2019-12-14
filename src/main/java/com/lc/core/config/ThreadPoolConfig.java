@@ -3,10 +3,9 @@ package com.lc.core.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -16,8 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @date 2019/11/21下午 10:02
  */
 @Slf4j
-@EnableScheduling
-@Component
+@Configuration
 public class ThreadPoolConfig implements AsyncConfigurer {
     /**
      * 核心线程数
@@ -68,6 +66,7 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setAllowCoreThreadTimeOut(false);
         // 等待所有任务结束后再关闭线程池
         executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.initialize();
         return executor;
     }
 
