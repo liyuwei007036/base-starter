@@ -159,6 +159,14 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- modelmapper -->
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>2.3.5</version>
+            <optional>true</optional>
+        </dependency>
+
 
     </dependencies>
     <build>
