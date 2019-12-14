@@ -2,6 +2,7 @@ package com.lc.core.utils;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.spi.MatchingStrategy;
 
 /**
  * 模型转换
@@ -12,28 +13,24 @@ import org.modelmapper.convention.MatchingStrategies;
 public class ModelMapperUtils {
 
 
-    private ModelMapper getMapper() {
-        return new ModelMapper();
+    private static ModelMapper getMapper(MatchingStrategy strategy) {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(strategy);
+        return modelMapper;
     }
 
 
-    public <T, E> T loose(E source, Class<T> type) {
-        ModelMapper modelMapper = getMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        return modelMapper.map(source, type);
+    public static <T, E> T loose(E source, Class<T> type) {
+        return getMapper(MatchingStrategies.LOOSE).map(source, type);
     }
 
-    public <T, E> T standard(E source, Class<T> type) {
-        ModelMapper modelMapper = getMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
-        return modelMapper.map(source, type);
+    public static <T, E> T standard(E source, Class<T> type) {
+        return getMapper(MatchingStrategies.STANDARD).map(source, type);
     }
 
 
-    public <T, E> T strict(E source, Class<T> type) {
-        ModelMapper modelMapper = getMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return modelMapper.map(source, type);
+    public static <T, E> T strict(E source, Class<T> type) {
+        return getMapper(MatchingStrategies.STRICT).map(source, type);
     }
 
 }
