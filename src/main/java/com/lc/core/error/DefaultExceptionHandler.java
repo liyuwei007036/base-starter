@@ -33,19 +33,6 @@ public class DefaultExceptionHandler {
      * @param e
      * @return
      */
-    @ExceptionHandler(BindException.class)
-    @ResponseBody
-    public ResponseInfo BindException(BindException e) {
-        log.error("bind ", e);
-        return new ResponseInfo<>(BaseErrorEnums.FILEUPLOAD);
-    }
-
-    /**
-     * 文件上传错误异常的捕获
-     *
-     * @param e
-     * @return
-     */
     @ExceptionHandler(MultipartException.class)
     @ResponseBody
     public ResponseInfo uploadFile(MultipartException e) {
