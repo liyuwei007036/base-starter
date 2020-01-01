@@ -1,8 +1,8 @@
 package com.lc.core.utils;
 
 
-import com.lc.core.error.BaseException;
 import com.lc.core.enums.BaseErrorEnums;
+import com.lc.core.error.BaseException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -244,5 +244,19 @@ public class FileUtils {
             throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
         }
         return result;
+    }
+
+    /**
+     * bytes 转文件
+     *
+     * @param bytes
+     * @param file
+     */
+    public static void bytes2File(byte[] bytes, File file) {
+        try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            bos.write(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
