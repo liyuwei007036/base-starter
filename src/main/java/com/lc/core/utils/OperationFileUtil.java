@@ -1,7 +1,7 @@
 package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.config.UploadConfig;
+import com.lc.core.service.BaseUploadService;
 import com.lc.core.dto.FileInfo;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.enums.ResponseEnums;
@@ -30,13 +30,13 @@ public class OperationFileUtil {
 
     private Boolean isDev;
 
-    private UploadConfig config;
+    private BaseUploadService config;
 
     private OperationFileUtil() {
 
     }
 
-    public OperationFileUtil(UploadConfig config) {
+    public OperationFileUtil(BaseUploadService config) {
         this.config = config;
         isDev = !"prod".equals(SpringUtil.getProperty("spring.profiles.active"));
     }
