@@ -1,12 +1,12 @@
 package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.service.BaseUploadService;
 import com.lc.core.dto.FileInfo;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.enums.ResponseEnums;
 import com.lc.core.error.BaseException;
-import lombok.extern.log4j.Log4j2;
+import com.lc.core.service.BaseUploadService;
+import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,12 +25,14 @@ import java.util.*;
  *
  * @author l5990
  */
-@Log4j2
+@Slf4j
 public class OperationFileUtil {
 
     private Boolean isDev;
 
     private BaseUploadService config;
+
+    private String fileName;
 
     private OperationFileUtil() {
 
@@ -58,6 +60,7 @@ public class OperationFileUtil {
      * @param file
      */
     public void upload(MultipartFile file) throws IOException {
+        fileName = file.getName();
         File tempFile = null;
         try {
             String s = FileUtils.extensionName(file.getOriginalFilename());
@@ -75,6 +78,7 @@ public class OperationFileUtil {
     }
 
     public void upload(File file) throws IOException {
+        fileName = file.getName();
         // 配置校验
         checkConfig();
         // 开始上传
@@ -82,7 +86,7 @@ public class OperationFileUtil {
     }
 
     private void doUpload(File f) throws IOException {
-        String s = FileUtils.extensionName(f.getName());
+        String s = FileUtils.extensionName(fileName);
         File tempFile = File.createTempFile("tmp", "." + s);
         FileInfo info;
         try {
@@ -98,20 +102,17 @@ public class OperationFileUtil {
             String separateUuid = new SimpleDateFormat("yyyyMM").format(new Date());
             String extensionName = FileUtils.extensionName(f.getName()).toLowerCase();
             Set<String> strings = config.fileTypes();
-
-            if (!strings.contains("*")) {
-                if (!strings.contains(extensionName)) {
-                    log.error("文件上传: 格式错误");
-                    throw new BaseException(BaseErrorEnums.ERROR_FILE_FORMAT);
-                }
+            String all = "*";
+            if (!strings.contains(all) && !strings.contains(extensionName)) {
+                log.error("文件上传: 格式错误");
+                throw new BaseException(BaseErrorEnums.ERROR_FILE_FORMAT);
             }
             String uuid = UUID.randomUUID().toString().replaceAll("-", "");
             info = new FileInfo();
             info.setSeparateUuid(separateUuid);
-            info.setFileName(f.getName());
+            info.setFileName(fileName);
             info.setFileType(extensionName);
             info.setUuid(uuid);
-
             // 开发环境
             if (isDev) {
                 doUploadForDisk(filePath, separateUuid, extensionName, uuid, f, info);
@@ -171,7 +172,7 @@ public class OperationFileUtil {
             }
             info.setMd5(md5);
         } catch (Exception e) {
-            e.printStackTrace();
+
             log.error("文件上传失败", e);
             throw new BaseException(BaseErrorEnums.ERROR_SYS);
         }
@@ -186,7 +187,7 @@ public class OperationFileUtil {
      */
     private Boolean isImg(String extensionName) {
         extensionName = extensionName.toLowerCase();
-        return extensionName.equals("jpg") || extensionName.equals("jpeg") || extensionName.equals("png");
+        return "jpg".equals(extensionName) || "jpeg".equals(extensionName) || "png".equals(extensionName);
     }
 
     /**
@@ -195,13 +196,9 @@ public class OperationFileUtil {
      * @param pathObj
      */
     public void deleteFile(JSONObject pathObj) throws Exception {
-        Boolean delFile = config.beforeDeleteFile();
+        boolean delFile = config.beforeDeleteFile();
         if (delFile) {
             if (pathObj == null || pathObj.size() < 1) {
-                log.error("文件路径为空");
-                throw new BaseException(BaseErrorEnums.ERROR_ARGS);
-            }
-            if (pathObj.size() != 3) {
                 log.error("文件路径为空");
                 throw new BaseException(BaseErrorEnums.ERROR_ARGS);
             }
@@ -271,7 +268,7 @@ public class OperationFileUtil {
             try {
                 object.put("inputstream", new FileInputStream(file));
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+
                 log.error("从磁盘获取文件失败");
                 object.put("success", false);
             }
@@ -279,7 +276,6 @@ public class OperationFileUtil {
     }
 
     public void renderFile(HttpServletResponse response, String separateUuid, String uuid, String fileExt, String zoom) {
-
         JSONObject info = getFile(separateUuid, uuid, fileExt, zoom);
         Boolean success = info.getBoolean("success");
         if (success) {
@@ -298,25 +294,18 @@ public class OperationFileUtil {
                 response.setHeader("Accept-Ranges", "bytes");
                 response.setContentType(ResponseEnums.getValue(fileExt.toLowerCase()));
                 response.setHeader("Content-Length", contentLength.toString());
-                OutputStream outputStream = null;
-                try (InputStream inputStream = (InputStream) info.get("inputstream")) {
-                    outputStream = response.getOutputStream();
+                try (InputStream inputStream = (InputStream) info.get("inputstream"); OutputStream outputStream = response.getOutputStream()) {
                     byte[] buffer = new byte[409600];
-                    for (int len = -1; (len = inputStream.read(buffer)) != -1; ) {
+                    for (int len; (len = inputStream.read(buffer)) != -1; ) {
                         outputStream.write(buffer, 0, len);
                     }
+                    outputStream.flush();
                 } catch (Exception e) {
-                    e.printStackTrace();
                     log.error("获取文件失败", e);
                     throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
-                } finally {
-                    if (outputStream != null) {
-                        outputStream.flush();
-                        outputStream.close();
-                    }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+
                 log.error("无法取得图片", e);
                 throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
             }
