@@ -125,26 +125,25 @@ public class OperationFileUtil {
     }
 
     private void doUploadForDisk(String filePath, String separateUuid, String extensionName, String uuid, File file, FileInfo info) throws IOException {
-        String md5 = FileUtils.getMd5(new FileInputStream(file));
-        if (config.md5Path()) {
-            uuid = md5;
-        }
-        // 构建文件存放路径
-        filePath += File.separator + separateUuid + File.separator + uuid.substring(0, 2) + File.separator + uuid + File.separator;
-
-        // 构建新文件名
-        String newFilename = uuid + "." + extensionName;
-        File savedFile = new File(filePath, newFilename);
-
-        // 创建文件夹
-        File fileParent = savedFile.getParentFile();
-        if (!fileParent.exists()) {
-            boolean mkdirs = fileParent.mkdirs();
-            if (!mkdirs) {
-                log.error("mkdirs file");
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            String md5 = FileUtils.getMd5(inputStream);
+            if (config.md5Path()) {
+                uuid = md5;
             }
-        }
-        try {
+            // 构建文件存放路径
+            filePath += File.separator + separateUuid + File.separator + uuid.substring(0, 2) + File.separator + uuid + File.separator;
+            // 构建新文件名
+            String newFilename = uuid + "." + extensionName;
+            File savedFile = new File(filePath, newFilename);
+
+            // 创建文件夹
+            File fileParent = savedFile.getParentFile();
+            if (!fileParent.exists()) {
+                boolean mkdirs = fileParent.mkdirs();
+                if (!mkdirs) {
+                    log.error("mkdirs file");
+                }
+            }
             FileUtils.file2File(file, savedFile);
             // 保存文件
             info.setFileSize(savedFile.length());
@@ -172,7 +171,6 @@ public class OperationFileUtil {
             }
             info.setMd5(md5);
         } catch (Exception e) {
-
             log.error("文件上传失败", e);
             throw new BaseException(BaseErrorEnums.ERROR_SYS);
         }
