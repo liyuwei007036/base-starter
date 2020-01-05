@@ -60,13 +60,13 @@ public final class HttpUtils {
         String ct = ObjectUtil.getString(head.get("Content-Type"));
         HttpEntity r;
         // 根据不同的请求头发送
-        if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(ct)) {
+        if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(ct) || (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(ct))) {
             MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
             for (String m : data.keySet()) {
                 postParameters.add(m, data.get(m));
             }
             r = new HttpEntity<>(postParameters, headers);
-        } else {
+        } else{
             r = new HttpEntity<>(JSONObject.toJSONString(data), headers);
         }
         return restTemplate.postForEntity(url, r, String.class).getBody();
