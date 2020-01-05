@@ -55,6 +55,7 @@ public final class HttpUtils {
         HttpHeaders headers = new HttpHeaders();
         head.forEach(headers::add);
         String ct = ObjectUtil.getString(head.get("Content-Type"));
+
         HttpEntity r;
         // 根据不同的请求头发送
         if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(ct) || (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(ct))) {
