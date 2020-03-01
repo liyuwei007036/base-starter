@@ -7,7 +7,6 @@ import com.lc.core.controller.BaseController;
 import com.lc.core.dto.ResponseInfo;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.error.BaseException;
-import com.lc.core.utils.HttpUtils;
 import com.lc.core.utils.RequestUtils;
 import com.lc.core.utils.SpringUtil;
 import lombok.extern.log4j.Log4j2;
@@ -76,7 +75,7 @@ public class ValidAspect {
         // 签名校验
         if (valid.validSign()) {
             if (args.equals(new JSONObject().toJSONString())) {
-                args = HttpUtils.readData(controller.getRequest());
+                args = RequestUtils.readData(controller.getRequest());
                 ARGS.set(new Object[]{args});
             }
             // todo

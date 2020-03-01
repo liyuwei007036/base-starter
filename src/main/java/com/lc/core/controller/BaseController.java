@@ -1,8 +1,9 @@
 package com.lc.core.controller;
 
 
-import com.lc.core.enums.SessionConstants;
 import com.lc.core.dto.User;
+import com.lc.core.enums.CommonConstant;
+import com.lc.core.enums.SessionConstants;
 import com.lc.core.service.BaseSessionService;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +73,15 @@ public abstract class BaseController {
      * @return
      */
     private String getSessionId(HttpServletRequest request, String sessionType) {
-        Optional<String> first = Arrays.stream(request.getCookies())
-                .filter(cookie -> cookie.getName().equals(getSessionType()))
-                .map(Cookie::getValue).findFirst();
-        String sessionId = first.orElse(null);
+        Cookie[] cookies = request.getCookies();
+        String sessionId = null;
+        if (cookies != null && cookies.length > 0) {
+            Optional<String> first = Arrays.stream(request.getCookies())
+                    .filter(cookie -> cookie.getName().equals(getSessionType()))
+                    .map(Cookie::getValue).findFirst();
+            sessionId = first.orElse(null);
+        }
+
         if (StringUtils.isEmpty(sessionId)) {
             sessionId = request.getHeader(sessionType);
         }
@@ -90,21 +96,29 @@ public abstract class BaseController {
      *
      * @return
      */
-    public abstract String getSessionType();
+    public String getSessionType() {
+        return CommonConstant.SESSION_NAME;
+    }
 
     /**
      * 超时时间
      *
      * @return
      */
-    public abstract int getTimeOut();
+    public int getTimeOut() {
+        return CommonConstant.SESSION_TIME_OUT;
+    }
 
     /**
      * 默认session db
      *
      * @return
      */
-    public abstract int getDbIndex();
+    public int getDbIndex() {
+        return CommonConstant.REDIS_DB_DEFAULT;
+    }
+
+    ;
 
     /**
      * 设置 session 变量

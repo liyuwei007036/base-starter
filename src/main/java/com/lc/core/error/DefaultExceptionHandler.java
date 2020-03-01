@@ -3,7 +3,7 @@ package com.lc.core.error;
 import com.lc.core.dto.ResponseInfo;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.utils.ObjectUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -22,7 +22,7 @@ import java.sql.SQLException;
  *
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @RestControllerAdvice
 public class DefaultExceptionHandler {
 
@@ -35,9 +35,9 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(MultipartException.class)
     @ResponseBody
-    public ResponseInfo uploadFile(MultipartException e) throws Exception {
+    public ResponseInfo uploadFile(MultipartException e) {
         log.error("MultipartException ", e);
-        return new ResponseInfo(BaseErrorEnums.FILEUPLOAD);
+        return new ResponseInfo<>(BaseErrorEnums.FILEUPLOAD);
     }
 
 
@@ -49,9 +49,9 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     @ResponseBody
-    public ResponseInfo badRequest(BindException e) throws Exception {
+    public ResponseInfo badRequest(BindException e) {
         log.error("BindException: ", e);
-        return new ResponseInfo(BaseErrorEnums.BAD_REQUEST);
+        return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST);
     }
 
     /**
@@ -62,9 +62,9 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseBody
-    public ResponseInfo badRequestNotFound(NoHandlerFoundException e) throws Exception {
+    public ResponseInfo badRequestNotFound(NoHandlerFoundException e) {
         log.error("NoHandlerFoundException ", e);
-        return new ResponseInfo(BaseErrorEnums.NOT_FOUND);
+        return new ResponseInfo<>(BaseErrorEnums.NOT_FOUND);
 
     }
 
@@ -79,11 +79,10 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = {BaseException.class})
     @ResponseBody
-    public ResponseInfo sendError(BaseException exception, HttpServletRequest request) throws Exception {
-        String requestURI = request.getRequestURI();
-        log.error(exception);
-        log.error("occurs error when execute url ={} ,message {}", requestURI, exception);
-        return new ResponseInfo(ObjectUtil.getInteger(exception.getErrCode()), exception.getMessage());
+    public ResponseInfo sendError(BaseException exception, HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        log.error("occurs error when execute url ={} ,message {}", uri, exception);
+        return new ResponseInfo<>(ObjectUtil.getInteger(exception.getErrCode()), exception.getMessage());
     }
 
     /**
@@ -94,9 +93,9 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = {SQLException.class, DataAccessException.class})
     @ResponseBody
-    public ResponseInfo systemError(Exception e) throws Exception {
+    public ResponseInfo systemError(Exception e) {
         log.error("SQLException,DataAccessException:", e);
-        return new ResponseInfo(BaseErrorEnums.ERROR_SYS);
+        return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
     }
 
     /**
@@ -107,22 +106,22 @@ public class DefaultExceptionHandler {
      */
     @ExceptionHandler(value = {ConnectException.class})
     @ResponseBody
-    public ResponseInfo connect(Exception e) throws Exception {
+    public ResponseInfo connect(Exception e) {
         log.error("ConnectException ", e);
-        return new ResponseInfo(BaseErrorEnums.CONNECTION_ERROR);
+        return new ResponseInfo<>(BaseErrorEnums.CONNECTION_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseInfo notAllowed(Exception e) {
         log.error("Exception :", e);
-        return new ResponseInfo(BaseErrorEnums.ERROR_SYS);
+        return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseBody
     public ResponseInfo notAllowedMethod(Exception e) {
         log.error("HttpRequestMethodNotSupportedException {}", e);
-        return new ResponseInfo(BaseErrorEnums.BAD_REQUEST_TYPE);
+        return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST_TYPE);
     }
 }

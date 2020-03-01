@@ -10,7 +10,7 @@ public enum BaseErrorEnums implements IErrorInterface {
     /**
      * 错误提示
      */
-    SUCCESS_CODE(0, "success"),
+    SUCCESS_CODE(1000, "success"),
     SYSTEM_ERROR(1000, "系统异常"),
     BAD_REQUEST(1001, "错误的请求参数"),
     NOT_FOUND(1002, "找不到请求路径！"),

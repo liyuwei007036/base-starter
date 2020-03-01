@@ -1,120 +1,20 @@
 package com.lc.core.utils;
 
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import lombok.extern.log4j.Log4j2;
-import net.minidev.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.DigestUtils;
 
-import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * json web token
  */
-@Log4j2
+@Slf4j
 public class JWTUtils {
-    /**
-     * 创建token　默认token 有效期２小时
-     *
-     * @param data   token携带的数据
-     * @param secret 　token 加密秘钥
-     * @return
-     */
-    public static JSONObject createToken(Object data, String secret) {
-        JSONObject object = new JSONObject();
-        try {
-            Map<String, Object> payloadMap = new HashMap<>(3);
-            Calendar c = Calendar.getInstance();
 
-            //生成时间
-            payloadMap.put("create_date", c.getTimeInMillis());
-            payloadMap.put("data", data);
-
-            //过期时间
-            c.add(Calendar.HOUR_OF_DAY, 2);
-            payloadMap.put("exp_date", c.getTimeInMillis());
-
-            //3.建立一个头部Header
-            /**
-             * JWSHeader参数：1.加密算法法则,2.类型，3.。。。。。。。
-             * 一般只需要传入加密算法法则就可以。
-             * 这里则采用HS256
-             *
-             * JWSAlgorithm类里面有所有的加密算法法则，直接调用。
-             */
-            JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
-
-            //建立一个载荷Payload
-            Payload payload = new Payload(new JSONObject(payloadMap));
-
-            //将头部和载荷结合在一起
-            JWSObject jwsObject = new JWSObject(jwsHeader, payload);
-
-            //建立一个密匙
-            JWSSigner jwsSigner = new MACSigner(secret.getBytes());
-
-            //签名
-            jwsObject.sign(jwsSigner);
-            String token = jwsObject.serialize();
-            object.put("token", token);
-            object.put("expires", c.getTimeInMillis() - System.currentTimeMillis());
-            object.put("is_error", false);
-        } catch (Exception e) {
-            e.printStackTrace();
-            object.put("msg", e.getMessage());
-            object.put("is_error", true);
-        } finally {
-            return object;
-        }
-    }
-
-    /**
-     * 解析token 并验证是否过期
-     *
-     * @param token
-     * @param secret
-     * @return
-     * @throws ParseException
-     * @throws JOSEException
-     */
-    public static Map<String, Object> valid(String token, String secret) throws ParseException, JOSEException {
-//        解析token
-        JWSObject jwsObject = JWSObject.parse(token);
-
-        //获取到载荷
-        Payload payload = jwsObject.getPayload();
-
-        JWSVerifier jwsVerifier = new MACVerifier(secret.getBytes());
-
-        Map<String, Object> resultMap = new HashMap<>();
-
-        //判断token是否合法
-        if (jwsObject.verify(jwsVerifier)) {
-            resultMap.put("valid", 0);
-            //载荷的数据解析成json对象。
-            JSONObject jsonObject = payload.toJSONObject();
-            resultMap.put("data", jsonObject.get("data"));
-            //判断token是否过期
-            if (jsonObject.containsKey("exp_date")) {
-                Long expTime = Long.valueOf(jsonObject.get("exp_date").toString());
-                Long nowTime = System.currentTimeMillis();
-                //判断是否过期
-                if (nowTime > expTime) {
-                    //已经过期
-                    resultMap.put("valid", 2);
-                }
-            } else {
-                resultMap.put("valid", 1);
-            }
-        } else {
-            resultMap.put("valid", 1);
-        }
-        return resultMap;
-    }
-
-    public static Boolean validSign(String MD5KEY, Map<Object, Object> parameters) {
+    public static Boolean validSign(String mD5KEY, Map<Object, Object> parameters) {
         SortedMap<Object, Object> sortedMap = new TreeMap<>(parameters);
         StringBuffer sbkey = new StringBuffer();
         String signData = "";
@@ -159,7 +59,7 @@ public class JWTUtils {
             log.debug("签名验证失败, 时间错误");
             return false;
         }
-        String newSbkey = sbkey.toString() + MD5KEY;
+        String newSbkey = sbkey.toString() + mD5KEY;
         String sign = DigestUtils.md5DigestAsHex(newSbkey.getBytes()).toUpperCase();
         if (signData.equals(sign)) {
             log.debug("签名验证,成功");
