@@ -67,7 +67,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -154,7 +153,6 @@
         </dependency>
 
 
-
         <!--- excel 处理依赖-->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -171,6 +169,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- JDBC -->
