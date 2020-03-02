@@ -6,6 +6,8 @@ import com.lc.core.annotations.Valid;
 import com.lc.core.controller.BaseController;
 import com.lc.core.dto.ResponseInfo;
 import com.lc.core.enums.BaseErrorEnums;
+import com.lc.core.enums.CommonConstant;
+import com.lc.core.enums.SessionConstants;
 import com.lc.core.error.BaseException;
 import com.lc.core.utils.RequestUtils;
 import com.lc.core.utils.SpringUtil;
@@ -14,8 +16,13 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -39,7 +46,7 @@ public class ValidAspect {
         CONTROLLER.remove();
     }
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(org.springframework.web.bind.annotation.GetMapping)")
+    @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public void cut() {
 
     }
@@ -59,15 +66,23 @@ public class ValidAspect {
         }
         VALID.set(valid);
         Object o = SpringUtil.getBean(clazz);
+        if (!(o instanceof BaseController)) {
+            return;
+        }
         BaseController controller = (BaseController) o;
         CONTROLLER.set(controller);
         String args;
-        List consumes = null;
-        PostMapping post = method.getAnnotation(PostMapping.class);
-        if (post != null) {
-            consumes = Arrays.asList(post.consumes());
+        boolean flag = false;
+        RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
+        if (requestMapping != null) {
+            flag = true;
         }
-        if (ARGS.get().length > 0 && consumes != null && !consumes.contains("multipart/form-data")) {
+        if (flag) {
+            String[] consumes = requestMapping.consumes();
+            List<String> strings = Arrays.asList(consumes);
+            flag = !strings.contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+        }
+        if (ARGS.get().length > 0 && flag) {
             args = JSON.toJSONString(ARGS.get()[0]);
         } else {
             args = "{}";
@@ -98,10 +113,9 @@ public class ValidAspect {
             log.info("request_user_agent: {}", RequestUtils.getUserAgent(controller.getRequest()));
             log.info("request_args: {}", JSON.toJSONString(ARGS.get()));
             log.info("request_user: {}", controller.getCurrentUser());
-            log.info("request_token: {}", controller.getRequest().getHeader("TC5U_API"));
+            log.info("request_token: {}", controller.getRequest().getHeader(CommonConstant.SESSION_NAME));
             log.info("request_u-info: {}", controller.getRequest().getHeader(""));
-            log.info("response_token: {}", controller.getResponse().getHeader("TC5U_API"));
-            log.info("response_u-info: {}", controller.getResponse().getHeader(""));
+            log.info("response_token: {}", controller.getResponse().getHeader(CommonConstant.SESSION_NAME));
             log.info("response_args: {}", responseInfo);
             log.info("【------------------------ success request end ---------------------------】\n\n");
         } catch (Exception e) {
@@ -123,10 +137,9 @@ public class ValidAspect {
             log.warn("request_user_agent: {}", RequestUtils.getUserAgent(controller.getRequest()));
             log.warn("request_args: {}", JSON.toJSONString(ARGS.get()));
             log.warn("request_user: {}", controller.getCurrentUser());
-            log.warn("request_token: {}", controller.getRequest().getHeader("TC5U_API"));
+            log.warn("request_token: {}", controller.getRequest().getHeader(CommonConstant.SESSION_NAME));
             log.warn("request_u-info: {}", controller.getRequest().getHeader(""));
-            log.warn("response_token: {}", controller.getResponse().getHeader("TC5U_API"));
-            log.warn("response_u-info: {}", controller.getResponse().getHeader(""));
+            log.warn("response_token: {}", controller.getResponse().getHeader(CommonConstant.SESSION_NAME));
             log.warn("response_msg: {}", e.getMessage());
             log.warn("【------------------------ fail request end ---------------------------】\n\n");
         } catch (Exception error) {

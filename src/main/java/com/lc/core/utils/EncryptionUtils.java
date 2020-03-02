@@ -1,11 +1,9 @@
 package com.lc.core.utils;
 
-import org.apache.commons.codec.cli.Digest;
 import org.springframework.util.DigestUtils;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;

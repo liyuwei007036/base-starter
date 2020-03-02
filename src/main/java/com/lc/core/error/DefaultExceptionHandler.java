@@ -6,7 +6,9 @@ import com.lc.core.utils.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.net.ConnectException;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * 全局错误处理
@@ -52,6 +55,16 @@ public class DefaultExceptionHandler {
     public ResponseInfo badRequest(BindException e) {
         log.error("BindException: ", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public ResponseInfo methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("BindException: ", e);
+        List<FieldError> bindingResult = e.getBindingResult().getFieldErrors();
+        StringBuffer errMsg = new StringBuffer();
+        bindingResult.forEach(x -> errMsg.append(String.format("%s:%s ", x.getField(), x.getDefaultMessage())));
+        return new ResponseInfo<>(BaseErrorEnums.ERROR_ARGS.getCode(), errMsg.toString());
     }
 
     /**
