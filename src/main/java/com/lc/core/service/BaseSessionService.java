@@ -28,7 +28,7 @@ public class BaseSessionService<HK, HV> {
      * @param hashKey
      * @param hashValue
      */
-    public void setSessionValue(String sessionId, HK hashKey, HV hashValue, int timeOut, int dbIndex) {
+    public void setSessionValue(String sessionId, HK hashKey, HV hashValue, long timeOut, int dbIndex) {
         try {
             if (!redisService.hasKey(sessionId, dbIndex)) {
                 redisService.hashPut(sessionId, "create_date", new Date(), dbIndex);
@@ -88,7 +88,7 @@ public class BaseSessionService<HK, HV> {
      * @param sessionId
      * @return
      */
-    public Map<String, Object> getSessionMapBySessionId(String sessionId, int timeOut, int dbIndex) {
+    public Map<String, Object> getSessionMapBySessionId(String sessionId, long timeOut, int dbIndex) {
         if (StringUtils.isEmpty(sessionId)) {
             return new HashMap<>(16);
         }
@@ -105,7 +105,7 @@ public class BaseSessionService<HK, HV> {
     }
 
 
-    public Boolean updateAccessTime(String sessionId, int timeOut, int dbIndex) {
+    public Boolean updateAccessTime(String sessionId, long timeOut, int dbIndex) {
         return redisService.expire(sessionId, timeOut, dbIndex);
     }
 

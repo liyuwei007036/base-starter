@@ -1,6 +1,7 @@
 package com.lc.core.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.lc.core.dto.User;
 import com.lc.core.enums.CommonConstant;
 import com.lc.core.enums.SessionConstants;
@@ -47,11 +48,10 @@ public abstract class BaseController {
         insertMdc();
     }
 
-    private boolean insertMdc() {
+    private void insertMdc() {
         UUID uuid = UUID.randomUUID();
         String uniqueId = uuid.toString().replace("-", "");
         MDC.put(UNIQUE_ID, uniqueId);
-        return true;
     }
 
     public String getSessionId() {
@@ -105,7 +105,7 @@ public abstract class BaseController {
      *
      * @return
      */
-    public int getTimeOut() {
+    public long getTimeOut() {
         return CommonConstant.SESSION_TIME_OUT;
     }
 
@@ -153,7 +153,7 @@ public abstract class BaseController {
 
 
     public User getCurrentUser() {
-        return getSessionAttr(SessionConstants.USER);
+        return getSessionAttr(SessionConstants.USER, User.class);
     }
 
     public boolean userHasLogin() {
@@ -176,7 +176,7 @@ public abstract class BaseController {
      * @param <T>
      * @return
      */
-    public <T> T getSessionAttr(String key) {
+    public <T> T getSessionAttr(String key, Class<T> clazz) {
         if (StringUtils.isEmpty(SESSION_ID.get())) {
             return null;
         }
@@ -184,7 +184,11 @@ public abstract class BaseController {
         if (session == null) {
             return null;
         }
-        return (T) session;
+        return JSON.parseObject(session.toString(), clazz);
+    }
+
+    public BaseSessionService getSessionService() {
+        return baseSessionService;
     }
 
     /**

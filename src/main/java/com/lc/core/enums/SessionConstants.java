@@ -11,4 +11,6 @@ public class SessionConstants {
 
     public static String USER_NAME = "SESSION_USER_NAME";
 
+    public static String USER_ACCOUNT = "SESSION_USER_ACCOUNT";
+
 }

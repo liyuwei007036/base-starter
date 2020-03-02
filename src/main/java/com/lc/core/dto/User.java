@@ -3,6 +3,7 @@ package com.lc.core.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -16,4 +17,8 @@ public class User implements Serializable {
     private String account;
 
     private String uName;
+
+    private String roleName;
+
+    private List<String> powers;
 }

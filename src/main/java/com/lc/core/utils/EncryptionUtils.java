@@ -27,9 +27,8 @@ public class EncryptionUtils {
      * @param salt
      * @param isUpper
      * @return
-     * @throws Exception
      */
-    public static String md5(String data, String salt, boolean isUpper) throws Exception {
+    public static String md5(String data, String salt, boolean isUpper) {
         data += salt;
         data = DigestUtils.md5DigestAsHex(data.getBytes(StandardCharsets.UTF_8));
         if (isUpper) {

@@ -34,6 +34,11 @@ public class RedisService<K, V> {
         redisTemplate.opsForHash().put(key, hasKey, value);
     }
 
+    public void hashPutAll(String key, Map<String, Object> data, int dbIndex) {
+        redisTemplate.indexed.set(dbIndex);
+        redisTemplate.opsForHash().putAll(key, data);
+    }
+
     public void put(String key, Object value, int dbIndex, long timeout) {
         redisTemplate.indexed.set(dbIndex);
         redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(timeout));

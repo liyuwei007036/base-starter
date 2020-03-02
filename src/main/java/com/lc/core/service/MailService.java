@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailMessage;
 import org.springframework.mail.SimpleMailMessage;
@@ -25,6 +26,7 @@ import java.io.File;
  */
 @Slf4j
 @ConditionalOnClass(MailMessage.class)
+@ConditionalOnProperty(prefix = "spring.mail", value = "username")
 @Component
 public class MailService {
 
