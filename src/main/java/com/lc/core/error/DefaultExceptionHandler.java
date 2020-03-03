@@ -6,11 +6,11 @@ import com.lc.core.utils.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -37,12 +37,16 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(MultipartException.class)
-    @ResponseBody
     public ResponseInfo uploadFile(MultipartException e) {
         log.error("MultipartException ", e);
         return new ResponseInfo<>(BaseErrorEnums.FILEUPLOAD);
     }
 
+    @ExceptionHandler(MultipartException.class)
+    public ResponseInfo httpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException ", e);
+        return new ResponseInfo<>(BaseErrorEnums.REQUEST_ARGS_ERROR);
+    }
 
     /**
      * 请求参数类型错误异常的捕获
@@ -51,14 +55,12 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(BindException.class)
-    @ResponseBody
     public ResponseInfo badRequest(BindException e) {
         log.error("BindException: ", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
     public ResponseInfo methodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("BindException: ", e);
         List<FieldError> bindingResult = e.getBindingResult().getFieldErrors();
@@ -74,7 +76,6 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseBody
     public ResponseInfo badRequestNotFound(NoHandlerFoundException e) {
         log.error("NoHandlerFoundException ", e);
         return new ResponseInfo<>(BaseErrorEnums.NOT_FOUND);
@@ -91,7 +92,6 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = {BaseException.class})
-    @ResponseBody
     public ResponseInfo sendError(BaseException exception, HttpServletRequest request) {
         String uri = request.getRequestURI();
         log.error("occurs error when execute url ={} ,message {}", uri, exception);
@@ -105,7 +105,6 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = {SQLException.class, DataAccessException.class})
-    @ResponseBody
     public ResponseInfo systemError(Exception e) {
         log.error("SQLException,DataAccessException:", e);
         return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
@@ -118,21 +117,18 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = {ConnectException.class})
-    @ResponseBody
     public ResponseInfo connect(Exception e) {
         log.error("ConnectException ", e);
         return new ResponseInfo<>(BaseErrorEnums.CONNECTION_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseBody
     public ResponseInfo notAllowed(Exception e) {
         log.error("Exception :", e);
         return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseBody
     public ResponseInfo notAllowedMethod(Exception e) {
         log.error("HttpRequestMethodNotSupportedException {}", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST_TYPE);

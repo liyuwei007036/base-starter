@@ -7,22 +7,17 @@ import com.lc.core.controller.BaseController;
 import com.lc.core.dto.ResponseInfo;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.enums.CommonConstant;
-import com.lc.core.enums.SessionConstants;
 import com.lc.core.error.BaseException;
 import com.lc.core.utils.RequestUtils;
 import com.lc.core.utils.SpringUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,7 +26,7 @@ import java.util.List;
 /**
  * @author l5990
  */
-@Log4j2
+@Slf4j
 @Aspect
 @Component
 public class ValidAspect {
@@ -119,7 +114,7 @@ public class ValidAspect {
             log.info("response_args: {}", responseInfo);
             log.info("【------------------------ success request end ---------------------------】\n\n");
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         } finally {
             CONTROLLER.get().removeThread();
             recycleThread();
@@ -143,7 +138,7 @@ public class ValidAspect {
             log.warn("response_msg: {}", e.getMessage());
             log.warn("【------------------------ fail request end ---------------------------】\n\n");
         } catch (Exception error) {
-            log.error(error);
+            log.error(error.getMessage(), error);
         } finally {
             CONTROLLER.get().removeThread();
             MDC.remove(UNIQUE_ID);

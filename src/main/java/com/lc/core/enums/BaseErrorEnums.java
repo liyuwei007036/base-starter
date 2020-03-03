@@ -31,7 +31,9 @@ public enum BaseErrorEnums implements IErrorInterface {
     ERROR_ARGS(1017, "参数错误"),
     FILE_NOT_EXISTS(1018, "文件不存在"),
     OTHER_ERROR(1019, "其它错误"),
-    REQUEST_FAIL(1020, "发起网络请求失败");
+    REQUEST_FAIL(1020, "发起网络请求失败"),
+    ARGS_FORMAT_ERROR(1020, "发起网络请求失败"),
+    REQUEST_ARGS_ERROR(1021, "发起网络请求失败");
 
     private int code;
     private String msg;
