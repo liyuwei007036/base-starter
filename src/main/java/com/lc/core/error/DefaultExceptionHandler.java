@@ -42,7 +42,7 @@ public class DefaultExceptionHandler {
         return new ResponseInfo<>(BaseErrorEnums.FILEUPLOAD);
     }
 
-    @ExceptionHandler(MultipartException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseInfo httpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException ", e);
         return new ResponseInfo<>(BaseErrorEnums.REQUEST_ARGS_ERROR);
@@ -55,7 +55,7 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(BindException.class)
-    public ResponseInfo badRequest(BindException e) {
+    public ResponseInfo bindException(BindException e) {
         log.error("BindException: ", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST);
     }
@@ -76,7 +76,7 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseInfo badRequestNotFound(NoHandlerFoundException e) {
+    public ResponseInfo noHandlerFoundException(NoHandlerFoundException e) {
         log.error("NoHandlerFoundException ", e);
         return new ResponseInfo<>(BaseErrorEnums.NOT_FOUND);
 
@@ -92,7 +92,7 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = {BaseException.class})
-    public ResponseInfo sendError(BaseException exception, HttpServletRequest request) {
+    public ResponseInfo baseException(BaseException exception, HttpServletRequest request) {
         String uri = request.getRequestURI();
         log.error("occurs error when execute url ={} ,message {}", uri, exception);
         return new ResponseInfo<>(ObjectUtil.getInteger(exception.getErrCode()), exception.getMessage());

@@ -10,13 +10,13 @@ import java.util.List;
  * @author l5990
  */
 @Data
-public class User implements Serializable {
+public class Account implements Serializable {
 
     private Long id;
 
     private String account;
 
-    private String uName;
+    private String name;
 
     private String roleName;
 

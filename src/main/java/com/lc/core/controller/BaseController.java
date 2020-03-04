@@ -2,7 +2,7 @@ package com.lc.core.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.lc.core.dto.User;
+import com.lc.core.dto.Account;
 import com.lc.core.enums.CommonConstant;
 import com.lc.core.enums.SessionConstants;
 import com.lc.core.service.BaseSessionService;
@@ -152,8 +152,8 @@ public abstract class BaseController {
     }
 
 
-    public User getCurrentUser() {
-        return getSessionAttr(SessionConstants.USER, User.class);
+    public Account getCurrentUser() {
+        return getSessionAttr(SessionConstants.USER, Account.class);
     }
 
     public boolean userHasLogin() {
