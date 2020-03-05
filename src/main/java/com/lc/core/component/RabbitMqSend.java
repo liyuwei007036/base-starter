@@ -66,7 +66,7 @@ public class RabbitMqSend {
             rk.put("exchange", messageProperties.getExpiration());
             rk.put("msg", returnedMessage);
             rk.put("date", new Date());
-            rk.put("num", messageProperties.getHeader("num"));
+            rk.put("num", messageProperties.getHeaders().getOrDefault("num", 0));
             String env = SpringUtil.getProperty("spring.profiles.active");
             redisService.hashPut(env + "MQMSG", correlationData.getId(), rk, CommonConstant.REDIS_DB_OTHER);
         }

@@ -62,7 +62,7 @@ public class RedisService<K, V> {
 
     public boolean putIfAbsent(String key, V value, int dbIndex, long timeOut) {
         redisTemplate.indexed.set(dbIndex);
-        return redisTemplate.opsForValue().setIfPresent(key, value, timeOut, TimeUnit.SECONDS);
+        return redisTemplate.opsForValue().setIfAbsent(key, value, timeOut, TimeUnit.SECONDS);
     }
 
     public boolean hashPutIfAbsent(String key, K hasKey, V value, int dbIndex) {
