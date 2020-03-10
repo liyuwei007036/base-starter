@@ -1,4 +1,4 @@
-package com.lc.core.config;
+package com.lc.core.config.redis;
 
 import org.springframework.data.redis.connection.RedisConnection;
 

@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.lc.core.enums.CommonConstant;
 import com.lc.core.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +20,7 @@ import java.util.Map;
  * @author l5990
  */
 @Slf4j
+@ConditionalOnClass(RabbitAdmin.class)
 @Component
 @EnableScheduling
 public class ScheduleTask {

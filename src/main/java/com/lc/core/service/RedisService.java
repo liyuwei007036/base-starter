@@ -1,6 +1,6 @@
 package com.lc.core.service;
 
-import com.lc.core.config.RedisTemplate;
+import com.lc.core.config.redis.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
