@@ -1,6 +1,6 @@
 package com.lc.core.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.lc.core.enums.CommonConstant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -13,8 +13,6 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class CorsConfig {
 
-    @Value("${spring.session.type:x-lc-token}")
-    private String tokenName;
 
     private CorsConfiguration buildConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -25,7 +23,7 @@ public class CorsConfig {
         // 允许任何方法（post、get等）
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addExposedHeader(tokenName);
+        corsConfiguration.addExposedHeader(CommonConstant.SESSION_NAME);
         return corsConfiguration;
     }
 

@@ -93,7 +93,7 @@ public class ValidAspect {
         // 验证用户是否登陆
         if (valid.needLogin()) {
             if (!CONTROLLER.get().userHasLogin()) {
-                throw new BaseException(BaseErrorEnums.ERROR_AUTH);
+                throw new BaseException(BaseErrorEnums.ERROR_LOGIN);
             }
         }
     }
