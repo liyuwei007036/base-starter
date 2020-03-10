@@ -1,6 +1,8 @@
 package com.lc.core.service;
 
 import com.lc.core.config.redis.RedisTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
@@ -13,11 +15,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author l5990
  */
+@Component
 public class RedisService<K, V> {
 
     /**
      * 在构造器中获取redisTemplate实例, key(not hasKey) 默认使用String类型
      */
+    @Autowired
     private RedisTemplate redisTemplate;
 
     public void setRedisTemplate(RedisTemplate redisTemplate) {
