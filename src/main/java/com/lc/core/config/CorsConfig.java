@@ -23,6 +23,7 @@ public class CorsConfig {
         // 允许任何方法（post、get等）
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setMaxAge(3600L);
         corsConfiguration.addExposedHeader(CommonConstant.SESSION_NAME);
         return corsConfiguration;
     }
