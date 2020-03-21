@@ -41,7 +41,7 @@ public class SpringElUtils {
             }
             return expression.getValue(context);
         } catch (Exception e) {
-            log.error("【EL表达式解析失败】", e);
+            log.error("【EL表达式解析失败】");
             return spElString;
         }
     }
