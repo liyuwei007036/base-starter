@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author l5990
@@ -73,18 +74,7 @@ public abstract class BaseController {
      * @return
      */
     private String getSessionId(HttpServletRequest request, String sessionType) {
-        Cookie[] cookies = request.getCookies();
-        String sessionId = null;
-        if (cookies != null && cookies.length > 0) {
-            Optional<String> first = Arrays.stream(request.getCookies())
-                    .filter(cookie -> cookie.getName().equals(getSessionType()))
-                    .map(Cookie::getValue).findFirst();
-            sessionId = first.orElse(null);
-        }
-
-        if (StringUtils.isEmpty(sessionId)) {
-            sessionId = request.getHeader(sessionType);
-        }
+        String sessionId = request.getHeader(sessionType);
         if (!StringUtils.isEmpty(sessionId)) {
             sessionId = sessionId.toLowerCase().trim();
         }
@@ -145,9 +135,6 @@ public abstract class BaseController {
             String sessionId = UUID.randomUUID().toString().toLowerCase();
             SESSION_ID.set(sessionId);
             this.getResponse().setHeader(getSessionType(), sessionId);
-            Cookie cookie = new Cookie(getSessionType(), sessionId);
-            cookie.setPath("/");
-            this.getResponse().addCookie(cookie);
         }
     }
 
