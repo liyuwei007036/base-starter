@@ -59,6 +59,10 @@ public class ValidAspect {
         if (valid == null) {
             valid = clazz.getAnnotation(Valid.class);
         }
+        if(valid == null){
+            log.warn("未添加Valid注解");
+            return;
+        }
         VALID.set(valid);
         Object o = SpringUtil.getBean(clazz);
         if (!(o instanceof BaseController)) {
