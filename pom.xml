@@ -16,10 +16,11 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <java.version1>1.8</java.version1>
-        <java.version2>1.8</java.version2>
-        <java.version3>1.8</java.version3>
-        <java.version4>1.8</java.version4>
+        <java.version1>1.812</java.version1>
+        <java.version2>1.82</java.version2>
+        <java.version3>1.83</java.version3>
+        <java.version4>1.84</java.version4>
+        <java.x>1.84</java.x>
     </properties>
 
 
