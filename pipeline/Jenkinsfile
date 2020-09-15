@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    stages {
+       stage('初始化环境') {
+            steps {
+                //
+		        sh 'rm -rf core/'
+            }
+        }
+
+        stage('拉取代码') {
+            steps {
+                //
+		        sh 'git clone git@github.com:liyuwei007036/core.git'
+            }
+        }
+        stage('打包入库') {
+            steps {
+                //
+		        sh 'cd core/ && mvn install'
+            }
+        }
+        stage('清理文件') {
+                steps {
+                    //
+                    sh 'rm -rf core/'
+                }
+            }
+        }
+}
