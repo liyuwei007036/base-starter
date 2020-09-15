@@ -16,9 +16,6 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <java.version12>1.8</java.version12>
-        <java.versionx>1.8</java.versionx>
-        <java.versionc>1.8</java.versionc>
     </properties>
 
 
