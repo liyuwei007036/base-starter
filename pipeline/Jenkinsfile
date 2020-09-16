@@ -10,7 +10,7 @@ pipeline {
         stage('清理代码') {
                 steps {
                     //
-                     sh 'rm -rf *'
+                     sh 'rm -rf * &&　rm -rf .git*'
                 }
             }
         }
