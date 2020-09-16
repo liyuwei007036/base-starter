@@ -10,7 +10,7 @@ pipeline {
         stage('清理环境') {
                 steps {
                     //
-                    sh 'rm -rf * && rm -rf .*'
+                     sh 'rm -rf *'
                 }
             }
         }
