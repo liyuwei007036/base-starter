@@ -4,7 +4,7 @@ pipeline {
        stage('初始化环境') {
             steps {
                 //
-		        sh 'rm -rf core/'
+		        sh 'rm -rf install_core/*'
             }
         }
 
@@ -23,7 +23,7 @@ pipeline {
         stage('清理文件') {
                 steps {
                     //
-                    sh 'rm -rf core/'
+                    sh 'rm -rf install_core/*'
                 }
             }
         }
