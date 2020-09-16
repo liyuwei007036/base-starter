@@ -3,14 +3,12 @@ pipeline {
     stages {
         stage('打包入库') {
             steps {
-                //
 		        sh 'mvn install'
             }
         }
         stage('清理代码') {
                 steps {
-                    //
-                     sh 'rm -rf * &&　rm -rf .git*'
+                    sh 'rm -rf * &&  rm -rf .git*'
                 }
             }
         }
