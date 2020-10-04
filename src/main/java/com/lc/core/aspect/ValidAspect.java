@@ -112,7 +112,7 @@ public class ValidAspect {
             info.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
             info.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             info.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
-            info.append("request_user: ").append(controller.getCurrentUser()).append("\n\n");
+            info.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
             info.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
             info.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
             info.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
@@ -138,9 +138,9 @@ public class ValidAspect {
             warn.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
             warn.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             warn.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
-            warn.append("request_user: ").append(controller.getCurrentUser()).append("\n\n");
+            warn.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
             warn.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
-            warn.append("request_user_info-info: ").append(controller.getRequest().getHeader("")).append("\n\n");
+            warn.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
             warn.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
             warn.append("response_msg: ").append(e.getMessage()).append("\n\n");
             warn.append("【------------------------ fail request end ---------------------------】\n\n");
