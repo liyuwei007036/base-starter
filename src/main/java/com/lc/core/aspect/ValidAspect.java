@@ -107,16 +107,16 @@ public class ValidAspect {
         StringBuilder info = new StringBuilder();
         try {
             BaseController controller = CONTROLLER.get();
-            info.append("【------------------------ success request start -------------------------】\n\n");
+            info.append("\n\n【------------------------ success request start -------------------------】\n\n");
             info.append("url: ").append(controller.getCurUrl()).append("\n\n");
-            info.append("request_ip:").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
-            info.append("request_user_agent:").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
+            info.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
+            info.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             info.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
             info.append("request_user: ").append(controller.getCurrentUser()).append("\n\n");
             info.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
-            info.append("request_user_info: ").append(controller.getRequest().getHeader(""));
+            info.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
             info.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
-            info.append("response_data: ").append(responseInfo).append("\n\n");
+            info.append("response_data: ").append(JSON.toJSONString(responseInfo)).append("\n\n");
             info.append("【------------------------ success request end ---------------------------】\n\n");
             log.info(info.toString());
         } catch (Exception e) {
@@ -133,8 +133,8 @@ public class ValidAspect {
         StringBuilder warn = new StringBuilder();
         try {
             BaseController controller = CONTROLLER.get();
-            warn.append("【------------------------ fail request start -------------------------】\n\n");
-            warn.append("url: ").append(controller.getCurUrl());
+            warn.append("\n\n【------------------------ fail request start -------------------------】\n\n");
+            warn.append("url: ").append(controller.getCurUrl()).append("\n\n");
             warn.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
             warn.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             warn.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
