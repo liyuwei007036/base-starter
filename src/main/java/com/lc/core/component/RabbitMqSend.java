@@ -103,7 +103,7 @@ public class RabbitMqSend {
         }
         Message message = MessageBuilder.withBody(msg.getBytes(StandardCharsets.UTF_8))
                 .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-                .setContentEncoding("utf-8")
+                .setContentEncoding(StandardCharsets.UTF_8.displayName())
                 .setMessageId(msgId)
                 .setHeader("num", num)
                 .build();

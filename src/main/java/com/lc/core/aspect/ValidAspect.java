@@ -59,8 +59,8 @@ public class ValidAspect {
         if (valid == null) {
             valid = clazz.getAnnotation(Valid.class);
         }
-        if(valid == null){
-            log.warn("未添加Valid注解");
+        if (valid == null) {
+            log.warn("{}.{}，未添加Valid注解", clazz.getCanonicalName(), method.getName());
             return;
         }
         VALID.set(valid);
@@ -104,19 +104,21 @@ public class ValidAspect {
 
     @AfterReturning(pointcut = "cut()", returning = "responseInfo")
     public void afterRun(ResponseInfo responseInfo) {
+        StringBuilder info = new StringBuilder();
         try {
             BaseController controller = CONTROLLER.get();
-            log.info("【------------------------ success request start -------------------------】");
-            log.info("url: {} ", controller.getCurUrl());
-            log.info("request_ip: {}", RequestUtils.getIpAddress(controller.getRequest()));
-            log.info("request_user_agent: {}", RequestUtils.getUserAgent(controller.getRequest()));
-            log.info("request_args: {}", JSON.toJSONString(ARGS.get()));
-            log.info("request_user: {}", controller.getCurrentUser());
-            log.info("request_token: {}", controller.getRequest().getHeader(CommonConstant.SESSION_NAME));
-            log.info("request_u-info: {}", controller.getRequest().getHeader(""));
-            log.info("response_token: {}", controller.getResponse().getHeader(CommonConstant.SESSION_NAME));
-            log.info("response_args: {}", responseInfo);
-            log.info("【------------------------ success request end ---------------------------】\n\n");
+            info.append("\n\n【------------------------ success request start -------------------------】\n\n");
+            info.append("url: ").append(controller.getCurUrl()).append("\n\n");
+            info.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
+            info.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
+            info.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
+            info.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
+            info.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            info.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
+            info.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            info.append("response_data: ").append(JSON.toJSONString(responseInfo)).append("\n\n");
+            info.append("【------------------------ success request end ---------------------------】\n\n");
+            log.info(info.toString());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -128,19 +130,21 @@ public class ValidAspect {
 
     @AfterThrowing(pointcut = "cut()", throwing = "e")
     public void afterError(Exception e) {
+        StringBuilder warn = new StringBuilder();
         try {
             BaseController controller = CONTROLLER.get();
-            log.warn("【------------------------ fail request start -------------------------】");
-            log.warn("url: {} ", controller.getCurUrl());
-            log.warn("request_ip: {}", RequestUtils.getIpAddress(controller.getRequest()));
-            log.warn("request_user_agent: {}", RequestUtils.getUserAgent(controller.getRequest()));
-            log.warn("request_args: {}", JSON.toJSONString(ARGS.get()));
-            log.warn("request_user: {}", controller.getCurrentUser());
-            log.warn("request_token: {}", controller.getRequest().getHeader(CommonConstant.SESSION_NAME));
-            log.warn("request_u-info: {}", controller.getRequest().getHeader(""));
-            log.warn("response_token: {}", controller.getResponse().getHeader(CommonConstant.SESSION_NAME));
-            log.warn("response_msg: {}", e.getMessage());
-            log.warn("【------------------------ fail request end ---------------------------】\n\n");
+            warn.append("\n\n【------------------------ fail request start -------------------------】\n\n");
+            warn.append("url: ").append(controller.getCurUrl()).append("\n\n");
+            warn.append("request_ip: ").append(RequestUtils.getIpAddress(controller.getRequest())).append("\n\n");
+            warn.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
+            warn.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
+            warn.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
+            warn.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            warn.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
+            warn.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            warn.append("response_msg: ").append(e.getMessage()).append("\n\n");
+            warn.append("【------------------------ fail request end ---------------------------】\n\n");
+            log.error(warn.toString());
         } catch (Exception error) {
             log.error(error.getMessage(), error);
         } finally {
