@@ -11,11 +11,10 @@ import java.util.Map;
  * 作者：LuckyTHP
  * 来源：CSDN
  * 原文：https://blog.csdn.net/asd54090/article/details/81028323
+ *
  * @author l5990
  */
 public class WXPayDomainSimpleImpl implements IWXPayDomain {
-
-    private final int MIN_SWITCH_PRIMARY_MSEC = 3 * 60 * 1000;  //3 minutes
 
     private long switchToAlternateDomainTime = 0;
 
@@ -40,8 +39,10 @@ public class WXPayDomainSimpleImpl implements IWXPayDomain {
             domainData.put(domain, info);
         }
 
-        if (ex == null) { //success
-            if (info.succCount >= 2) {    //continue succ, clear error count
+        //success
+        if (ex == null) {
+            //continue succ, clear error count
+            if (info.succCount >= 2) {
                 info.connectTimeoutCount = info.dnsErrorCount = info.otherErrorCount = 0;
             } else {
                 ++info.succCount;
@@ -67,6 +68,8 @@ public class WXPayDomainSimpleImpl implements IWXPayDomain {
         }
 
         long now = System.currentTimeMillis();
+        //3 minutes
+        int MIN_SWITCH_PRIMARY_MSEC = 3 * 60 * 1000;
         if (switchToAlternateDomainTime == 0) {   //first switch
             switchToAlternateDomainTime = now;
             return new DomainInfo(WXPayConstants.DOMAIN_API2, false);
@@ -83,8 +86,9 @@ public class WXPayDomainSimpleImpl implements IWXPayDomain {
             switchToAlternateDomainTime = 0;
             primaryDomain.resetCount();
             DomainStatics alternateDomain = domainData.get(WXPayConstants.DOMAIN_API2);
-            if (alternateDomain != null)
+            if (alternateDomain != null) {
                 alternateDomain.resetCount();
+            }
             return new DomainInfo(WXPayConstants.DOMAIN_API, true);
         }
     }

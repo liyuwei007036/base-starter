@@ -3,7 +3,10 @@ package com.lc.core.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Java Reflection Util
@@ -97,10 +100,12 @@ public class ReflectsUtil {
      * @throws Exception
      */
     public static Object invokeMethod(Object owner, String methodName, Object[] args) throws Exception {
-        Class<?>[] argsClass = new Class<?>[args.length];
-        for (int i = 0, j = args.length; i < j; i++) {
-            argsClass[i] = args[i].getClass();
-        }
+
+        Class<?>[] argsClass = (Class<?>[]) Stream.of(args).map(Object::getClass).toArray();
+//        Class<?>[] argsClass = new Class<?>[args.length];
+//        for (int i = 0, j = args.length; i < j; i++) {
+//            argsClass[i] = args[i].getClass();
+//        }
         return owner.getClass().getMethod(methodName, argsClass).invoke(owner, args);
     }
 

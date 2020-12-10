@@ -1,10 +1,12 @@
 package com.lc.core.error;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author l5990
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class BaseException extends RuntimeException {
 

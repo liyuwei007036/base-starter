@@ -3,7 +3,11 @@ package com.lc.core.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 身份证号码校验工具
@@ -25,7 +29,7 @@ public class IdCardValidatorUtils {
      *     91 : 国外
      * </pre>
      */
-    private static String[] CITY_CODE = {"11", "12", "13", "14", "15", "21",
+    private static final String[] CITY_CODE = {"11", "12", "13", "14", "15", "21",
             "22", "23", "31", "32", "33", "34", "35", "36", "37", "41", "42",
             "43", "44", "45", "46", "50", "51", "52", "53", "54", "61", "62",
             "63", "64", "65", "71", "81", "82", "91"};
@@ -33,8 +37,8 @@ public class IdCardValidatorUtils {
     /**
      * 每位加权因子
      */
-    private static int[] POWER = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5,
-            8, 4, 2};
+    private static final int[] POWER = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+
 
     /**
      * 验证所有的身份证的合法性
@@ -42,7 +46,7 @@ public class IdCardValidatorUtils {
      * @param idCard 身份证
      * @return 合法返回true，否则返回false
      */
-    public static boolean isValidatedAllidCard(String idCard) {
+    public static boolean isValidatedAllIdCard(String idCard) {
         if (idCard == null || "".equals(idCard)) {
             return false;
         }
@@ -130,9 +134,9 @@ public class IdCardValidatorUtils {
         // 获取第18位
         String idCard18Code = idCard.substring(17, 18);
 
-        char c[] = idCard17.toCharArray();
+        char[] c = idCard17.toCharArray();
 
-        int bit[] = converCharToInt(c);
+        int[] bit = converCharToInt(c);
 
         int sum17 = 0;
 
@@ -144,11 +148,7 @@ public class IdCardValidatorUtils {
             return false;
         }
         // 将身份证的第18位与算出来的校码进行匹配，不相等就为假
-        if (!idCard18Code.equalsIgnoreCase(checkCode)) {
-            return false;
-        }
-
-        return true;
+        return idCard18Code.equalsIgnoreCase(checkCode);
     }
 
     /**
@@ -374,12 +374,12 @@ public class IdCardValidatorUtils {
      * @return
      * @throws NumberFormatException
      */
-    private static int[] converCharToInt(char[] c) throws NumberFormatException {
-        int[] a = new int[c.length];
-        int k = 0;
-        for (char temp : c) {
-            a[k++] = Integer.parseInt(String.valueOf(temp));
-        }
-        return a;
+    private static Integer[] converCharToInt(char[] c) throws NumberFormatException {
+
+        return Stream.of(c)
+                .map(x -> Integer.parseInt(String.valueOf(x)))
+                .collect(Collectors.toList())
+                .toArray(new Integer[c.length])
+
     }
 }

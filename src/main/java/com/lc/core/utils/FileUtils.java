@@ -22,7 +22,12 @@ import java.util.zip.ZipFile;
  */
 @Log4j2
 public class FileUtils {
-
+    /**
+     * 获取文件后缀
+     *
+     * @param fileName 文件名
+     * @return
+     */
     public static String getSuffix(String fileName) {
         if (fileName != null && fileName.contains(".")) {
             return fileName.substring(fileName.lastIndexOf("."));
@@ -30,6 +35,13 @@ public class FileUtils {
         return null;
     }
 
+    /**
+     * 删除前缀
+     *
+     * @param src    原文件名
+     * @param prefix 前缀
+     * @return
+     */
     public static String removePrefix(String src, String prefix) {
         if (src != null && src.startsWith(prefix)) {
             return src.substring(prefix.length());
@@ -37,6 +49,12 @@ public class FileUtils {
         return src;
     }
 
+    /**
+     * 文件转String
+     *
+     * @param file 文件
+     * @return
+     */
     public static String readString(File file) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(file)) {
             byte[] buffer = new byte[1024];
@@ -50,6 +68,12 @@ public class FileUtils {
         return null;
     }
 
+    /**
+     * 将字符串写入文件
+     *
+     * @param file   文件
+     * @param string 字符串
+     */
     public static void writeString(File file, String string) {
         try (FileOutputStream fos = new FileOutputStream(file, false)) {
             fos.write(string.getBytes(StandardCharsets.UTF_8));
@@ -58,7 +82,12 @@ public class FileUtils {
         }
     }
 
-
+    /**
+     * 解压文件
+     *
+     * @param zipFilePath 文件路径
+     * @throws IOException
+     */
     public static void unzip(String zipFilePath) throws IOException {
         String targetPath = zipFilePath.substring(0, zipFilePath.lastIndexOf("."));
         unzip(zipFilePath, targetPath);
@@ -117,10 +146,9 @@ public class FileUtils {
     }
 
     public static String getMd5(File file) throws IOException {
-        FileInputStream ins = new FileInputStream(file);
-        String md5 = getMd5(ins);
-        ins.close();
-        return md5;
+        try (FileInputStream ins = new FileInputStream(file)) {
+            return getMd5(ins);
+        }
     }
 
     public static String getMd5(FileInputStream inputStream) throws IOException {
@@ -174,16 +202,12 @@ public class FileUtils {
         }
     }
 
-
     public static void file2File(File file1, File file2) throws IOException {
-        FileInputStream in = new FileInputStream(file1);
-        FileOutputStream out = new FileOutputStream(file2);
-        FileChannel channel = in.getChannel();
-        FileChannel channel2 = out.getChannel();
-        channel.transferTo(0, channel.size(), channel2);
-        in.close();
-        out.close();
-
+        try (FileInputStream in = new FileInputStream(file1); FileOutputStream out = new FileOutputStream(file2)) {
+            FileChannel channel = in.getChannel();
+            FileChannel channel2 = out.getChannel();
+            channel.transferTo(0, channel.size(), channel2);
+        }
     }
 
     public static void inputStreamToFile(File f, InputStream input) throws IOException {

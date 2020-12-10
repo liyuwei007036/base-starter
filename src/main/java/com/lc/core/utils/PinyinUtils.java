@@ -36,7 +36,7 @@ public class PinyinUtils {
                     String[] temp = PinyinHelper.toHanyuPinyinStringArray(c, format);
                     output.append(temp[0]);
                 } else {
-                    output.append(Character.toString(c));
+                    output.append(c);
                 }
             }
         } catch (BadHanyuPinyinOutputFormatCombination e) {

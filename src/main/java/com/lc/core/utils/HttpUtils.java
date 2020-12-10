@@ -20,7 +20,8 @@ import java.util.Map;
  */
 @Slf4j
 public final class HttpUtils {
-    private static RestTemplate restTemplate = new RestTemplate();
+
+    private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
     private static ResponseErrorHandler getResponseErrorHandler() {
         return new ResponseErrorHandler() {
@@ -37,9 +38,11 @@ public final class HttpUtils {
     }
 
     public static String get(String url) {
-        restTemplate.setErrorHandler(getResponseErrorHandler());
-        return restTemplate.getForEntity(url, String.class).getBody();
+        REST_TEMPLATE.setErrorHandler(getResponseErrorHandler());
+        return REST_TEMPLATE.getForEntity(url, String.class).getBody();
     }
+
+
 
     /**
      * 发送post请求
@@ -50,11 +53,11 @@ public final class HttpUtils {
      * @return
      */
     public static String post(String url, Map<String, Object> data, Map<String, String> head) {
-        restTemplate.setErrorHandler(getResponseErrorHandler());
-        restTemplate.getMessageConverters().set(1,new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        REST_TEMPLATE.setErrorHandler(getResponseErrorHandler());
+        REST_TEMPLATE.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         HttpHeaders headers = new HttpHeaders();
         head.forEach(headers::add);
-        String ct = ObjectUtil.getString(head.get("Content-Type"));
+        String ct = ObjectUtil.getString(head.get(HttpHeaders.CONTENT_TYPE));
 
         HttpEntity r;
         // 根据不同的请求头发送
@@ -65,7 +68,7 @@ public final class HttpUtils {
         } else {
             r = new HttpEntity<>(JSONObject.toJSONString(data), headers);
         }
-        return restTemplate.postForEntity(url, r, String.class).getBody();
+        return REST_TEMPLATE.postForEntity(url, r, String.class).getBody();
     }
 
     /**

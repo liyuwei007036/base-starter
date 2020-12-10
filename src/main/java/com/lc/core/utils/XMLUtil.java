@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class XMLUtil {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         DOMSource source = new DOMSource(document);
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
@@ -87,7 +88,7 @@ public class XMLUtil {
         try {
             Map<String, String> data = new HashMap<>();
             DocumentBuilder documentBuilder = newDocumentBuilder();
-            InputStream stream = new ByteArrayInputStream(strXML.getBytes("UTF-8"));
+            InputStream stream = new ByteArrayInputStream(strXML.getBytes(StandardCharsets.UTF_8));
             org.w3c.dom.Document doc = documentBuilder.parse(stream);
             doc.getDocumentElement().normalize();
             NodeList nodeList = doc.getDocumentElement().getChildNodes();

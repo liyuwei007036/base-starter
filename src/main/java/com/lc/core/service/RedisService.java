@@ -1,7 +1,9 @@
 package com.lc.core.service;
 
 import com.lc.core.config.redis.RedisTemplate;
+import org.redisson.Version;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -15,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author l5990
  */
+@ConditionalOnClass(Version.class)
 @Component
 public class RedisService<K, V> {
 

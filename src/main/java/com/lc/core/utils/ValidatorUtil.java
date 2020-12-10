@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class ValidatorUtil {
 
-    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
 
     public static <T> void validator(T object, Class<?>... groups) {
@@ -29,7 +29,7 @@ public class ValidatorUtil {
         if (groups == null) {
             groups = new Class[]{Default.class};
         }
-        Set<ConstraintViolation<T>> set = validator.validate(object, groups);
+        Set<ConstraintViolation<T>> set = VALIDATOR.validate(object, groups);
         Map<String, String> errorMap = new HashMap<>(16);
         if (!CollectionUtils.isEmpty(set)) {
             Iterator<ConstraintViolation<T>> iterator = set.iterator();

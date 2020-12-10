@@ -14,9 +14,9 @@ import java.util.Date;
  */
 public class DateUtils {
 
-    private static String YMDHMS = "yyyy-MM-dd HH:mm:ss";
-    private static String YMDHM = "yyyy-MM-dd HH:mm";
-    private static String YMD = "yyyy-MM-dd";
+    private static final String YMDHMS = "yyyy-MM-dd HH:mm:ss";
+    private static final String YMDHM = "yyyy-MM-dd HH:mm";
+    private static final String YMD = "yyyy-MM-dd";
 
 
     private static SimpleDateFormat getDateFormat(String rule) {

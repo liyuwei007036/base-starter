@@ -19,9 +19,9 @@ import java.util.Objects;
 @Slf4j
 public class SpringElUtils {
 
-    private static SpelExpressionParser parser = new SpelExpressionParser();
+    private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
-    private static DefaultParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
+    private static final DefaultParameterNameDiscoverer NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
     public static Object generateKeyBySpel(String spElString, ProceedingJoinPoint joinPoint) {
         try {
@@ -29,11 +29,11 @@ public class SpringElUtils {
                 return null;
             }
             MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-            String[] paramNames = nameDiscoverer.getParameterNames(methodSignature.getMethod());
+            String[] paramNames = NAME_DISCOVERER.getParameterNames(methodSignature.getMethod());
             if (Objects.isNull(paramNames)) {
                 return null;
             }
-            Expression expression = parser.parseExpression(spElString);
+            Expression expression = PARSER.parseExpression(spElString);
             EvaluationContext context = new StandardEvaluationContext();
             Object[] args = joinPoint.getArgs();
             for (int i = 0; i < args.length; i++) {

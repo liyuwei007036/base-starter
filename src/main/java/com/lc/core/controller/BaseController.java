@@ -108,7 +108,6 @@ public abstract class BaseController {
         return CommonConstant.REDIS_DB_DEFAULT;
     }
 
-    ;
 
     /**
      * 设置 session 变量

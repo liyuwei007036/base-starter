@@ -45,7 +45,7 @@ public class RequestUtils {
      *
      * @return
      */
-    public static boolean isMoblieBrowser(HttpServletRequest request) {
+    public static boolean isMobileBrowser(HttpServletRequest request) {
         String ua = request.getHeader("User-Agent");
         if (ua == null) {
             return false;
@@ -128,7 +128,6 @@ public class RequestUtils {
             String var4;
             if (line == null) {
                 var4 = "";
-                return var4;
             } else {
                 StringBuilder ret = new StringBuilder();
                 ret.append(line);
@@ -136,10 +135,9 @@ public class RequestUtils {
                 while ((line = br.readLine()) != null) {
                     ret.append('\n').append(line);
                 }
-
                 var4 = ret.toString();
-                return var4;
             }
+            return var4;
         } catch (IOException var14) {
             throw new RuntimeException(var14);
         } finally {
@@ -150,18 +148,17 @@ public class RequestUtils {
                     log.error(var13.getMessage(), var13);
                 }
             }
-
         }
     }
 
     public static JSONObject readData(ServletInputStream ris) throws IOException {
-        ByteArrayOutputStream sout = new ByteArrayOutputStream();
-        int b;
-        while ((b = ris.read()) != -1) {
-            sout.write(b);
+        try (ByteArrayOutputStream sout = new ByteArrayOutputStream()) {
+            int b;
+            while ((b = ris.read()) != -1) {
+                sout.write(b);
+            }
+            String sOk = sout.toString(StandardCharsets.UTF_8.name());
+            return JSONObject.parseObject(sOk);
         }
-        byte[] temp = sout.toByteArray();
-        String sOk = new String(temp, StandardCharsets.UTF_8);
-        return JSONObject.parseObject(sOk);
     }
 }
