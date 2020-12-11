@@ -4,16 +4,13 @@ import com.baomidou.mybatisplus.core.MybatisPlusVersion;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author lc
  */
 @ConditionalOnClass(MybatisPlusVersion.class)
-@Component
 public class MybatisMateObjectHandler implements MetaObjectHandler {
 
     @Override

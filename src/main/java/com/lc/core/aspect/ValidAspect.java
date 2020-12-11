@@ -3,10 +3,10 @@ package com.lc.core.aspect;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lc.core.annotations.Valid;
+import com.lc.core.config.SessionNameConfig;
 import com.lc.core.controller.BaseController;
 import com.lc.core.dto.ResponseInfo;
 import com.lc.core.enums.BaseErrorEnums;
-import com.lc.core.enums.CommonConstant;
 import com.lc.core.error.BaseException;
 import com.lc.core.utils.RequestUtils;
 import com.lc.core.utils.SpringUtil;
@@ -15,8 +15,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -28,7 +28,6 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
-@Component
 public class ValidAspect {
 
     private static final ThreadLocal<Object[]> ARGS = new ThreadLocal<>();
@@ -40,6 +39,9 @@ public class ValidAspect {
         VALID.remove();
         CONTROLLER.remove();
     }
+
+    @Autowired
+    private SessionNameConfig sessionNameConfig;
 
     @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public void cut() {
@@ -113,9 +115,9 @@ public class ValidAspect {
             info.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             info.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
             info.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
-            info.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            info.append("request_token: ").append(controller.getRequest().getHeader(sessionNameConfig.getName())).append("\n\n");
             info.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
-            info.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            info.append("response_token: ").append(controller.getResponse().getHeader(sessionNameConfig.getName())).append("\n\n");
             info.append("response_data: ").append(JSON.toJSONString(responseInfo)).append("\n\n");
             info.append("【------------------------ success request end ---------------------------】\n\n");
             log.info(info.toString());
@@ -139,9 +141,9 @@ public class ValidAspect {
             warn.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             warn.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
             warn.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
-            warn.append("request_token: ").append(controller.getRequest().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            warn.append("request_token: ").append(controller.getRequest().getHeader(sessionNameConfig.getName())).append("\n\n");
             warn.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
-            warn.append("response_token: ").append(controller.getResponse().getHeader(CommonConstant.SESSION_NAME)).append("\n\n");
+            warn.append("response_token: ").append(controller.getResponse().getHeader(sessionNameConfig.getName())).append("\n\n");
             warn.append("response_msg: ").append(e.getMessage()).append("\n\n");
             warn.append("【------------------------ fail request end ---------------------------】\n\n");
             log.error(warn.toString());

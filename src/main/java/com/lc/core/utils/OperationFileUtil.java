@@ -8,6 +8,7 @@ import com.lc.core.error.BaseException;
 import com.lc.core.service.BaseUploadService;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +52,6 @@ public class OperationFileUtil {
             log.error("文件上传（开发环境）未配置 文件上传目录");
             throw new BaseException(BaseErrorEnums.ERROR_CONFIG);
         }
-
     }
 
     /**
@@ -261,12 +261,11 @@ public class OperationFileUtil {
             object.put("success", false);
             log.error("从磁盘获取文件失败");
         } else {
-            object.put("lastModified", file.lastModified());
-            object.put("Content-Length", file.length());
+            object.put(HttpHeaders.LAST_MODIFIED, file.lastModified());
+            object.put(HttpHeaders.CONTENT_LENGTH, file.length());
             try {
                 object.put("inputstream", new FileInputStream(file));
             } catch (FileNotFoundException e) {
-
                 log.error("从磁盘获取文件失败");
                 object.put("success", false);
             }
@@ -277,8 +276,8 @@ public class OperationFileUtil {
         JSONObject info = getFile(separateUuid, uuid, fileExt, zoom);
         Boolean success = info.getBoolean("success");
         if (success) {
-            Long lastModified = info.getLong("lastModified");
-            Long contentLength = info.getLong("Content-Length");
+            Long lastModified = info.getLong(HttpHeaders.LAST_MODIFIED);
+            Long contentLength = info.getLong(HttpHeaders.CONTENT_LENGTH);
             try {
                 String fileName = separateUuid + "/" + uuid + "." + fileExt;
                 // 开始设置 Http Response
@@ -288,10 +287,10 @@ public class OperationFileUtil {
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
                 String timeStr = sdf.format(cd.getTime());
-                response.setHeader("Last-Modified", timeStr);
-                response.setHeader("Accept-Ranges", "bytes");
+                response.setHeader(HttpHeaders.LAST_MODIFIED, timeStr);
+                response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
                 response.setContentType(ResponseEnums.getValue(fileExt.toLowerCase()));
-                response.setHeader("Content-Length", contentLength.toString());
+                response.setHeader(HttpHeaders.CONTENT_LENGTH, contentLength.toString());
                 try (InputStream inputStream = (InputStream) info.get("inputstream"); OutputStream outputStream = response.getOutputStream()) {
                     byte[] buffer = new byte[409600];
                     for (int len; (len = inputStream.read(buffer)) != -1; ) {

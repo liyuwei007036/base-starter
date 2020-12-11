@@ -16,7 +16,6 @@ import java.time.format.DateTimeFormatter;
  * @author lc
  * @date 2020/3/4下午 11:26
  */
-@Configuration
 public class LocalDateTimeSerializerConfig {
 
 

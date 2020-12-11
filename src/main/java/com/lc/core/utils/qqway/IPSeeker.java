@@ -48,20 +48,20 @@ public class IPSeeker {
 		            ipFile = new RandomAccessFile(IP_FILE, "r");
 		        } catch (FileNotFoundException e) {
 		            String filename = new File(IP_FILE).getName().toLowerCase();   
-		            File[] files = new File(INSTALL_DIR).listFiles();   
-		            for(int i = 0; i < files.length; i++) {   
-		                if(files[i].isFile()) {   
-		                    if(files[i].getName().toLowerCase().equals(filename)) {   
-		                        try {   
-		                            ipFile = new RandomAccessFile(files[i], "r");   
-		                        } catch (FileNotFoundException e1) {   
-		                            log.error("IP地址信息文件没有找到，IP显示功能将无法使用"+e1.getMessage());   
-		                            ipFile = null;   
-		                        }   
-		                        break;   
-		                    }   
-		                }   
-		            }   
+		            File[] files = new File(INSTALL_DIR).listFiles();
+					for (File file : files) {
+						if (file.isFile()) {
+							if (file.getName().toLowerCase().equals(filename)) {
+								try {
+									ipFile = new RandomAccessFile(file, "r");
+								} catch (FileNotFoundException e1) {
+									log.error("IP地址信息文件没有找到，IP显示功能将无法使用" + e1.getMessage());
+									ipFile = null;
+								}
+								break;
+							}
+						}
+					}
 		        }    
 		        if(ipFile != null) {   
 		            try {   

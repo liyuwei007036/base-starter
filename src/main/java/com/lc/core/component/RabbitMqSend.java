@@ -2,8 +2,7 @@ package com.lc.core.component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.lc.core.enums.CommonConstant;
-import com.lc.core.service.RedisService;
+import com.lc.core.utils.RedisUtil;
 import com.lc.core.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -30,14 +29,11 @@ import java.util.UUID;
  */
 @Slf4j
 @ConditionalOnClass(RabbitAdmin.class)
-@Component
 public class RabbitMqSend {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    private RedisService<String, JSONObject> redisService;
 
     @Value("${spring.profiles.active:dev}")
     private String env;
@@ -48,14 +44,13 @@ public class RabbitMqSend {
     private final RabbitTemplate.ConfirmCallback confirmCallback = (correlationData, ack, cause) -> {
         if (ack && Objects.nonNull(correlationData)) {
             // 从缓存中删除已经投递成功的消息
-            redisService.hashRemove(env + "MQMSG", correlationData.getId(), CommonConstant.REDIS_DB_OTHER);
+            RedisUtil.hashRemove(env + "MQMSG", correlationData.getId());
             log.info("【消息投递成功】 " + correlationData.getId());
         } else {
             log.error("【消息投递失败】 ");
             if (correlationData == null) {
                 return;
             }
-
             Message returnedMessage = correlationData.getReturnedMessage();
             if (Objects.isNull(returnedMessage)) {
                 return;
@@ -68,7 +63,7 @@ public class RabbitMqSend {
             rk.put("date", new Date());
             rk.put("num", messageProperties.getHeaders().getOrDefault("num", 0));
             String env = SpringUtil.getProperty("spring.profiles.active");
-            redisService.hashPut(env + "MQMSG", correlationData.getId(), rk, CommonConstant.REDIS_DB_OTHER);
+            RedisUtil.hashPut(env + "MQMSG", correlationData.getId(), rk);
         }
     };
 

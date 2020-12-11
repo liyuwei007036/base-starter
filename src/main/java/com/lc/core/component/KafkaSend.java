@@ -18,7 +18,6 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
  */
 @Slf4j
 @ConditionalOnClass(KafkaAdmin.class)
-@Component
 public class KafkaSend {
 
     @Autowired

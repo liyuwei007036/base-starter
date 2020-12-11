@@ -6,7 +6,6 @@ import com.lc.core.dto.Account;
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.enums.SessionConstants;
 import com.lc.core.error.BaseException;
-import com.lc.core.service.RedisService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,13 +24,12 @@ public class LoginUtils {
         String sessionId = controller.getSessionId();
         Map<String, Object> session = new HashMap<>(16);
         session.put(SessionConstants.USER, JSON.toJSONString(account));
-        session.put("createTime", LocalDateTime.now());
+        session.put("create_time", LocalDateTime.now());
         session.put(SessionConstants.USER_ID, JSON.toJSONString(account.getId()));
         session.put(SessionConstants.USER_NAME, account.getName());
         session.put(SessionConstants.USER_ACCOUNT, account.getAccount());
-        RedisService bean = SpringUtil.getBean(RedisService.class);
-        bean.hashPutAll(sessionId, session, controller.getDbIndex());
-        bean.expire(sessionId, controller.getTimeOut(), controller.getDbIndex());
+        RedisUtil.hashPutAll(sessionId, session);
+        RedisUtil.expire(sessionId, controller.getTimeOut());
         session.clear();
     }
 }

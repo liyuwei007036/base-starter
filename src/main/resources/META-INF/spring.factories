@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lc.core.config.CoreAutoConfig,\
+  com.lc.core.component.ScheduleTask,\
+  com.lc.core.component.RabbitMqSend,\
+  com.lc.core.component.KafkaSend,\
+  com.lc.core.config.RabbitConfig,\
+  com.lc.core.config.mp.MybatisMateObjectHandler,\
+  com.lc.core.config.mp.MybatisPlusConfig

@@ -1,8 +1,8 @@
 package com.lc.core.aspect;
 
 import com.lc.core.annotations.Cache;
-import com.lc.core.service.RedisService;
 import com.lc.core.utils.ObjectUtil;
+import com.lc.core.utils.RedisUtil;
 import com.lc.core.utils.SpringElUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,40 +10,33 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 
 /**
+ * 基于redisson 自定义缓存
+ *
  * @author l5990
  */
 @Slf4j
 @Aspect
-@Component
-@ConditionalOnBean(RedisService.class)
 public class CacheAspect {
 
     public enum CacheMethod {
         /**
-         *
+         * 缓存方法
          */
         ADD, REMOVE, UPDATE
     }
 
     public enum RedisDataType {
         /**
-         *
+         * 缓存值类型
          */
         HASH, STRING, SET
     }
 
-
-    @Autowired
-    private RedisService<String, Object> redisService;
 
     @Pointcut("@annotation(com.lc.core.annotations.Cache)")
     public void cacheCut() {
@@ -57,7 +50,6 @@ public class CacheAspect {
         Cache cache = method.getAnnotation(Cache.class);
         String className = method.getDeclaringClass().getName();
         String methodName = method.getName();
-        int db = cache.db();
         int timeout = cache.timeout();
         String name = cache.name();
         if (StringUtils.isEmpty(name)) {
@@ -74,29 +66,29 @@ public class CacheAspect {
         String key = ObjectUtil.getString(SpringElUtils.generateKeyBySpel(keyEl, joinPoint));
         switch (type) {
             case ADD:
-                return addCache(joinPoint, db, key, condition, name, redisDataType, timeout);
+                return addCache(joinPoint, key, condition, name, redisDataType, timeout);
             case REMOVE:
-                return removeCache(joinPoint, db, key, condition, name, redisDataType);
+                return removeCache(joinPoint, key, condition, name, redisDataType);
             case UPDATE:
-                return updateCache(joinPoint, db, key, condition, name, redisDataType, timeout);
+                return updateCache(joinPoint, key, condition, name, redisDataType, timeout);
             default:
                 return joinPoint.proceed();
         }
     }
 
-    private Object addCache(ProceedingJoinPoint joinPoint, int db, String key, boolean condition, String name, RedisDataType dateType, int timeout) throws Throwable {
+    private Object addCache(ProceedingJoinPoint joinPoint, String key, boolean condition, String name, RedisDataType dateType, int timeout) throws Throwable {
         Object res = null;
         if (condition) {
             try {
                 switch (dateType) {
                     case STRING:
-                        res = redisService.get(name + "." + key, db);
+                        res = RedisUtil.get(name + "." + key);
                         break;
                     case SET:
-                        res = redisService.setGet(name + "." + key, db);
+                        res = RedisUtil.setGet(name + "." + key);
                         break;
                     case HASH:
-                        res = redisService.hashGet(name, key, db);
+                        res = RedisUtil.hashGet(name, key);
                         break;
                     default:
                         break;
@@ -108,21 +100,21 @@ public class CacheAspect {
         }
         if (res == null) {
             res = joinPoint.proceed();
-            setCacheByType(res, condition, name, key, db, timeout, dateType);
+            setCacheByType(res, condition, name, key, timeout, dateType);
         }
         return res;
     }
 
-    private Object removeCache(ProceedingJoinPoint joinPoint, int db, String key, boolean condition, String name, RedisDataType dateType) throws Throwable {
+    private Object removeCache(ProceedingJoinPoint joinPoint, String key, boolean condition, String name, RedisDataType dateType) throws Throwable {
         if (condition) {
             try {
                 switch (dateType) {
                     case STRING:
                     case SET:
-                        redisService.remove(name + "." + key, db);
+                        RedisUtil.remove(name + "." + key);
                         break;
                     case HASH:
-                        redisService.hashRemove(name, key, db);
+                        RedisUtil.hashRemove(name, key);
                         break;
                     default:
                         break;
@@ -135,30 +127,30 @@ public class CacheAspect {
 
     }
 
-    private Object updateCache(ProceedingJoinPoint joinPoint, int db, String key, boolean condition, String name, RedisDataType dateType, int timeout) {
+    private Object updateCache(ProceedingJoinPoint joinPoint, String key, boolean condition, String name, RedisDataType dateType, int timeout) {
         Object res;
         try {
             res = joinPoint.proceed();
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
-        setCacheByType(res, condition, name, key, db, timeout, dateType);
+        setCacheByType(res, condition, name, key, timeout, dateType);
         return res;
     }
 
-    private void setCacheByType(Object res, Boolean condition, String name, String key, int db, int timeout, RedisDataType dateType) {
+    private void setCacheByType(Object res, Boolean condition, String name, String key, int timeout, RedisDataType dateType) {
         try {
             if (condition && res != null) {
                 switch (dateType) {
                     case STRING:
-                        redisService.put(name + "." + key, res, db, timeout);
+                        RedisUtil.put(name + "." + key, res, timeout);
                         break;
                     case SET:
-                        redisService.setPut(name + "." + key, res, db, timeout);
+                        RedisUtil.setPut(name + "." + key, res, timeout);
                         break;
                     case HASH:
-                        redisService.hashPut(name, key, res, db);
-                        redisService.expire(name, timeout, db);
+                        RedisUtil.hashPut(name, key, res);
+                        RedisUtil.expire(name, timeout);
                         break;
                     default:
                         break;

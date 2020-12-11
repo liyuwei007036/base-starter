@@ -18,9 +18,7 @@ public @interface Cache {
     String key();
 
     String name() default "";
-
-    int db() default 9;
-
+    
     int timeout() default 5000;
 
     CacheAspect.RedisDataType dataType() default CacheAspect.RedisDataType.STRING;

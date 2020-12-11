@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
  * @author l5990
  */
 @ConditionalOnClass(RabbitAdmin.class)
-@Configuration
 public class RabbitConfig {
 
     /**

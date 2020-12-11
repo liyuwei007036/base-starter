@@ -2,10 +2,12 @@ package com.lc.core.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.lc.core.config.SessionNameConfig;
 import com.lc.core.dto.Account;
-import com.lc.core.enums.CommonConstant;
 import com.lc.core.enums.SessionConstants;
 import com.lc.core.service.BaseSessionService;
+import com.lc.core.utils.ObjectUtil;
+import com.lc.core.utils.SpringUtil;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -23,7 +25,11 @@ import java.util.UUID;
 public abstract class BaseController {
 
     @Autowired
-    private BaseSessionService<String, Object> baseSessionService;
+    private BaseSessionService baseSessionService;
+
+
+    @Autowired
+    private SessionNameConfig sessionNameConfig;
 
     private static final String UNIQUE_ID = "sessionId";
 
@@ -61,7 +67,7 @@ public abstract class BaseController {
 
     public void loadSessionId() {
         SESSION_ID.set(getSessionId(LOCAL_REQUEST.get(), getSessionType()));
-        Map<String, Object> map = baseSessionService.getSessionMapBySessionId(SESSION_ID.get(), this.getTimeOut(), getDbIndex());
+        Map<String, Object> map = baseSessionService.getSessionMapBySessionId(SESSION_ID.get(), this.getTimeOut());
         TMP_SESSION_MAP.set(map);
         checkSession();
     }
@@ -87,7 +93,7 @@ public abstract class BaseController {
      * @return
      */
     public String getSessionType() {
-        return CommonConstant.SESSION_NAME;
+        return sessionNameConfig.getName();
     }
 
     /**
@@ -95,17 +101,8 @@ public abstract class BaseController {
      *
      * @return
      */
-    public long getTimeOut() {
-        return CommonConstant.SESSION_TIME_OUT;
-    }
-
-    /**
-     * 默认session db
-     *
-     * @return
-     */
-    public int getDbIndex() {
-        return CommonConstant.REDIS_DB_DEFAULT;
+    public Long getTimeOut() {
+        return sessionNameConfig.getTimeout();
     }
 
 
@@ -121,7 +118,7 @@ public abstract class BaseController {
             Map<String, Object> sessionMap = TMP_SESSION_MAP.get();
             sessionMap.put(key, value);
             TMP_SESSION_MAP.set(sessionMap);
-            baseSessionService.setSessionValue(SESSION_ID.get(), key, value, getTimeOut(), getDbIndex());
+            baseSessionService.setSessionValue(SESSION_ID.get(), key, value, getTimeOut());
         }
     }
 
@@ -183,7 +180,7 @@ public abstract class BaseController {
      * @param key
      */
     public void removeSession(String key) {
-        baseSessionService.removeSessionKey(getSessionId(), key, getDbIndex());
+        baseSessionService.removeSessionKey(getSessionId(), key);
     }
 
 
@@ -191,7 +188,7 @@ public abstract class BaseController {
      * 删除session
      */
     public void removeSession() {
-        baseSessionService.removeSessionId(getSessionId(), getDbIndex());
+        baseSessionService.removeSessionId(getSessionId());
     }
 
 

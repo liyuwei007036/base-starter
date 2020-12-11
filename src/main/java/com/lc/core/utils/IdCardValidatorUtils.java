@@ -136,7 +136,7 @@ public class IdCardValidatorUtils {
 
         char[] c = idCard17.toCharArray();
 
-        int[] bit = converCharToInt(c);
+        Integer[] bit = converCharToInt(c);
 
         int sum17 = 0;
 
@@ -256,7 +256,7 @@ public class IdCardValidatorUtils {
         String checkCode = "";
 
         // 将字符数组转为整型数组
-        int[] bit = converCharToInt(c);
+        Integer[] bit = converCharToInt(c);
 
         int sum17 = 0;
         sum17 = getPowerSum(bit);
@@ -304,7 +304,7 @@ public class IdCardValidatorUtils {
      * @param bit
      * @return
      */
-    private static int getPowerSum(int[] bit) {
+    private static int getPowerSum(Integer[] bit) {
         int sum = 0;
         if (POWER.length != bit.length) {
             return sum;
@@ -375,11 +375,10 @@ public class IdCardValidatorUtils {
      * @throws NumberFormatException
      */
     private static Integer[] converCharToInt(char[] c) throws NumberFormatException {
-
         return Stream.of(c)
                 .map(x -> Integer.parseInt(String.valueOf(x)))
                 .collect(Collectors.toList())
-                .toArray(new Integer[c.length])
+                .toArray(new Integer[c.length]);
 
     }
 }

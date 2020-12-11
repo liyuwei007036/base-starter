@@ -2,8 +2,8 @@ package com.lc.core.service;
 
 import com.lc.core.enums.BaseErrorEnums;
 import com.lc.core.error.BaseException;
+import com.lc.core.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -15,11 +15,8 @@ import java.util.Map;
  * @author l5990
  */
 @Slf4j
-@Component
-public class BaseSessionService<HK, HV> {
+public class BaseSessionService {
 
-    @Autowired
-    private RedisService redisService;
 
     /**
      * 设置 Session 值
@@ -28,13 +25,13 @@ public class BaseSessionService<HK, HV> {
      * @param hashKey
      * @param hashValue
      */
-    public void setSessionValue(String sessionId, HK hashKey, HV hashValue, long timeOut, int dbIndex) {
+    public <HK, HV> void setSessionValue(String sessionId, HK hashKey, HV hashValue, long timeOut) {
         try {
-            if (!redisService.hasKey(sessionId, dbIndex)) {
-                redisService.hashPut(sessionId, "create_date", new Date(), dbIndex);
-                redisService.expire(sessionId, timeOut, dbIndex);
+            if (!RedisUtil.hasKey(sessionId)) {
+                RedisUtil.hashPut(sessionId, "create_time", new Date());
+                RedisUtil.expire(sessionId, timeOut);
             }
-            redisService.hashPut(sessionId, hashKey, hashValue, dbIndex);
+            RedisUtil.hashPut(sessionId, hashKey, hashValue);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("插入session 失败", e);
@@ -49,13 +46,13 @@ public class BaseSessionService<HK, HV> {
      * @param hashKey
      * @param hashValue
      */
-    public Boolean setSessionValueIfAbsent(String sessionId, HK hashKey, HV hashValue, int timeOut, int dbIndex) {
+    public <HK, HV> Boolean setSessionValueIfAbsent(String sessionId, HK hashKey, HV hashValue, int timeOut) {
         try {
-            if (!redisService.hasKey(sessionId, dbIndex)) {
-                redisService.hashPut(sessionId, "create_date", new Date(), dbIndex);
-                redisService.expire(sessionId, timeOut, dbIndex);
+            if (!RedisUtil.hasKey(sessionId)) {
+                RedisUtil.hashPut(sessionId, "create_date", new Date());
+                RedisUtil.expire(sessionId, timeOut);
             }
-            return redisService.hashPutIfAbsent(sessionId, hashKey, hashValue, dbIndex);
+            return RedisUtil.hashPutIfAbsent(sessionId, hashKey, hashValue);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("插入session 失败", e);
@@ -71,10 +68,9 @@ public class BaseSessionService<HK, HV> {
      * @param hashKey
      * @return
      */
-    public HV getSessionValue(String sessionId, HK hashKey, int dbIndex) {
+    public <HK, HV> HV getSessionValue(String sessionId, HK hashKey, Class<HV> clazz) {
         try {
-            Object v = redisService.hashGet(sessionId, hashKey, dbIndex);
-            return (HV) v;
+            return RedisUtil.hashGet(sessionId, hashKey, clazz);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Can't get Session Value.", e);
@@ -88,29 +84,25 @@ public class BaseSessionService<HK, HV> {
      * @param sessionId
      * @return
      */
-    public Map<String, Object> getSessionMapBySessionId(String sessionId, long timeOut, int dbIndex) {
+    public Map<String, Object> getSessionMapBySessionId(String sessionId, long timeOut) {
         if (StringUtils.isEmpty(sessionId)) {
             return new HashMap<>(16);
         }
         Map map = null;
-        if (redisService.hasKey(sessionId, dbIndex)) {
-            map = redisService.hashFindAll(sessionId, dbIndex);
+        if (RedisUtil.hasKey(sessionId)) {
+            map = RedisUtil.hashFindAll(sessionId);
         }
         if (map == null) {
             map = new HashMap<>(16);
         } else {
-            updateAccessTime(sessionId, timeOut, dbIndex);
+            updateAccessTime(sessionId, timeOut);
         }
         return map;
     }
 
 
-    public Boolean updateAccessTime(String sessionId, long timeOut, int dbIndex) {
-        return redisService.expire(sessionId, timeOut, dbIndex);
-    }
-
-    public HashMap getSessionList(int dbIndex) {
-        return redisService.hashGetAll(dbIndex);
+    public Boolean updateAccessTime(String sessionId, long timeOut) {
+        return RedisUtil.expire(sessionId, timeOut);
     }
 
 
@@ -120,9 +112,9 @@ public class BaseSessionService<HK, HV> {
      * @param sessionId
      * @return
      */
-    public Boolean removeSessionId(String sessionId, int dbIndex) {
+    public Boolean removeSessionId(String sessionId) {
         try {
-            return redisService.remove(sessionId, dbIndex);
+            return RedisUtil.remove(sessionId);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("error: removeSessionId", e);
@@ -137,9 +129,9 @@ public class BaseSessionService<HK, HV> {
      * @param hashKey
      * @return
      */
-    public void removeSessionKey(String sessionId, HK hashKey, int dbIndex) {
+    public <HK> void removeSessionKey(String sessionId, HK hashKey) {
         try {
-            redisService.hashRemove(sessionId, hashKey, dbIndex);
+            RedisUtil.hashRemove(sessionId, hashKey);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("error: removeSessionKey", e);
