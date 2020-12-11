@@ -29,6 +29,7 @@ import java.util.UUID;
  */
 @Slf4j
 @ConditionalOnClass(RabbitAdmin.class)
+@Component
 public class RabbitMqSend {
 
     @Autowired

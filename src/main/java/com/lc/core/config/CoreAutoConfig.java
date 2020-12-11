@@ -6,11 +6,8 @@ import com.lc.core.aspect.ValidAspect;
 import com.lc.core.error.DefaultExceptionHandler;
 import com.lc.core.service.BaseSessionService;
 import com.lc.core.utils.SpringUtil;
-import org.redisson.Redisson;
 import org.redisson.spring.starter.RedissonAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,25 +32,21 @@ public class CoreAutoConfig {
     }
 
     @Bean
-    @ConditionalOnClass(Redisson.class)
     public BaseSessionService sessionService() {
         return new BaseSessionService();
     }
 
     @Bean
-    @ConditionalOnBean(Redisson.class)
     public CacheAspect cacheAspect() {
         return new CacheAspect();
     }
 
     @Bean
-    @ConditionalOnBean(Redisson.class)
     public LockAspect lockAspect() {
         return new LockAspect();
     }
 
     @Bean
-    @ConditionalOnBean(Redisson.class)
     public ValidAspect validAspect() {
         return new ValidAspect();
     }
@@ -67,4 +60,5 @@ public class CoreAutoConfig {
     public SpringUtil springUtil() {
         return new SpringUtil();
     }
+
 }

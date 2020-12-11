@@ -9,10 +9,10 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
@@ -23,6 +23,7 @@ import java.util.Map;
 @Slf4j
 @ConditionalOnClass(RabbitAdmin.class)
 @EnableScheduling
+@Configuration
 public class ScheduleTask {
 
     @Autowired

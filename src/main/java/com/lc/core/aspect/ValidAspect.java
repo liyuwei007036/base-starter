@@ -17,6 +17,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
+@Component
 public class ValidAspect {
 
     private static final ThreadLocal<Object[]> ARGS = new ThreadLocal<>();
