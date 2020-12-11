@@ -2,6 +2,7 @@ package com.lc.core.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -9,6 +10,7 @@ import org.springframework.web.filter.CorsFilter;
 /**
  * @author l5990
  */
+@Configuration
 public class CorsConfig {
 
     private CorsConfiguration buildConfig(SessionNameConfig sessionNameConfig) {

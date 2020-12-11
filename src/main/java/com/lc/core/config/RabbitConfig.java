@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author l5990
  */
+@Configuration
 @ConditionalOnClass(RabbitAdmin.class)
 public class RabbitConfig {
 
