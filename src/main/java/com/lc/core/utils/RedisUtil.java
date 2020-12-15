@@ -97,6 +97,9 @@ public class RedisUtil {
             return null;
         }
         RMap<Object, Object> map = getClient().getMap(key);
+        if (Objects.isNull(map) || map.isEmpty()) {
+            return null;
+        }
         return ModelMapperUtils.strict(map.get(hasKey), clazz);
     }
 
@@ -106,6 +109,9 @@ public class RedisUtil {
             return null;
         }
         RMap<Object, Object> map = getClient().getMap(key);
+        if (Objects.isNull(map) || map.isEmpty()) {
+            return null;
+        }
         return map.get(hasKey);
     }
 
