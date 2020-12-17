@@ -9,6 +9,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -56,16 +57,25 @@ public class FileUtils {
      * @return
      */
     public static String readString(File file) {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); FileInputStream fis = new FileInputStream(file)) {
-            byte[] buffer = new byte[1024];
-            for (int len; (len = fis.read(buffer)) > 0; ) {
-                baos.write(buffer, 0, len);
-            }
-            return new String(baos.toByteArray(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!file.exists()) {
+            return null;
         }
-        return null;
+        StringBuilder sb = new StringBuilder();
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            ByteBuffer buffer = ByteBuffer.allocate(512);
+            while (true) {
+                buffer.clear();
+                int read = inputStream.getChannel().read(buffer);
+                if (read == -1) {
+                    break;
+                }
+                buffer.flip();
+                sb.append(new String(buffer.array(), StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return sb.toString();
     }
 
     /**
@@ -78,7 +88,7 @@ public class FileUtils {
         try (FileOutputStream fos = new FileOutputStream(file, false)) {
             fos.write(string.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -96,33 +106,22 @@ public class FileUtils {
     public static void unzip(String zipFilePath, String targetPath) throws IOException {
         try (ZipFile zipFile = new ZipFile(zipFilePath)) {
             Enumeration<?> entryEnum = zipFile.entries();
-            if (null != entryEnum) {
-                while (entryEnum.hasMoreElements()) {
-                    OutputStream os = null;
-                    InputStream is = null;
-                    try {
-                        ZipEntry zipEntry = (ZipEntry) entryEnum.nextElement();
-                        if (!zipEntry.isDirectory()) {
-                            File targetFile = new File(targetPath + File.separator + zipEntry.getName());
-                            if (!targetFile.getParentFile().exists()) {
-                                boolean mkdirs = targetFile.getParentFile().mkdirs();
-                                log.info(mkdirs);
-                            }
-                            os = new BufferedOutputStream(new FileOutputStream(targetFile));
-                            is = zipFile.getInputStream(zipEntry);
-                            byte[] buffer = new byte[4096];
-                            int readLen;
-                            int maxLength = 4096;
-                            while ((readLen = is.read(buffer, 0, maxLength)) > 0) {
-                                os.write(buffer, 0, readLen);
-                            }
-                        }
-                    } finally {
-                        if (is != null) {
-                            is.close();
-                        }
-                        if (os != null) {
-                            os.close();
+            while (entryEnum.hasMoreElements()) {
+                ZipEntry zipEntry = (ZipEntry) entryEnum.nextElement();
+                if (!zipEntry.isDirectory()) {
+                    File targetFile = new File(targetPath + File.separator + zipEntry.getName());
+                    if (!targetFile.getParentFile().exists()) {
+                        boolean mkdirs = targetFile.getParentFile().mkdirs();
+                        log.info(mkdirs);
+                    }
+                    try (FileOutputStream outputStream = new FileOutputStream(targetFile);
+                         BufferedOutputStream os = new BufferedOutputStream(outputStream);
+                         InputStream is = zipFile.getInputStream(zipEntry)) {
+                        byte[] buffer = new byte[4096];
+                        int readLen;
+                        int maxLength = 4096;
+                        while ((readLen = is.read(buffer, 0, maxLength)) > 0) {
+                            os.write(buffer, 0, readLen);
                         }
                     }
                 }
@@ -211,15 +210,15 @@ public class FileUtils {
     }
 
     public static void inputStreamToFile(File f, InputStream input) throws IOException {
-        FileOutputStream os = new FileOutputStream(f);
-        int index;
-        byte[] bytes = new byte[1024];
-        while ((index = input.read(bytes)) != -1) {
-            os.write(bytes, 0, index);
-            os.flush();
+        try (FileOutputStream os = new FileOutputStream(f)) {
+            int index;
+            byte[] bytes = new byte[1024];
+            while ((index = input.read(bytes)) != -1) {
+                os.write(bytes, 0, index);
+                os.flush();
+            }
         }
         input.close();
-        os.close();
     }
 
     public static InputStream downloadFileFromUrl(String urlString) {
@@ -232,8 +231,7 @@ public class FileUtils {
             // 输入流
             return con.getInputStream();
         } catch (Exception e) {
-            log.error("网络图片下载失败，url： " + urlString);
-            log.error(e);
+            log.error("网络图片下载失败，url： {}", urlString, e);
             return null;
         }
     }
@@ -243,23 +241,11 @@ public class FileUtils {
             log.error("文件不存在");
             throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
         }
-        BufferedReader br = null;
-        try {
-            try {
-                br = new BufferedReader(new InputStreamReader(new FileInputStream(file), charsetName));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if (br == null) {
-                throw new RuntimeException("文件不存在");
-            }
-        } catch (FileNotFoundException e) {
-            log.error("文件不存在");
-            throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
-        }
-        String line;
         List<Object[]> result = new ArrayList<>();
-        try {
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, charsetName);
+             BufferedReader br = new BufferedReader(inputStreamReader)) {
+            String line;
             while ((line = br.readLine()) != null) {
                 result.add(line.split(","));
             }
@@ -277,10 +263,13 @@ public class FileUtils {
      * @param file
      */
     public static void bytes2File(byte[] bytes, File file) {
-        try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-            bos.write(bytes);
+        try (FileInputStream inputStream = new FileInputStream(file)) {
+            ByteBuffer buffer = ByteBuffer.wrap(bytes);
+            FileChannel channel = inputStream.getChannel();
+            buffer.flip();
+            channel.write(buffer);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 }

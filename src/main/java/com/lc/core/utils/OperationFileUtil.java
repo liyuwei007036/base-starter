@@ -281,7 +281,7 @@ public class OperationFileUtil {
             try {
                 String fileName = separateUuid + "/" + uuid + "." + fileExt;
                 // 开始设置 Http Response
-                response.setHeader("Content-disposition", "filename=" + fileName);
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "filename=" + fileName);
                 Calendar cd = Calendar.getInstance();
                 cd.setTimeInMillis(lastModified);
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);

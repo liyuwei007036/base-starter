@@ -5,4 +5,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.lc.core.component.KafkaSend,\
   com.lc.core.config.RabbitConfig,\
   com.lc.core.config.mp.MybatisMateObjectHandler,\
-  com.lc.core.config.mp.MybatisPlusConfig
+  com.lc.core.config.mp.MybatisPlusConfig,\
+  com.lc.core.service.MailService
