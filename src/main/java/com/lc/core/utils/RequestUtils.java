@@ -3,6 +3,7 @@ package com.lc.core.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletInputStream;
@@ -15,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class RequestUtils {
 
-    private static String[] mobileAgents = {"iphone", "android", "phone", "mobile", "wap", "netfront", "java", "opera mobi",
+    private static final String[] mobileAgents = {"iphone", "android", "phone", "mobile", "wap", "netfront", "java", "opera mobi",
             "opera mini", "ucweb", "windows ce", "symbian", "series", "webos", "sony", "blackberry", "dopod", "nokia",
             "samsung", "palmsource", "xda", "pieplus", "meizu", "midp", "cldc", "motorola", "foma", "docomo",
             "up.browser", "up.link", "blazer", "helio", "hosin", "huawei", "novarra", "coolpad", "webos", "techfaith",
@@ -46,7 +47,7 @@ public class RequestUtils {
      * @return
      */
     public static boolean isMobileBrowser(HttpServletRequest request) {
-        String ua = request.getHeader("User-Agent");
+        String ua = request.getHeader(HttpHeaders.USER_AGENT);
         if (ua == null) {
             return false;
         }
@@ -65,7 +66,7 @@ public class RequestUtils {
      * @return
      */
     public static boolean isWechatBrowser(HttpServletRequest request) {
-        String ua = request.getHeader("User-Agent");
+        String ua = request.getHeader(HttpHeaders.USER_AGENT);
         if (ua == null) {
             return false;
         }
@@ -79,7 +80,7 @@ public class RequestUtils {
      * @return
      */
     public static boolean isIEBrowser(HttpServletRequest request) {
-        String ua = request.getHeader("User-Agent");
+        String ua = request.getHeader(HttpHeaders.USER_AGENT);
         if (ua == null) {
             return false;
         }
@@ -88,7 +89,6 @@ public class RequestUtils {
         if (ua.indexOf("msie") > 0) {
             return true;
         }
-
         return ua.indexOf("gecko") > 0 && ua.indexOf("rv:11") > 0;
     }
 
@@ -116,7 +116,7 @@ public class RequestUtils {
     }
 
     public static String getUserAgent(HttpServletRequest request) {
-        return request.getHeader("User-Agent");
+        return request.getHeader(HttpHeaders.USER_AGENT);
     }
 
 

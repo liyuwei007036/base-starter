@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class RedisUtil {
 
     public static Redisson getClient() {
-        return SpringUtil.getBean("redisson", Redisson.class);
+        return SpringUtil.getBean(Redisson.class);
     }
 
     public static Boolean hasKey(String key) {

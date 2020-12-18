@@ -127,7 +127,6 @@ public class MailService {
             log.info("发送邮件成功");
         } catch (Exception e) {
             log.error("发送邮件失败：", e);
-            e.printStackTrace();
         }
     }
 }
