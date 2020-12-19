@@ -8,16 +8,15 @@
         <version>2.1.8.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.lc</groupId>
-    <artifactId>core-starter</artifactId>
+    <groupId>live.lumia</groupId>
+    <artifactId>base-starter</artifactId>
     <version>1.0-RELEASE</version>
-    <name>core</name>
+    <name>base-starter</name>
     <description>基础框架</description>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
-
 
     <dependencies>
         <dependency>
@@ -25,7 +24,6 @@
             <artifactId>redisson-spring-boot-starter</artifactId>
             <version>3.14.0</version>
         </dependency>
-
 
         <!-- 阿里　fastjson-->
         <dependency>

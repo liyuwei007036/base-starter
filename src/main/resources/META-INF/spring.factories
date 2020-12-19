@@ -1,9 +1,9 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.lc.core.config.CoreAutoConfig,\
-  com.lc.core.component.ScheduleTask,\
-  com.lc.core.component.RabbitMqSend,\
-  com.lc.core.component.KafkaSend,\
-  com.lc.core.config.RabbitConfig,\
-  com.lc.core.config.mp.MybatisMateObjectHandler,\
-  com.lc.core.config.mp.MybatisPlusConfig,\
-  com.lc.core.service.MailService
+  live.lumia.config.CoreAutoConfig,\
+  live.lumia.component.ScheduleTask,\
+  live.lumia.component.RabbitMqSend,\
+  live.lumia.component.KafkaSend,\
+  live.lumia.config.RabbitConfig,\
+  live.lumia.config.mp.MybatisMateObjectHandler,\
+  live.lumia.config.mp.MybatisPlusConfig,\
+  live.lumia.service.MailService
