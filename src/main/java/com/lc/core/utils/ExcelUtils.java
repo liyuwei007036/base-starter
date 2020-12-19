@@ -56,10 +56,8 @@ public class ExcelUtils {
      *
      * @param excelFile 被写入文件
      * @param data      写入数据集合
-     * @param <T>       标题解析对象
-     * @param <E>       写入数据类型
      */
-    public static <T, E> void writeMultipleSheetSimple(File excelFile, List<ExcelWriteData<T, E>> data) {
+    public static void writeMultipleSheetSimple(File excelFile, List<ExcelWriteData> data) {
         ExcelWriter excelWriter = EasyExcel.write(excelFile).build();
         data.forEach(x -> {
             WriteSheet writeSheet = EasyExcel.writerSheet(x.getSheetName()).head(x.getHeader()).build();

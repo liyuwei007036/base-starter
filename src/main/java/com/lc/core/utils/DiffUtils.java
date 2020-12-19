@@ -1,6 +1,5 @@
 package com.lc.core.utils;
 
-import com.sun.istack.internal.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,9 +49,9 @@ public class DiffUtils {
      * @return 对比结果
      */
     public static <O, T, K> DiffResult<O, T> diffList(List<O> originList, List<T> targetList,
-                                                      @NotNull Function<O, K> originKeyExtract,
-                                                      @NotNull Function<T, K> targetKeyExtract,
-                                                      @NotNull BiPredicate<O, T> predicate) {
+                                                      Function<O, K> originKeyExtract,
+                                                      Function<T, K> targetKeyExtract,
+                                                      BiPredicate<O, T> predicate) {
         DiffResult<O, T> checkResult = checkEmptyAndReturn(originList, targetList);
         if (checkResult != null) {
             return checkResult;
