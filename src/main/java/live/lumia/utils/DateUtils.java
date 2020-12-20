@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * @author zhulx
- * @date 2016/10/23
+ * @since 2016/10/23
  */
 public class DateUtils {
 
@@ -26,9 +26,9 @@ public class DateUtils {
     /**
      * 格式化日期
      *
-     * @param date
-     * @param fmt
-     * @return
+     * @param date 时间
+     * @param fmt  格式
+     * @return str
      */
     public static String dateToStr(Date date, String fmt) {
         if (date != null) {
@@ -119,8 +119,8 @@ public class DateUtils {
     /**
      * 清除日期时间的时分秒为0
      *
-     * @param date
-     * @return
+     * @param date 时间
+     * @return 时间
      */
     public static Date clearTime(Date date) {
         if (date != null) {
@@ -138,8 +138,8 @@ public class DateUtils {
     /**
      * 清除日期时间的毫秒为0
      *
-     * @param date
-     * @return
+     * @param date 时间
+     * @return 时间
      */
     public static Date clearMilliTime(Date date) {
         if (date != null) {
@@ -154,9 +154,9 @@ public class DateUtils {
     /**
      * 统计两个日期之间包含的天数。
      *
-     * @param date1
-     * @param date2
-     * @return
+     * @param date1 1
+     * @param date2 2
+     * @return 1
      */
     public static int getDayDiff(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
@@ -170,8 +170,8 @@ public class DateUtils {
     /**
      * 获取指定月份的总天数
      *
-     * @param month
-     * @return
+     * @param month 1
+     * @return 2
      */
     public static int getTotalDays(int year, int month) {
         int monthNum = 12;
@@ -189,9 +189,9 @@ public class DateUtils {
     /**
      * 计算2个时间之间的秒数
      *
-     * @param date1
-     * @param date2
-     * @return
+     * @param date1 1
+     * @param date2 1
+     * @return 1
      */
     public static int getDaysSeconds(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
@@ -206,8 +206,8 @@ public class DateUtils {
     /**
      * 将一个时间往前推多少个月
      *
-     * @param nums
-     * @return
+     * @param nums 月数
+     * @return 时间
      */
     public static Date getBeforeNowMonth(Integer nums) {
         Calendar calendar = Calendar.getInstance();

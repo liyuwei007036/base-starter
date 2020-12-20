@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author lc
- * @date 2020/3/2下午 9:02
+ * @since 2020/3/2下午 9:02
  */
 @ConditionalOnClass(MybatisPlusVersion.class)
 @Configuration

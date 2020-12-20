@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * 多个Sheet写入对象
  *
- * @param <D>
- * @param <H>
+ * @param <D> 数据类型
+ * @param <H> 头类型
  * @author liyuwei
  */
 @Data

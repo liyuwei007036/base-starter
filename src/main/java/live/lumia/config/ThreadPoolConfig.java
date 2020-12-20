@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author lc
- * @date 2019/11/21下午 10:02
  */
 @Slf4j
 @Configuration

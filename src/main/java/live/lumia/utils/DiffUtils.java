@@ -45,7 +45,9 @@ public class DiffUtils {
      * @param predicate        元素比较器
      * @param originKeyExtract 主键选择器
      * @param targetKeyExtract 主键选择器
-     * @param <T>
+     * @param <T>              T
+     * @param <O>              T
+     * @param <K>              T
      * @return 对比结果
      */
     public static <O, T, K> DiffResult<O, T> diffList(List<O> originList, List<T> targetList,
@@ -100,14 +102,7 @@ public class DiffUtils {
     }
 
 
-    /**
-     * 检查baseList 和 targetList 为empty(null||size==0)的情况
-     *
-     * @param originList
-     * @param targetList
-     * @param <T>
-     * @return
-     */
+
     private static <O, T> DiffResult<O, T> checkEmptyAndReturn(List<O> originList, List<T> targetList) {
 
         if (CollectionUtils.isEmpty(originList) && CollectionUtils.isEmpty(targetList)) {

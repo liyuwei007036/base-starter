@@ -64,6 +64,7 @@ public class EncryptionUtils {
      * 获得一个 密钥长度为 256 位的 AES 密钥，
      *
      * @return 返回经 BASE64 处理之后的密钥字符串
+     * @throws NoSuchAlgorithmException e
      */
     public static String getStrKeyAes() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");

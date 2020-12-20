@@ -8,14 +8,14 @@ public interface IErrorInterface {
     /**
      * 获取错误代码
      *
-     * @return
+     * @return 错误码
      */
     int getCode();
 
     /**
      * 获取错误消息
      *
-     * @return
+     * @return 错误消息
      */
     String getMsg();
 }
