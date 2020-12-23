@@ -10,6 +10,7 @@ import live.lumia.service.ExcelReadListener;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -59,8 +60,9 @@ public class ExcelUtils {
      */
     public static void writeMultipleSheetSimple(File excelFile, List<ExcelWriteData> data) {
         ExcelWriter excelWriter = EasyExcel.write(excelFile).build();
+        AtomicInteger i = new AtomicInteger();
         data.forEach(x -> {
-            WriteSheet writeSheet = EasyExcel.writerSheet(x.getSheetName()).head(x.getHeader()).build();
+            WriteSheet writeSheet = EasyExcel.writerSheet(i.getAndIncrement(), x.getSheetName()).head(x.getHeader()).build();
             excelWriter.write(x.getData(), writeSheet);
         });
         excelWriter.finish();
