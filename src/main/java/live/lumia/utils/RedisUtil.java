@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -19,8 +22,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RedisUtil {
 
-    public static Redisson getClient() {
-        return SpringUtil.getBean(Redisson.class);
+    public static RedissonClient getClient() {
+        return SpringUtil.getBean(RedissonClient.class);
     }
 
     public static Boolean hasKey(String key) {
@@ -39,14 +42,13 @@ public class RedisUtil {
 
     public static void put(String key, Object value, long timeout) {
         RBucket<Object> bucket = getClient().getBucket(key);
-        RFuture<Void> future = bucket.setAsync(value);
-        boolean success = future.isSuccess();
-        if (success) {
-            bucket.expire(timeout, TimeUnit.SECONDS);
-        } else {
-            log.error("【Redisson】保存Map失败");
-            throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
-        }
+        RFuture<Void> future = bucket.setAsync(value, timeout, TimeUnit.SECONDS);
+        future.whenComplete((unused, throwable) -> {
+            if (!future.isSuccess()) {
+                log.error("【Redisson】保存失败");
+                throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
+            }
+        });
     }
 
     public static <E> E get(String key, Class<E> clazz) {
@@ -61,12 +63,14 @@ public class RedisUtil {
     public static <V> void setPut(String key, V values, long timeout) {
         RSet<Object> set = getClient().getSet(key);
         RFuture<Boolean> future = set.addAsync(values);
-        if (future.isSuccess()) {
-            set.expire(timeout, TimeUnit.SECONDS);
-        } else {
-            log.error("【Redisson】保存Set失败");
-            throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
-        }
+        future.whenComplete((unused, throwable) -> {
+            if (!future.isSuccess()) {
+                log.error("【Redisson】保存失败");
+                throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
+            } else {
+                set.expire(timeout, TimeUnit.SECONDS);
+            }
+        });
     }
 
     public static <V> Set<V> setGet(String key, Class<V> clazz) {
