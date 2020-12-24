@@ -9,4 +9,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.service.MailService,\
   live.lumia.config.CorsConfig,\
   live.lumia.config.LocalDateTimeSerializerConfig,\
-  live.lumia.service.BaseSessionService
+  live.lumia.service.BaseSessionService,\
+  live.lumia.config.ThreadPoolConfig

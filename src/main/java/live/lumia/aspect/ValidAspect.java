@@ -3,7 +3,7 @@ package live.lumia.aspect;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import live.lumia.annotations.Valid;
-import live.lumia.config.SessionNameConfig;
+import live.lumia.config.SessionNameProperties;
 import live.lumia.controller.BaseController;
 import live.lumia.dto.ResponseInfo;
 import live.lumia.enums.BaseErrorEnums;
@@ -43,7 +43,7 @@ public class ValidAspect {
     }
 
     @Autowired
-    private SessionNameConfig sessionNameConfig;
+    private SessionNameProperties sessionNameProperties;
 
     @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public void cut() {
@@ -117,9 +117,9 @@ public class ValidAspect {
             info.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             info.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
             info.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
-            info.append("request_token: ").append(controller.getRequest().getHeader(sessionNameConfig.getName())).append("\n\n");
+            info.append("request_token: ").append(controller.getRequest().getHeader(sessionNameProperties.getName())).append("\n\n");
             info.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
-            info.append("response_token: ").append(controller.getResponse().getHeader(sessionNameConfig.getName())).append("\n\n");
+            info.append("response_token: ").append(controller.getResponse().getHeader(sessionNameProperties.getName())).append("\n\n");
             info.append("response_data: ").append(JSON.toJSONString(responseInfo)).append("\n\n");
             info.append("【------------------------ success request end ---------------------------】\n\n");
             log.info(info.toString());
@@ -143,9 +143,9 @@ public class ValidAspect {
             warn.append("request_user_agent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append("\n\n");
             warn.append("request_args: ").append(JSON.toJSONString(ARGS.get())).append("\n\n");
             warn.append("request_user: ").append(JSON.toJSONString(controller.getCurrentUser())).append("\n\n");
-            warn.append("request_token: ").append(controller.getRequest().getHeader(sessionNameConfig.getName())).append("\n\n");
+            warn.append("request_token: ").append(controller.getRequest().getHeader(sessionNameProperties.getName())).append("\n\n");
             warn.append("request_user_info: ").append(controller.getRequest().getHeader("")).append("\n\n");
-            warn.append("response_token: ").append(controller.getResponse().getHeader(sessionNameConfig.getName())).append("\n\n");
+            warn.append("response_token: ").append(controller.getResponse().getHeader(sessionNameProperties.getName())).append("\n\n");
             warn.append("response_msg: ").append(e.getMessage()).append("\n\n");
             warn.append("【------------------------ fail request end ---------------------------】\n\n");
             log.error(warn.toString());

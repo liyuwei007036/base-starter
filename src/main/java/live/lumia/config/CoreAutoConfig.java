@@ -12,14 +12,9 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author liyuwei
  */
-@EnableConfigurationProperties(value = {SessionNameConfig.class})
+@EnableConfigurationProperties(value = {SessionNameProperties.class})
 @Configuration
 public class CoreAutoConfig {
-
-    @Bean
-    public ThreadPoolConfig threadPoolConfig() {
-        return new ThreadPoolConfig();
-    }
 
     @Bean
     public CacheAspect cacheAspect() {

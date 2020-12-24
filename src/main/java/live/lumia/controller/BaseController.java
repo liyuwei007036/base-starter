@@ -2,7 +2,7 @@ package live.lumia.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import live.lumia.config.SessionNameConfig;
+import live.lumia.config.SessionNameProperties;
 import live.lumia.dto.Account;
 import live.lumia.enums.SessionConstants;
 import live.lumia.service.BaseSessionService;
@@ -27,7 +27,7 @@ public abstract class BaseController {
 
 
     @Autowired
-    private SessionNameConfig sessionNameConfig;
+    private SessionNameProperties sessionNameProperties;
 
     private static final String UNIQUE_ID = "sessionId";
 
@@ -91,7 +91,7 @@ public abstract class BaseController {
      * @return
      */
     public String getSessionType() {
-        return sessionNameConfig.getName();
+        return sessionNameProperties.getName();
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class BaseController {
      * @return
      */
     public Long getTimeOut() {
-        return sessionNameConfig.getTimeout();
+        return sessionNameProperties.getTimeout();
     }
 
 
