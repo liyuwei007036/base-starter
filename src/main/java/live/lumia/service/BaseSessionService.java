@@ -6,6 +6,7 @@ import live.lumia.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 /**
  * @author l5990
  */
-@ConditionalOnBean(Redisson.class)
+@ConditionalOnClass(Redisson.class)
 @Component
 @Slf4j
 public class BaseSessionService {

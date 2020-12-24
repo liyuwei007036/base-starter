@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('打包入库') {
             steps {
-		        sh 'mvn install'
+		        sh 'mvn clean && mvn install'
             }
         }
         stage('清理代码') {
