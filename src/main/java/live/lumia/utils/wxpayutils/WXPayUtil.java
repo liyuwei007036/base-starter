@@ -194,15 +194,17 @@ public class WXPayUtil {
      */
     public static String generateSignature(final Map<String, String> data, String key, WXPayConstants.SignType signType) throws Exception {
         Set<String> keySet = data.keySet();
-        String[] keyArray = keySet.toArray(new String[keySet.size()]);
+        String[] keyArray = keySet.toArray(new String[0]);
         Arrays.sort(keyArray);
         StringBuilder sb = new StringBuilder();
         for (String k : keyArray) {
             if (k.equals(WXPayConstants.FIELD_SIGN)) {
                 continue;
             }
-            if (data.get(k).trim().length() > 0) // 参数值为空，则不参与签名
+            // 参数值为空，则不参与签名
+            if (data.get(k).trim().length() > 0) {
                 sb.append(k).append("=").append(data.get(k).trim()).append("&");
+            }
         }
         sb.append("key=").append(key);
         if (WXPayConstants.SignType.MD5.equals(signType)) {

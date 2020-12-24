@@ -124,42 +124,37 @@ public class WXPayReport {
         reportMsgQueue = new LinkedBlockingQueue<String>(config.getReportQueueMaxSize());
 
         // 添加处理线程
-        executorService = Executors.newFixedThreadPool(config.getReportWorkerNum(), new ThreadFactory() {
-            public Thread newThread(Runnable r) {
-                Thread t = Executors.defaultThreadFactory().newThread(r);
-                t.setDaemon(true);
-                return t;
-            }
+        executorService = Executors.newFixedThreadPool(config.getReportWorkerNum(), r -> {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
         });
 
         if (config.shouldAutoReport()) {
             WXPayUtil.getLogger().info("report worker num: {}", config.getReportWorkerNum());
             for (int i = 0; i < config.getReportWorkerNum(); ++i) {
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            // 先用 take 获取数据
-                            try {
-                                StringBuffer sb = new StringBuffer();
-                                String firstMsg = reportMsgQueue.take();
-                                WXPayUtil.getLogger().info("get first report msg: {}", firstMsg);
-                                String msg = null;
-                                sb.append(firstMsg); //会阻塞至有消息
-                                int remainNum = config.getReportBatchSize() - 1;
-                                for (int j = 0; j < remainNum; ++j) {
-                                    WXPayUtil.getLogger().info("try get remain report msg");
-                                    // msg = reportMsgQueue.poll();  // 不阻塞了
-                                    msg = reportMsgQueue.take();
-                                    WXPayUtil.getLogger().info("get remain report msg: {}", msg);
-                                    sb.append("\n");
-                                    sb.append(msg);
-                                }
-                                // 上报
-                                WXPayReport.httpRequest(sb.toString(), DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_READ_TIMEOUT_MS);
-                            } catch (Exception ex) {
-                                WXPayUtil.getLogger().warn("report fail. reason: {}", ex.getMessage());
+                executorService.execute(() -> {
+                    while (true) {
+                        // 先用 take 获取数据
+                        try {
+                            StringBuffer sb = new StringBuffer();
+                            String firstMsg = reportMsgQueue.take();
+                            WXPayUtil.getLogger().info("get first report msg: {}", firstMsg);
+                            String msg = null;
+                            sb.append(firstMsg); //会阻塞至有消息
+                            int remainNum = config.getReportBatchSize() - 1;
+                            for (int j = 0; j < remainNum; ++j) {
+                                WXPayUtil.getLogger().info("try get remain report msg");
+                                // msg = reportMsgQueue.poll();  // 不阻塞了
+                                msg = reportMsgQueue.take();
+                                WXPayUtil.getLogger().info("get remain report msg: {}", msg);
+                                sb.append("\n");
+                                sb.append(msg);
                             }
+                            // 上报
+                            WXPayReport.httpRequest(sb.toString(), DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_READ_TIMEOUT_MS);
+                        } catch (Exception ex) {
+                            WXPayUtil.getLogger().warn("report fail. reason: {}", ex.getMessage());
                         }
                     }
                 });

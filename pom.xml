@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>live.lumia</groupId>
     <artifactId>base-starter</artifactId>
-    <version>1.0-RELEASE</version>
+    <version>1.0.1</version>
     <url>https://github.com/liyuwei007036/core</url>
     <name>base-starter for springboot</name>
 
@@ -28,7 +28,7 @@
 
     <scm>
         <tag>main</tag>
-        <url>git@github.com:liyuwei007036/core.git</url>
+        <url>https://github.com/liyuwei007036/core/tree/main</url>
         <connection>scm:git:git@github.com:liyuwei007036/core.git</connection>
         <developerConnection>scm:git:git@github.com:liyuwei007036/core.git</developerConnection>
     </scm>
@@ -61,6 +61,18 @@
             <version>3.14.0</version>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.4.1.Final</version>
+        </dependency>
+
 
         <!-- 阿里　fastjson-->
         <dependency>
