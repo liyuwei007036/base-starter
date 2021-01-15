@@ -21,21 +21,19 @@ public class SignUtils {
         String signData = ObjectUtil.getString(parameters.get("sign"));
         long timestamp = ObjectUtil.getLong(parameters.get("timestamp"));
 
-        String sbkey = data.keySet()
-                .stream()
-                .sorted()
-                .map(x -> String.format("%s=%s", x, data.get(x)))
-                .reduce((x, y) -> String.format("%s&%s", x, y))
-                .orElse("");
 
         long s = System.currentTimeMillis() / 1000 + 3;
         if (s - timestamp > 60 * 1000 || timestamp <= 0 || s < timestamp) {
             log.warn("签名验证失败, 时间错误");
             return false;
         }
-
-        String newSbkey = sbkey + md5;
-        String sign = DigestUtils.md5DigestAsHex(newSbkey.getBytes()).toUpperCase();
+        String sbkey = data.keySet()
+                .stream()
+                .sorted()
+                .map(x -> String.format("%s=%s", x, data.get(x)))
+                .reduce((x, y) -> String.format("%s&%s", x, y))
+                .orElse("") + md5;
+        String sign = DigestUtils.md5DigestAsHex(sbkey.getBytes()).toUpperCase();
         if (signData.equals(sign)) {
             log.debug("签名验证,成功");
             return true;

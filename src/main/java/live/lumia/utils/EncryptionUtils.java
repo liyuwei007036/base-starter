@@ -3,6 +3,7 @@ package live.lumia.utils;
 import org.springframework.util.DigestUtils;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -58,58 +59,39 @@ public class EncryptionUtils {
     }
 
 
-    //----------------- AES 对称加密------
-
     /**
-     * 获得一个 密钥长度为 256 位的 AES 密钥，
+     * AES解密
      *
-     * @return 返回经 BASE64 处理之后的密钥字符串
-     * @throws NoSuchAlgorithmException e
+     * @param content 待加密内容
+     * @return 解密后的内容
+     * @throws Exception 异常
      */
-    public static String getStrKeyAes() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        SecureRandom secureRandom = new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
-        // 这里可以是 128、192、256、越大越安全
-        keyGen.init(256, secureRandom);
-        SecretKey secretKey = keyGen.generateKey();
-        return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+    public static String aesDecrypt(String content, String key, String iv) throws Exception {
+        byte[] encryptedBytes = Base64.getDecoder().decode(content);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+        byte[] result = cipher.doFinal(encryptedBytes);
+        return new String(result, StandardCharsets.UTF_8);
     }
 
-    /**
-     * 将使用 Base64 加密后的字符串类型的 secretKey 转为 SecretKey
-     *
-     * @param strKey
-     * @return SecretKey
-     */
-    public static SecretKey strKey2SecretKey(String strKey) {
-        byte[] bytes = Base64.getDecoder().decode(strKey);
-        return new SecretKeySpec(bytes, "AES");
-    }
 
     /**
-     * 加密
+     * AES加密
      *
-     * @param content   待加密内容
-     * @param secretKey 加密使用的 AES 密钥
-     * @return 加密后的密文 byte[]
+     * @param content 待解密的内容
+     * @return 加密后的内容
+     * @throws Exception 异常
      */
-    public static byte[] encryptAes(byte[] content, SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        return cipher.doFinal(content);
-    }
-
-    /**
-     * 解密
-     *
-     * @param content   待解密内容
-     * @param secretKey 解密使用的 AES 密钥
-     * @return 解密后的明文 byte[]
-     */
-    public static byte[] decryptAes(byte[] content, SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        return cipher.doFinal(content);
+    public static String aesEncrypt(String content, String key, String iv) throws Exception {
+        byte[] encryptedBytes = content.getBytes(StandardCharsets.UTF_8);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        byte[] result = cipher.doFinal(encryptedBytes);
+        return Base64.getEncoder().encodeToString(result);
     }
 
 

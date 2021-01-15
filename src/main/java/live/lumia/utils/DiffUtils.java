@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DiffUtils {
 
@@ -59,11 +60,7 @@ public class DiffUtils {
             return checkResult;
         }
 
-        Map<Object, O> originMap = new HashMap<>(4096);
-        for (O origin : originList) {
-            K key = originKeyExtract.apply(origin);
-            originMap.put(key, origin);
-        }
+        Map<K, O> originMap = originList.stream().collect(Collectors.toMap(originKeyExtract, x -> x, (x, y) -> x));
 
         List<T> addedList = new ArrayList<>();
         Map<O, T> changedMap = new HashMap<>();
@@ -85,22 +82,19 @@ public class DiffUtils {
                 }
             }
         }
-
         //剩余的就是需要删除的
-        Set<Map.Entry<Object, O>> entrySet = originMap.entrySet();
+        Set<Map.Entry<K, O>> entrySet = originMap.entrySet();
         if (CollectionUtils.isNotEmpty(entrySet)) {
-            for (Map.Entry<Object, O> entry : entrySet) {
+            for (Map.Entry<K, O> entry : entrySet) {
                 deletedList.add(entry.getValue());
             }
         }
-
         return new DiffResult<O, T>()
                 .setAddedList(addedList)
                 .setChangedMap(changedMap)
                 .setSameMap(sameMap)
                 .setDeletedList(deletedList);
     }
-
 
 
     private static <O, T> DiffResult<O, T> checkEmptyAndReturn(List<O> originList, List<T> targetList) {

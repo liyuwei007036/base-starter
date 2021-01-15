@@ -67,7 +67,7 @@ public class XMLUtil {
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);
         transformer.transform(source, result);
-        String output = writer.getBuffer().toString(); //.replaceAll("\n|\r", "");
+        String output = writer.getBuffer().toString();
         try {
             writer.close();
         } catch (Exception ex) {
