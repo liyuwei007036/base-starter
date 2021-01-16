@@ -25,7 +25,7 @@ public class SessionNameProperties implements InitializingBean {
     private Long timeout;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (StringUtils.isEmpty(name)) {
             name = "sessionId";
         }

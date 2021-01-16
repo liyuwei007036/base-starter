@@ -11,4 +11,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.config.LocalDateTimeSerializerConfig,\
   live.lumia.service.BaseSessionService,\
   live.lumia.config.ThreadPoolConfig,\
-  live.lumia.config.SignMessageConverter
+  live.lumia.config.SecretRequestBodyAdvice,\
+  live.lumia.config.SecretResponseBodyAdvice
