@@ -27,6 +27,7 @@ import java.util.Objects;
 public class SecretRequestBodyAdvice implements RequestBodyAdvice {
 
 
+    @Autowired
     private DefaultAesDecrypt defaultAesDecryptImpl;
 
     @Autowired
