@@ -3,6 +3,7 @@ package live.lumia.config;
 import live.lumia.annotations.Secret;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -22,6 +22,7 @@ import java.util.Objects;
 /**
  * @author liyuwei
  */
+@ConditionalOnBean(DefaultAesDecrypt.class)
 @EnableConfigurationProperties(SignConfigProperties.class)
 @RestControllerAdvice
 public class SecretRequestBodyAdvice implements RequestBodyAdvice {
@@ -32,14 +33,6 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
 
     @Autowired
     private SignConfigProperties signConfigProperties;
-
-
-    @PostConstruct
-    private void initAesDecrypt() throws IllegalAccessException, InstantiationException {
-        if (Objects.nonNull(signConfigProperties.getAesDecryptImpl())) {
-            defaultAesDecryptImpl = signConfigProperties.getAesDecryptImpl().newInstance();
-        }
-    }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
