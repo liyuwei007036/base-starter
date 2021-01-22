@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -26,8 +25,6 @@ import java.util.Objects;
 @EnableConfigurationProperties(SignConfigProperties.class)
 @RestControllerAdvice
 public class SecretRequestBodyAdvice implements RequestBodyAdvice {
-
-    private static final String TENANT_ID_STR = "tenant-id";
 
 
     private DefaultAesDecrypt defaultAesDecryptImpl;
@@ -45,7 +42,7 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
-        return methodParameter.hasParameterAnnotation(RequestBody.class);
+        return Objects.nonNull(signConfigProperties.getAesDecryptImpl()) && methodParameter.hasParameterAnnotation(RequestBody.class);
     }
 
     @Override
@@ -61,10 +58,11 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
         if (!secret.decode()) {
             return httpInputMessage;
         }
+
         return new HttpInputMessage() {
             @Override
             public InputStream getBody() throws IOException {
-                String tenantCode = Objects.requireNonNull(httpInputMessage.getHeaders().get(TENANT_ID_STR)).stream().findFirst().orElse(null);
+                String tenantCode = SecretResponseBodyAdvice.getTenantIdStr(httpInputMessage.getHeaders());
                 String bodyStr = IOUtils.toString(httpInputMessage.getBody(), StandardCharsets.UTF_8);
                 String decrypt = defaultAesDecryptImpl.decrypt(tenantCode, bodyStr);
                 return IOUtils.toInputStream(decrypt, StandardCharsets.UTF_8);
