@@ -36,7 +36,8 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
-        return Objects.nonNull(signConfigProperties.getAesDecryptImpl()) && methodParameter.hasParameterAnnotation(RequestBody.class);
+        Secret secret = SecretResponseBodyAdvice.getSecret(methodParameter);
+        return Objects.nonNull(signConfigProperties.getAesDecryptImpl()) && Objects.nonNull(secret) && methodParameter.hasParameterAnnotation(RequestBody.class);
     }
 
     @Override
