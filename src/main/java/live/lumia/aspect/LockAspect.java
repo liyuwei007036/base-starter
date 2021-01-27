@@ -33,7 +33,7 @@ public class LockAspect {
     }
 
     @Around(value = "cut()")
-    public Object around(ProceedingJoinPoint point) {
+    public Object around(ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         RedisLock redisLock = method.getAnnotation(RedisLock.class);
@@ -47,8 +47,6 @@ public class LockAspect {
             if (res) {
                 try {
                     return point.proceed();
-                } catch (Throwable throwable) {
-                    throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
                 } finally {
                     lock.unlock();
                 }

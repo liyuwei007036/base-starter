@@ -39,7 +39,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(MultipartException.class)
     public ResponseInfo uploadFile(MultipartException e) {
         log.error("MultipartException ", e);
-        return new ResponseInfo<>(BaseErrorEnums.FILEUPLOAD);
+        return new ResponseInfo<>(BaseErrorEnums.UPLOAD_FILE_TOO_LARGE);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

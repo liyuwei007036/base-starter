@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Valid {
+public @interface Permission {
     /**
      * 是否需要登陆
      *
@@ -19,24 +19,11 @@ public @interface Valid {
     boolean needLogin() default false;
 
     /**
-     * 是否签名校验
+     * 权限代码
      *
      * @return
      */
-    boolean validSign() default true;
+    String code() default "";
 
-    /**
-     * 权限
-     *
-     * @return
-     */
-    String auth() default "";
 
-    /**
-     * 指定appID
-     * needAppID 为 true 时有效
-     *
-     * @return 指定密钥
-     */
-    String[] appID() default {};
 }

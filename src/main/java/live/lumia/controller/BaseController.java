@@ -29,7 +29,6 @@ public abstract class BaseController {
     @Autowired
     private SessionNameProperties sessionNameProperties;
 
-    private static final String UNIQUE_ID = "sessionId";
 
 
     private static final ThreadLocal<String> SESSION_ID = new ThreadLocal<>();
@@ -50,13 +49,6 @@ public abstract class BaseController {
         LOCAL_REQUEST.set(request);
         LOCAL_RESPONSE.set(response);
         loadSessionId();
-        insertMdc();
-    }
-
-    private void insertMdc() {
-        UUID uuid = UUID.randomUUID();
-        String uniqueId = uuid.toString().replace("-", "");
-        MDC.put(UNIQUE_ID, uniqueId);
     }
 
     public String getSessionId() {

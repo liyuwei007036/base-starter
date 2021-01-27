@@ -98,7 +98,6 @@ public class CacheAspect {
             } catch (Exception e) {
                 log.error("addCache fail", e);
             }
-
         }
         if (res == null) {
             res = joinPoint.proceed();
