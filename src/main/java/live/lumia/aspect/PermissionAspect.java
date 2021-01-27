@@ -11,10 +11,9 @@ import live.lumia.utils.IPV4Utils;
 import live.lumia.utils.RequestUtils;
 import live.lumia.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -42,7 +41,7 @@ public class PermissionAspect {
     }
 
     @Before(value = "cut()")
-    public void before(ProceedingJoinPoint point) throws Throwable {
+    public void before(JoinPoint point) {
         ARGS.set(point.getArgs());
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();

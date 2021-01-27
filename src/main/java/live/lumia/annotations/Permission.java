@@ -1,5 +1,7 @@
 package live.lumia.annotations;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,14 +18,22 @@ public @interface Permission {
      *
      * @return
      */
-    boolean needLogin() default false;
+    boolean needLogin() default true;
 
     /**
      * 权限代码
      *
      * @return
      */
+    @AliasFor("value")
     String code() default "";
 
+    /**
+     * 权限代码
+     *
+     * @return
+     */
+    @AliasFor("code")
+    String value() default "";
 
 }
