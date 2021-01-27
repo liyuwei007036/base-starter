@@ -8,6 +8,7 @@ import live.lumia.dto.ResponseInfo;
 import live.lumia.enums.BaseErrorEnums;
 import live.lumia.error.BaseException;
 import live.lumia.utils.IPV4Utils;
+import live.lumia.utils.ObjectUtil;
 import live.lumia.utils.RequestUtils;
 import live.lumia.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class PermissionAspect {
         ARGS.remove();
         CONTROLLER.remove();
     }
+
     @Pointcut("this(live.lumia.controller.BaseController) && execution(* (!live.lumia.controller.BaseController).*(..)) && execution(public * * (..))")
     public void cut() {
 
@@ -65,7 +67,7 @@ public class PermissionAspect {
                 String code = permission.code();
                 Account currentUser = controller.getCurrentUser();
                 boolean contains = currentUser.getPowers().contains(code);
-                if (!contains) {
+                if (!contains && !ObjectUtil.getBoolean(currentUser.getHasAllPowers())) {
                     throw new BaseException(BaseErrorEnums.ERROR_AUTH);
                 }
             }

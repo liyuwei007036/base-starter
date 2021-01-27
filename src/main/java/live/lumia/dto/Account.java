@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class Account implements Serializable {
 
-    private Long id;
+    private String id;
 
     private String account;
 
@@ -21,4 +21,6 @@ public class Account implements Serializable {
     private String roleName;
 
     private List<String> powers;
+
+    private Boolean hasAllPowers;
 }
