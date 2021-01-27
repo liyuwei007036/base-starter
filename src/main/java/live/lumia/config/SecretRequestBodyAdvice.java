@@ -23,7 +23,6 @@ import java.util.Objects;
  * @author liyuwei
  */
 @ConditionalOnBean(DefaultAesDecrypt.class)
-@EnableConfigurationProperties(SignConfigProperties.class)
 @RestControllerAdvice
 public class SecretRequestBodyAdvice implements RequestBodyAdvice {
 
@@ -31,13 +30,11 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
     @Autowired
     private DefaultAesDecrypt defaultAesDecryptImpl;
 
-    @Autowired
-    private SignConfigProperties signConfigProperties;
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> aClass) {
         Secret secret = SecretResponseBodyAdvice.getSecret(methodParameter);
-        return Objects.nonNull(signConfigProperties.getAesDecryptImpl()) && Objects.nonNull(secret) && methodParameter.hasParameterAnnotation(RequestBody.class);
+        return Objects.nonNull(secret) && methodParameter.hasParameterAnnotation(RequestBody.class);
     }
 
     @Override

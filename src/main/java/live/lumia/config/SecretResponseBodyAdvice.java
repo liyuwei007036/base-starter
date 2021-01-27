@@ -33,14 +33,10 @@ public class SecretResponseBodyAdvice implements ResponseBodyAdvice<ResponseInfo
     @Autowired
     private DefaultAesDecrypt defaultAesDecryptImpl;
 
-    @Autowired
-    private SignConfigProperties signConfigProperties;
-
-
     @Override
     public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> aClass) {
         Secret secret = getSecret(methodParameter);
-        return Objects.nonNull(secret) && Objects.nonNull(signConfigProperties.getAesDecryptImpl());
+        return Objects.nonNull(secret);
     }
 
     @Override
