@@ -109,6 +109,7 @@ public class PermissionAspect {
         info.append("url: ").append(controller.getCurUrl()).append(line);
         String ipAddress = RequestUtils.getIpAddress(controller.getRequest());
         info.append("requestIp: ").append(ipAddress).append(" ").append(IPV4Utils.getLocationAndOperator(ipAddress)).append(line);
+        info.append("requestArgs: ").append(JSON.toJSONString(ARGS.get())).append(line);
         info.append("requestUserAgent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append(line);
         info.append("requestUser: ").append(JSON.toJSONString(controller.getCurrentUser())).append(line);
         info.append("response: ").append(msg).append(line);
