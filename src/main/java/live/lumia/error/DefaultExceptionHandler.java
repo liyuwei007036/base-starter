@@ -117,19 +117,19 @@ public class DefaultExceptionHandler {
      * @return
      */
     @ExceptionHandler(value = {ConnectException.class})
-    public ResponseInfo connect(Exception e) {
+    public ResponseInfo connect(ConnectException e) {
         log.error("ConnectException ", e);
         return new ResponseInfo<>(BaseErrorEnums.CONNECTION_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseInfo notAllowed(Exception e) {
+    public ResponseInfo all(Exception e) {
         log.error("Exception :", e);
         return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseInfo notAllowedMethod(Exception e) {
+    public ResponseInfo notAllowedMethod(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException {}", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST_TYPE);
     }
