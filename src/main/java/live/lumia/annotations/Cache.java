@@ -2,6 +2,7 @@ package live.lumia.annotations;
 
 
 import live.lumia.aspect.CacheAspect;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
@@ -15,10 +16,14 @@ import java.lang.annotation.*;
 @Documented
 public @interface Cache {
 
+    @AliasFor("value")
     String key();
 
+    @AliasFor("key")
+    String value();
+
     String name() default "";
-    
+
     int timeout() default 5000;
 
     CacheAspect.RedisDataType dataType() default CacheAspect.RedisDataType.STRING;

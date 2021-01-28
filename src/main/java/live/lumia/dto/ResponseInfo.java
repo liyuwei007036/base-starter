@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseInfo<T extends Serializable> implements Serializable {
+public class ResponseInfo<T> implements Serializable {
 
     private int code;
 

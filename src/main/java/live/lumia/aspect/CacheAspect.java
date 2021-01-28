@@ -10,10 +10,13 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 基于redisson 自定义缓存
@@ -81,30 +84,32 @@ public class CacheAspect {
     private Object addCache(ProceedingJoinPoint joinPoint, String key, boolean condition, String name, RedisDataType dateType, int timeout) throws Throwable {
         Object res = null;
         if (condition) {
-            try {
-                switch (dateType) {
-                    case STRING:
-                        res = RedisUtil.get(name + "." + key);
-                        break;
-                    case SET:
-                        res = RedisUtil.setGet(name + "." + key);
-                        break;
-                    case HASH:
-                        res = RedisUtil.hashGet(name, key);
-                        break;
-                    default:
-                        break;
+            res = getCacheByType(name, key, dateType);
+        }
+        if (Objects.isNull(res)) {
+            // 防止缓存击穿
+            RLock lock = RedisUtil.getClient().getLock(String.format("%s.%s.%s", name, key, dateType));
+            boolean success = lock.tryLock(2, 3, TimeUnit.MINUTES);
+            if (success) {
+                try {
+                    res = getCacheByType(name, key, dateType);
+                    if (Objects.isNull(res)) {
+                        res = joinPoint.proceed();
+                        setCacheByType(res, condition, name, key, timeout, dateType);
+                    }
+                } finally {
+                    lock.unlock();
                 }
-            } catch (Exception e) {
-                log.error("addCache fail", e);
+            } else {
+                log.error("添加缓存时获取锁超时,lock {}", lock.getName());
             }
         }
-        if (res == null) {
-            res = joinPoint.proceed();
-            setCacheByType(res, condition, name, key, timeout, dateType);
+        if (Objects.isNull(res)) {
+            res = getCacheByType(name, key, dateType);
         }
         return res;
     }
+
 
     private Object removeCache(ProceedingJoinPoint joinPoint, String key, boolean condition, String name, RedisDataType dateType) throws Throwable {
         if (condition) {
@@ -137,6 +142,25 @@ public class CacheAspect {
         }
         setCacheByType(res, condition, name, key, timeout, dateType);
         return res;
+    }
+
+
+    private Object getCacheByType(String name, String key, RedisDataType dateType) {
+        try {
+            switch (dateType) {
+                case STRING:
+                    return RedisUtil.get(name + "." + key);
+                case SET:
+                    return RedisUtil.setGet(name + "." + key);
+                case HASH:
+                    return RedisUtil.hashGet(name, key);
+                default:
+                    return null;
+            }
+        } catch (Exception e) {
+            log.error("getCacheByType fail", e);
+            return null;
+        }
     }
 
     private void setCacheByType(Object res, Boolean condition, String name, String key, int timeout, RedisDataType dateType) {
