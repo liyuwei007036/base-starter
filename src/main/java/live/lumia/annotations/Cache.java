@@ -16,11 +16,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface Cache {
 
-    @AliasFor("value")
     String key();
-
-    @AliasFor("key")
-    String value();
 
     String name() default "";
 
