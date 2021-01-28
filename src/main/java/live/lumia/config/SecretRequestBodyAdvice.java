@@ -43,14 +43,9 @@ public class SecretRequestBodyAdvice implements RequestBodyAdvice {
             return httpInputMessage;
         }
         Secret secret = SecretResponseBodyAdvice.getSecret(methodParameter);
-        if (Objects.isNull(secret)) {
+        if (Objects.isNull(secret) || !secret.decode()) {
             return httpInputMessage;
         }
-
-        if (!secret.decode()) {
-            return httpInputMessage;
-        }
-
         return new HttpInputMessage() {
             @Override
             public InputStream getBody() throws IOException {

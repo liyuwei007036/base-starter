@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author liyuwei
@@ -41,16 +43,10 @@ public class SecretResponseBodyAdvice implements ResponseBodyAdvice<ResponseInfo
     @Override
     public ResponseInfo beforeBodyWrite(ResponseInfo o, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         Secret secret = getSecret(methodParameter);
-        if (Objects.isNull(secret)) {
+        if (Objects.isNull(secret) || !secret.encode()) {
             return o;
         }
-        if (!secret.encode()) {
-            return o;
-        }
-        Object data = o.getData();
-        if (Objects.isNull(data)) {
-            data = new JSONObject();
-        }
+        Object data = Optional.ofNullable(o.getData()).orElse(new JSONObject());
         String tenantCode = getTenantIdStr(serverHttpRequest.getHeaders());
         String encrypt = defaultAesDecryptImpl.encrypt(tenantCode, data);
         o.setData(encrypt);
@@ -61,21 +57,16 @@ public class SecretResponseBodyAdvice implements ResponseBodyAdvice<ResponseInfo
         if (Objects.isNull(httpHeaders)) {
             return null;
         }
-        List<String> headers = httpHeaders.get(TENANT_ID_STR);
-        if (CollectionUtils.isEmpty(headers)) {
-            return null;
-        }
-        return headers.stream().findFirst().orElse(null);
+        return Optional.ofNullable(httpHeaders.get(TENANT_ID_STR)).orElse(Collections.emptyList()).stream().findFirst().orElse(null);
     }
 
     public static Secret getSecret(MethodParameter methodParameter) {
         Method method = methodParameter.getMethod();
-        Class<?> clazz = methodParameter.getDeclaringClass();
-        Secret secret = method.getAnnotation(Secret.class);
-        if (Objects.isNull(secret)) {
-            secret = clazz.getAnnotation(Secret.class);
+        if (Objects.isNull(method)) {
+            return null;
         }
-        return secret;
+        Class<?> clazz = methodParameter.getDeclaringClass();
+        return Optional.ofNullable(method.getAnnotation(Secret.class)).orElse(clazz.getAnnotation(Secret.class));
     }
 }
 
