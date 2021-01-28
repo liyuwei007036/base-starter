@@ -15,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +47,7 @@ public class SecretResponseBodyAdvice implements ResponseBodyAdvice<ResponseInfo
         if (!secret.encode()) {
             return o;
         }
-        Serializable data = o.getData();
+        Object data = o.getData();
         if (Objects.isNull(data)) {
             data = new JSONObject();
         }
