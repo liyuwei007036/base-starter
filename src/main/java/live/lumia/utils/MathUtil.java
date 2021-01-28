@@ -100,7 +100,6 @@ public class MathUtil {
 	 *            表示表示需要精确到小数点以后几位。
 	 * @return 两个参数的商
 	 */
-
 	public static double div(double v1, double v2, int scale) {
 		if (scale < 0) {
 			throw new IllegalArgumentException("The scale must be a positive integer or zero");

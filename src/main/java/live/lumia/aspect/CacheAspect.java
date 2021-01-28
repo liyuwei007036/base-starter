@@ -137,10 +137,11 @@ public class CacheAspect {
         Object res;
         try {
             res = joinPoint.proceed();
+            setCacheByType(res, condition, name, key, timeout, dateType);
         } catch (Throwable throwable) {
+            log.error("更新缓存失", throwable);
             throw new RuntimeException(throwable);
         }
-        setCacheByType(res, condition, name, key, timeout, dateType);
         return res;
     }
 
@@ -165,7 +166,7 @@ public class CacheAspect {
 
     private void setCacheByType(Object res, Boolean condition, String name, String key, int timeout, RedisDataType dateType) {
         try {
-            if (condition && res != null) {
+            if (condition && Objects.nonNull(res)) {
                 switch (dateType) {
                     case STRING:
                         RedisUtil.put(name + "." + key, res, timeout);

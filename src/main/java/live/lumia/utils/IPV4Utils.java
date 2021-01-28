@@ -21,6 +21,7 @@ public class IPV4Utils {
     static {
         try {
             qqWry = new QQWry();
+            log.debug("IP库版本：{}", qqWry.getDatabaseVersion());
         } catch (IOException e) {
             log.error("IP工具初始化失败", e);
         }
@@ -34,7 +35,7 @@ public class IPV4Utils {
      */
     public static String getLocation(String ip) {
         IPZone ip1 = qqWry.findIP(ip);
-        return ip1.getMainInfo();
+        return ip1.getMainInfo().replaceAll("CZ88.NET", "");
     }
 
     /**
@@ -45,7 +46,7 @@ public class IPV4Utils {
      */
     public static String getLocationAndOperator(String ip) {
         IPZone ip1 = qqWry.findIP(ip);
-        return ip1.toString();
+        return ip1.toString().replaceAll("CZ88.NET", "");
     }
 
     /**
@@ -56,7 +57,7 @@ public class IPV4Utils {
      */
     public static String getOperator(String ip) {
         IPZone ip1 = qqWry.findIP(ip);
-        return ip1.getSubInfo();
+        return ip1.getSubInfo().replaceAll("CZ88.NET", "");
     }
 
     /**
@@ -108,6 +109,4 @@ public class IPV4Utils {
             return "";
         }
     }
-
-
 }
