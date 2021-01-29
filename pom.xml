@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>live.lumia</groupId>
     <artifactId>base-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <url>https://github.com/liyuwei007036/core</url>
     <name>base-starter for springboot</name>
 

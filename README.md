@@ -17,6 +17,6 @@ springboot 脚手架
 <dependency>
   <groupId>live.lumia</groupId>
   <artifactId>base-starter</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ~~~
