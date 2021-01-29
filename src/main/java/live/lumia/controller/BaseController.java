@@ -2,6 +2,7 @@ package live.lumia.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import live.lumia.config.SessionNameProperties;
 import live.lumia.dto.Account;
 import live.lumia.enums.SessionConstants;
@@ -28,7 +29,6 @@ public abstract class BaseController {
 
     @Autowired
     private SessionNameProperties sessionNameProperties;
-
 
 
     private static final ThreadLocal<String> SESSION_ID = new ThreadLocal<>();
@@ -158,6 +158,20 @@ public abstract class BaseController {
             return null;
         }
         return JSON.parseObject(session.toString(), clazz);
+    }
+
+
+    /**
+     * 取得 session 变量值
+     *
+     * @param key
+     * @return
+     */
+    public Object getSessionAttr(String key) {
+        if (StringUtils.isEmpty(SESSION_ID.get())) {
+            return null;
+        }
+        return TMP_SESSION_MAP.get().get(key);
     }
 
     public BaseSessionService getSessionService() {

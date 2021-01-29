@@ -75,8 +75,8 @@ public class PermissionAspect {
         if (Objects.nonNull(currentUser)) {
             String curIpAddress = RequestUtils.getIpAddress(controller.getRequest());
             String curUserAgent = RequestUtils.getUserAgent(controller.getRequest());
-            String loginIp = controller.getSessionAttr("loginIp", String.class);
-            String loginAgent = controller.getSessionAttr("loginAgent", String.class);
+            String loginIp = controller.getSessionAttr("loginIp").toString();
+            String loginAgent = controller.getSessionAttr("loginAgent").toString();
             if (!curIpAddress.equals(loginIp) || !curUserAgent.equals(loginAgent)) {
                 log.warn("检测到用户登录地址和当前请求地址不一致，当前用户可能为非法用户，用户信息：{}:{}", currentUser.getAccount(), currentUser.getName());
             }
