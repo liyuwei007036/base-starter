@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author l5990
@@ -50,28 +51,37 @@ public class PermissionAspect {
         Class<?> clazz = method.getDeclaringClass();
 
         Permission permission = method.getAnnotation(Permission.class);
-        if (Objects.isNull(permission)) {
-            permission = clazz.getAnnotation(Permission.class);
-        }
+        permission = Optional.ofNullable(permission).orElse(clazz.getAnnotation(Permission.class));
         Object o = SpringUtil.getBean(clazz);
         BaseController controller = (BaseController) o;
         CONTROLLER.set(controller);
-        if (Objects.nonNull(permission)) {
-            // 验证用户是否登陆
-            if (permission.needLogin()) {
-                if (!CONTROLLER.get().userHasLogin()) {
-                    throw new BaseException(BaseErrorEnums.ERROR_LOGIN);
-                }
-            }
-            if (!StringUtils.isEmpty(permission.code())) {
-                String code = permission.code();
-                Account currentUser = controller.getCurrentUser();
-                boolean contains = currentUser.getPowers().contains(code);
-                if (!contains && !ObjectUtil.getBoolean(currentUser.getHasAllPowers())) {
-                    throw new BaseException(BaseErrorEnums.ERROR_AUTH);
-                }
+        if (Objects.isNull(permission)) {
+            return;
+        }
+        // 验证用户是否登陆
+        if (permission.needLogin() && !controller.userHasLogin()) {
+            throw new BaseException(BaseErrorEnums.ERROR_LOGIN);
+        }
+        // 权限校验
+        if (!StringUtils.isEmpty(permission.code())) {
+            String code = permission.code();
+            Account currentUser = controller.getCurrentUser();
+            boolean contains = currentUser.getPowers().contains(code);
+            if (!contains && !ObjectUtil.getBoolean(currentUser.getHasAllPowers())) {
+                throw new BaseException(BaseErrorEnums.ERROR_AUTH);
             }
         }
+        Account currentUser = controller.getCurrentUser();
+        if (Objects.nonNull(currentUser)) {
+            String curIpAddress = RequestUtils.getIpAddress(controller.getRequest());
+            String curUserAgent = RequestUtils.getUserAgent(controller.getRequest());
+            String loginIp = controller.getSessionAttr("loginIp", String.class);
+            String loginAgent = controller.getSessionAttr("loginAgent", String.class);
+            if (!curIpAddress.equals(loginIp) || !curUserAgent.equals(loginAgent)) {
+                log.warn("检测到用户登录地址和当前请求地址不一致，当前用户可能为非法用户，用户信息：{}:{}", currentUser.getAccount(), currentUser.getName());
+            }
+        }
+
     }
 
     @AfterReturning(pointcut = "cut()", returning = "responseInfo")
