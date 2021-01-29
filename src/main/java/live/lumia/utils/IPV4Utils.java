@@ -68,11 +68,11 @@ public class IPV4Utils {
      */
     public static String getLocationByHost(String host) {
         try {
-            String ip = InetAddress.getByName(host).getHostName();
+            String ip = InetAddress.getByName(host).getHostAddress();
             return getLocation(ip);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             log.error("根据host获取地理位置失败", e);
-            return "";
+            return null;
         }
 
     }
@@ -86,11 +86,11 @@ public class IPV4Utils {
      */
     public static String getLocationAndOperatorByHost(String host) {
         try {
-            String ip = InetAddress.getByName(host).getHostName();
+            String ip = InetAddress.getByName(host).getHostAddress();
             return getLocationAndOperator(ip);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             log.error("根据host获取地理位置失败", e);
-            return "";
+            return null;
         }
     }
 
@@ -102,11 +102,12 @@ public class IPV4Utils {
      */
     public static String getOperatorByHost(String host) {
         try {
-            String ip = InetAddress.getByName(host).getHostName();
+            String ip = InetAddress.getByName(host).getHostAddress();
             return getOperator(ip);
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             log.error("根据host获取地理位置失败", e);
-            return "";
+            return null;
         }
     }
+
 }

@@ -44,9 +44,6 @@ public class PinyinUtils {
         } catch (Exception e) {
             return "";
         }
-        if (output.length() > 20) {
-            return output.substring(0, 20);
-        }
         return output.toString();
     }
 

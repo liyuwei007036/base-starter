@@ -9,9 +9,10 @@ import java.util.stream.Collectors;
 
 /**
  * json web token
+ * @author liyuwei
  */
 @Slf4j
-public class SignUtils {
+public class Md5SignUtils {
 
     public static Boolean validSign(String md5, Map<Object, Object> parameters) {
         Map<Object, Object> data = parameters.entrySet().stream()
