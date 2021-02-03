@@ -39,7 +39,7 @@ public class ThreadPoolConfigProperties implements InitializingBean {
     private String threadNamePrefix;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (Objects.isNull(coreSize)) {
             coreSize = 80;
         }

@@ -61,16 +61,13 @@ public class FileUtils {
             return null;
         }
         StringBuilder sb = new StringBuilder();
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
         try (FileInputStream inputStream = new FileInputStream(file)) {
-            ByteBuffer buffer = ByteBuffer.allocate(512);
-            while (true) {
-                buffer.clear();
-                int read = inputStream.getChannel().read(buffer);
-                if (read == -1) {
-                    break;
-                }
-                buffer.flip();
-                sb.append(new String(buffer.array(), StandardCharsets.UTF_8));
+            FileChannel channel = inputStream.getChannel();
+            while (channel.read(buffer) != -1) {
+                String line = new String(buffer.array(), StandardCharsets.UTF_8);
+                sb.append(line);
+                buffer.rewind();
             }
         } catch (Exception e) {
             return null;
@@ -270,6 +267,7 @@ public class FileUtils {
             channel.write(buffer);
         } catch (Exception e) {
             log.error(e);
+            throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
         }
     }
 }

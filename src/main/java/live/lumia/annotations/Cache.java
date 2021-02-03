@@ -2,7 +2,6 @@ package live.lumia.annotations;
 
 
 import live.lumia.aspect.CacheAspect;
-import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 

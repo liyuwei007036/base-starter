@@ -89,7 +89,7 @@ public class RedisUtil {
         return Objects.nonNull(getClient().getMap(key).putIfAbsent(hasKey, value));
     }
 
-    public static Map hashFindAll(String key) {
+    public static <K, V> Map<K, V> hashFindAll(String key) {
         if (StringUtils.isEmpty(key)) {
             return null;
         }

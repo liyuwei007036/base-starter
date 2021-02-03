@@ -2,12 +2,10 @@ package live.lumia.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import live.lumia.config.SessionNameProperties;
 import live.lumia.dto.Account;
 import live.lumia.enums.SessionConstants;
 import live.lumia.service.BaseSessionService;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;

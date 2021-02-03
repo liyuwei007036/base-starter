@@ -28,8 +28,6 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class DefaultExceptionHandler {
-
-
     /**
      * 文件上传错误异常的捕获
      *
@@ -79,9 +77,7 @@ public class DefaultExceptionHandler {
     public ResponseInfo noHandlerFoundException(NoHandlerFoundException e) {
         log.error("NoHandlerFoundException ", e);
         return new ResponseInfo<>(BaseErrorEnums.NOT_FOUND);
-
     }
-
 
     /**
      * 自定义异常的捕获
@@ -94,7 +90,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = {BaseException.class})
     public ResponseInfo baseException(BaseException exception, HttpServletRequest request) {
         String uri = request.getRequestURI();
-        log.error("occurs error when execute url ={} ,message {}", uri, exception);
+        log.warn("occurs error when execute url ={} ,message {}", uri, exception);
         return new ResponseInfo<>(ObjectUtil.getInteger(exception.getErrCode()), exception.getMessage());
     }
 
@@ -122,15 +118,15 @@ public class DefaultExceptionHandler {
         return new ResponseInfo<>(BaseErrorEnums.CONNECTION_ERROR);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseInfo all(Exception e) {
-        log.error("Exception :", e);
-        return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
-    }
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseInfo notAllowedMethod(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException {}", e);
         return new ResponseInfo<>(BaseErrorEnums.BAD_REQUEST_TYPE);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseInfo all(Exception e) {
+        log.error("Exception :", e);
+        return new ResponseInfo<>(BaseErrorEnums.ERROR_SYS);
     }
 }

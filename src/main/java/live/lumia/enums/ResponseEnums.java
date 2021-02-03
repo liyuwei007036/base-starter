@@ -698,14 +698,14 @@ public enum ResponseEnums {
     ZOO("zoo", "application/x-zoo");
 
     @Getter
-    private String key;
+    private final String key;
 
     @Getter
-    private String value;
+    private final String value;
 
-    ResponseEnums(String s, String s1) {
-        this.key = s;
-        this.value = s1;
+    ResponseEnums(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
     public static String getValue(String key) {
