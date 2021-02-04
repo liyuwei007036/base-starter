@@ -2,7 +2,7 @@ package live.lumia.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import live.lumia.config.SessionNameProperties;
+import live.lumia.config.properties.SessionNameProperties;
 import live.lumia.dto.Account;
 import live.lumia.enums.SessionConstants;
 import live.lumia.service.BaseSessionService;
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -102,12 +103,12 @@ public abstract class BaseController {
      */
     public void setSessionAttr(String key, Object value) {
         checkSession();
-        if (value != null) {
+        Optional.ofNullable(value).ifPresent(x -> {
             Map<String, Object> sessionMap = TMP_SESSION_MAP.get();
-            sessionMap.put(key, value);
+            sessionMap.put(key, x);
             TMP_SESSION_MAP.set(sessionMap);
-            baseSessionService.setSessionValue(SESSION_ID.get(), key, value, getTimeOut());
-        }
+            baseSessionService.setSessionValue(SESSION_ID.get(), key, x, getTimeOut());
+        });
     }
 
     private void checkSession() {
@@ -196,13 +197,15 @@ public abstract class BaseController {
 
     public String getCurUrl() {
         HttpServletRequest request = LOCAL_REQUEST.get();
+        if (Objects.isNull(request)) {
+            return null;
+        }
         String reqStr = request.getRequestURL().toString();
         String queryStr = request.getQueryString();
-        if (StringUtils.isEmpty(queryStr)) {
-            return reqStr;
-        } else {
-            return reqStr + "?" + queryStr;
+        if (!StringUtils.isEmpty(queryStr)) {
+            reqStr = reqStr + "?" + queryStr;
         }
+        return reqStr;
     }
 
 }

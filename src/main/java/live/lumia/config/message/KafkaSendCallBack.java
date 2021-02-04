@@ -1,4 +1,4 @@
-package live.lumia.config;
+package live.lumia.config.message;
 
 import org.springframework.kafka.support.SendResult;
 

@@ -21,8 +21,6 @@ public class Md5SignUtils {
 
         String signData = ObjectUtil.getString(parameters.get("sign"));
         long timestamp = ObjectUtil.getLong(parameters.get("timestamp"));
-
-
         long s = System.currentTimeMillis() / 1000 + 3;
         if (s - timestamp > 60 * 1000 || timestamp <= 0 || s < timestamp) {
             log.warn("签名验证失败, 时间错误");

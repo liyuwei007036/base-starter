@@ -1,15 +1,15 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.config.CoreAutoConfig,\
-  live.lumia.component.ScheduleTask,\
+  live.lumia.component.FailMessageRetryTask,\
   live.lumia.component.RabbitMqSend,\
   live.lumia.component.KafkaSend,\
-  live.lumia.config.RabbitConfig,\
+  live.lumia.config.message.RabbitRequestLogConfig,\
   live.lumia.config.mp.MybatisMateObjectHandler,\
   live.lumia.config.mp.MybatisPlusConfig,\
   live.lumia.service.MailService,\
-  live.lumia.config.CorsConfig,\
-  live.lumia.config.LocalDateTimeSerializerConfig,\
+  live.lumia.config.sys.CorsConfig,\
+  live.lumia.config.sys.LocalDateTimeSerializerConfig,\
   live.lumia.service.BaseSessionService,\
-  live.lumia.config.ThreadPoolConfig,\
-  live.lumia.config.SecretRequestBodyAdvice,\
-  live.lumia.config.SecretResponseBodyAdvice
+  live.lumia.config.sys.ThreadPoolConfig,\
+  live.lumia.config.secret.SecretRequestBodyAdvice,\
+  live.lumia.config.secret.SecretResponseBodyAdvice

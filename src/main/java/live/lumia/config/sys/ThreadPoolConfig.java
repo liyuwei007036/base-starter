@@ -1,5 +1,6 @@
-package live.lumia.config;
+package live.lumia.config.sys;
 
+import live.lumia.config.properties.ThreadPoolConfigProperties;
 import live.lumia.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;

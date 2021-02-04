@@ -1,4 +1,4 @@
-package live.lumia.config;
+package live.lumia.config.secret;
 
 /**
  * 默认的AES解密

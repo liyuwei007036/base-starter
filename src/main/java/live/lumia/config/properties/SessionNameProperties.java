@@ -1,4 +1,4 @@
-package live.lumia.config;
+package live.lumia.config.properties;
 
 
 import lombok.Data;

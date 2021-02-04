@@ -1,21 +1,24 @@
-package live.lumia.config;
+package live.lumia.config.message;
 
+import org.redisson.api.RedissonClient;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
 /**
+ * 请求日志队列
+ *
  * @author l5990
  */
 @Configuration
-@ConditionalOnClass(RabbitAdmin.class)
-public class RabbitConfig {
+@ConditionalOnBean({RabbitTemplate.class, RedissonClient.class})
+public class RabbitRequestLogConfig {
 
     /**
      * 请求交换机
@@ -43,6 +46,5 @@ public class RabbitConfig {
     public Binding bindingRequestExchange() {
         return BindingBuilder.bind(requestQueue()).to(requestExchange()).with(REQUEST_QUEUE);
     }
-
 
 }

@@ -34,6 +34,7 @@ public class PermissionAspect {
     private static final ThreadLocal<BaseController> CONTROLLER = new ThreadLocal<>();
 
     private void recycleThread() {
+        CONTROLLER.get().removeThread();
         ARGS.remove();
         CONTROLLER.remove();
     }
@@ -49,39 +50,37 @@ public class PermissionAspect {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
         Class<?> clazz = method.getDeclaringClass();
-
         Permission permission = method.getAnnotation(Permission.class);
         permission = Optional.ofNullable(permission).orElse(clazz.getAnnotation(Permission.class));
         Object o = SpringUtil.getBean(clazz);
         BaseController controller = (BaseController) o;
         CONTROLLER.set(controller);
-        if (Objects.isNull(permission)) {
-            return;
-        }
-        // 验证用户是否登陆
-        if (permission.needLogin() && !controller.userHasLogin()) {
-            throw new BaseException(BaseErrorEnums.ERROR_LOGIN);
-        }
-        // 权限校验
-        if (!StringUtils.isEmpty(permission.code())) {
-            String code = permission.code();
-            Account currentUser = controller.getCurrentUser();
-            boolean contains = currentUser.getPowers().contains(code);
-            if (!contains && !ObjectUtil.getBoolean(currentUser.getHasAllPowers())) {
-                throw new BaseException(BaseErrorEnums.ERROR_AUTH);
-            }
-        }
-        Account currentUser = controller.getCurrentUser();
-        if (Objects.nonNull(currentUser)) {
-            String curIpAddress = RequestUtils.getIpAddress(controller.getRequest());
-            String curUserAgent = RequestUtils.getUserAgent(controller.getRequest());
-            String loginIp = controller.getSessionAttr("loginIp").toString();
-            String loginAgent = controller.getSessionAttr("loginAgent").toString();
-            if (!curIpAddress.equals(loginIp) || !curUserAgent.equals(loginAgent)) {
-                log.warn("检测到用户登录地址和当前请求地址不一致，当前用户可能为非法用户，用户信息：{}:{}", currentUser.getAccount(), currentUser.getName());
-            }
-        }
-
+        Optional.ofNullable(permission)
+                .ifPresent(p -> {
+                    // 验证用户是否登陆
+                    if (p.needLogin() && !controller.userHasLogin()) {
+                        throw new BaseException(BaseErrorEnums.ERROR_LOGIN);
+                    }
+                    // 权限校验
+                    if (!StringUtils.isEmpty(p.code())) {
+                        String code = p.code();
+                        Account currentUser = controller.getCurrentUser();
+                        boolean contains = currentUser.getPowers().contains(code);
+                        if (!contains && !ObjectUtil.getBoolean(currentUser.getHasAllPowers())) {
+                            throw new BaseException(BaseErrorEnums.ERROR_AUTH);
+                        }
+                    }
+                    Account currentUser = controller.getCurrentUser();
+                    if (Objects.nonNull(currentUser)) {
+                        String curIpAddress = RequestUtils.getIpAddress(controller.getRequest());
+                        String curUserAgent = RequestUtils.getUserAgent(controller.getRequest());
+                        String loginIp = controller.getSessionAttr("loginIp").toString();
+                        String loginAgent = controller.getSessionAttr("loginAgent").toString();
+                        if (!curIpAddress.equals(loginIp) || !curUserAgent.equals(loginAgent)) {
+                            log.warn("检测到用户登录地址和当前请求地址不一致，当前用户可能为非法用户，用户信息：{}:{}", currentUser.getAccount(), currentUser.getName());
+                        }
+                    }
+                });
     }
 
     @AfterReturning(pointcut = "cut()", returning = "responseInfo")
@@ -92,7 +91,6 @@ public class PermissionAspect {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
-            CONTROLLER.get().removeThread();
             recycleThread();
         }
     }
@@ -105,7 +103,6 @@ public class PermissionAspect {
         } catch (Exception error) {
             log.error(error.getMessage(), error);
         } finally {
-            CONTROLLER.get().removeThread();
             recycleThread();
         }
     }

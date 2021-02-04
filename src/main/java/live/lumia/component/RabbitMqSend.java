@@ -5,15 +5,15 @@ import com.alibaba.fastjson.JSONObject;
 import live.lumia.utils.RedisUtil;
 import live.lumia.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,7 @@ import java.util.UUID;
  * @author l5990
  */
 @Slf4j
-@ConditionalOnClass(RabbitAdmin.class)
+@ConditionalOnBean({RabbitTemplate.class, RedissonClient.class})
 @Component
 public class RabbitMqSend {
 
@@ -105,7 +105,7 @@ public class RabbitMqSend {
                 .build();
         CorrelationData cd = new CorrelationData(msgId);
         rabbitTemplate.convertAndSend(exchange, routingKey, message, cd);
-        log.info("【MQ投递消息】 exchange :" + exchange + " routingKey : " + routingKey + " msg : " + JSON.toJSONString(msg) + " msgId: " + cd.getId());
+        log.info("【MQ投递消息】 exchange : {}, routingKey: {},  msg : {} , msgId: {}, num: {}", exchange, routingKey, JSON.toJSONString(msg), cd.getId(), num);
     }
 
 }

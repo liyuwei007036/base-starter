@@ -1,5 +1,6 @@
-package live.lumia.config;
+package live.lumia.config.sys;
 
+import live.lumia.config.properties.SessionNameProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

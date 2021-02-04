@@ -100,12 +100,7 @@ public class ReflectsUtil {
      * @throws Exception
      */
     public static Object invokeMethod(Object owner, String methodName, Object[] args) throws Exception {
-
         Class<?>[] argsClass = (Class<?>[]) Stream.of(args).map(Object::getClass).toArray();
-//        Class<?>[] argsClass = new Class<?>[args.length];
-//        for (int i = 0, j = args.length; i < j; i++) {
-//            argsClass[i] = args[i].getClass();
-//        }
         return owner.getClass().getMethod(methodName, argsClass).invoke(owner, args);
     }
 
@@ -190,14 +185,4 @@ public class ReflectsUtil {
         return cls.isInstance(obj);
     }
 
-//    /**
-//     * 得到数组中的某个元素
-//     *
-//     * @param array 数组
-//     * @param index 索引
-//     * @return 返回指定数组对象中索引组件的值
-//     */
-//    public static Object getByArray(Object array, int index) {
-//        return Array.get(array, index);
-//    }
 }

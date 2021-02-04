@@ -5,10 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import live.lumia.annotations.RedisLock;
 import live.lumia.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,10 +22,10 @@ import java.util.Map;
  * @author l5990
  */
 @Slf4j
-@ConditionalOnClass(RabbitAdmin.class)
+@ConditionalOnBean({RabbitTemplate.class, RedissonClient.class})
 @EnableScheduling
 @Configuration
-public class ScheduleTask {
+public class FailMessageRetryTask {
 
     @Autowired
     private RabbitMqSend rabbitMqSend;
@@ -48,17 +49,18 @@ public class ScheduleTask {
                 log.debug("无失败的消息");
                 return;
             }
-            msgs.entrySet().parallelStream().forEach(msg -> {
-                String msgId = msg.getKey();
-                JSONObject obj = msg.getValue();
-                int num = obj.getInteger("num");
-                if (num < maxTime) {
-                    rabbitMqSend.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
-                    RedisUtil.hashRemove(env + "MQMSG", msgId);
-                } else {
-                    log.error("消息投递失败3次放弃投递{}", obj.toJSONString());
-                }
-            });
+            msgs.entrySet().parallelStream()
+                    .forEach(msg -> {
+                        String msgId = msg.getKey();
+                        JSONObject obj = msg.getValue();
+                        int num = obj.getInteger("num");
+                        if (num < maxTime) {
+                            rabbitMqSend.sendMsg(msgId, obj.getString("exchange"), obj.getString("routingKey"), JSON.toJSONString(obj.get("msg")), ++num);
+                            RedisUtil.hashRemove(env + "MQMSG", msgId);
+                        } else {
+                            log.warn("消息投递失败{}次放弃投递{},消息ID：{}", maxTime, obj.toJSONString(), msgId);
+                        }
+                    });
             msgs.clear();
         } catch (Exception e) {
             log.error("【执行定时任务{}失败】", "MQ_FAiL_CHECK_TASK", e);

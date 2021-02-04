@@ -1,10 +1,12 @@
 package live.lumia.utils;
 
+import jodd.util.CollectionUtil;
 import live.lumia.enums.BaseErrorEnums;
 import live.lumia.error.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.*;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
@@ -101,7 +103,7 @@ public class RedisUtil {
             return null;
         }
         RMap<Object, Object> map = getClient().getMap(key);
-        if (Objects.isNull(map) || map.isEmpty()) {
+        if (CollectionUtils.isEmpty(map)) {
             return null;
         }
         return ModelMapperUtils.strict(map.get(hasKey), clazz);
@@ -113,7 +115,7 @@ public class RedisUtil {
             return null;
         }
         RMap<Object, Object> map = getClient().getMap(key);
-        if (Objects.isNull(map) || map.isEmpty()) {
+        if (CollectionUtils.isEmpty(map)) {
             return null;
         }
         return map.get(hasKey);

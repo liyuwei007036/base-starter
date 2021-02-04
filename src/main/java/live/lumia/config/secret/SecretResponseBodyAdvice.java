@@ -1,4 +1,4 @@
-package live.lumia.config;
+package live.lumia.config.secret;
 
 import com.alibaba.fastjson.JSONObject;
 import live.lumia.annotations.Secret;

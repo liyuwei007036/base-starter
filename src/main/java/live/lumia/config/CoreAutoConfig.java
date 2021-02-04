@@ -3,6 +3,7 @@ package live.lumia.config;
 import live.lumia.aspect.CacheAspect;
 import live.lumia.aspect.LockAspect;
 import live.lumia.aspect.PermissionAspect;
+import live.lumia.config.properties.SessionNameProperties;
 import live.lumia.error.DefaultExceptionHandler;
 import live.lumia.utils.SpringUtil;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

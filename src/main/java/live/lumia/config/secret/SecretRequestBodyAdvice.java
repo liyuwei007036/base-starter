@@ -1,4 +1,4 @@
-package live.lumia.config;
+package live.lumia.config.secret;
 
 import live.lumia.annotations.Secret;
 import org.apache.commons.io.IOUtils;

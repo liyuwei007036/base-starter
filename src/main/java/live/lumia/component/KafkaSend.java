@@ -1,10 +1,9 @@
 package live.lumia.component;
 
-import live.lumia.config.KafkaSendCallBack;
+import live.lumia.config.message.KafkaSendCallBack;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.kafka.core.KafkaAdmin;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +16,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
  * @date 2019-12-10
  */
 @Slf4j
-@ConditionalOnClass(KafkaAdmin.class)
+@ConditionalOnBean(KafkaTemplate.class)
 @Component
 public class KafkaSend {
 
