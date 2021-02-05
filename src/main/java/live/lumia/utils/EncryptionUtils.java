@@ -108,8 +108,8 @@ public class EncryptionUtils {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         // 说的一个安全的随机数
         SecureRandom secureRandom = new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8));
-        // 这里可以是1024、2048 初始化一个密钥对
-        keyPairGenerator.initialize(2048, secureRandom);
+        // 这里可以是1024、2048 初始化一个密钥对 越大解密越慢
+        keyPairGenerator.initialize(1024, secureRandom);
         // 获得密钥对
         return keyPairGenerator.generateKeyPair();
     }
@@ -167,28 +167,60 @@ public class EncryptionUtils {
     /**
      * 公钥加密
      *
-     * @param content   待加密的内容 byte[]
-     * @param publicKey 加密所需的公钥对象 PublicKey
+     * @param content      待加密的内容 byte[]
+     * @param publicKeyStr 加密所需的公钥对象 publicKeyStr
      * @return 加密后的字节数组 byte[]
      */
-    public static byte[] publicEncryType(byte[] content, PublicKey publicKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static String publicEncrypt(String content, String publicKeyStr) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        PublicKey publicKey = string2PublicKey(publicKeyStr);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        return cipher.doFinal(content);
+        byte[] bytes = cipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     /**
      * 私钥解密
      *
-     * @param content    待解密的内容 byte[]
-     * @param privateKey 解密需要的私钥对象 PrivateKey
+     * @param content       待解密的内容 byte[]
+     * @param privateKeyStr 解密需要的私钥对象 PrivateKey
      * @return 解密后的字节数组 byte[]
      */
-    public static byte[] privateDecrypt(byte[] content, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public static String privateDecrypt(String content, String privateKeyStr) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        byte[] decode = Base64.getDecoder().decode(content.getBytes(StandardCharsets.UTF_8));
+        PrivateKey privateKey = string2PrivateKey(privateKeyStr);
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        return cipher.doFinal(content);
+        return new String(cipher.doFinal(decode), StandardCharsets.UTF_8);
     }
 
+    /**
+     * 私钥加密
+     *
+     * @param content       待加密的内容
+     * @param privateKeyStr 加密所需私钥字符串 publicKeyStr
+     * @return 加密后的字符串 base64加密
+     */
+    public static String privateEncrypt(String content, String privateKeyStr) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        PrivateKey privateKey = string2PrivateKey(privateKeyStr);
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+        byte[] bytes = cipher.doFinal(content.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(bytes);
+    }
 
+    /**
+     * 公钥解密
+     *
+     * @param content      待解密的内容
+     * @param publicKeyStr 解密需要的公钥字符串 publicKeyStr
+     * @return 解密后的字节数组
+     */
+    public static String publicDecrypt(String content, String publicKeyStr) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidKeySpecException {
+        byte[] decode = Base64.getDecoder().decode(content.getBytes(StandardCharsets.UTF_8));
+        PublicKey privateKey = string2PublicKey(publicKeyStr);
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        return new String(cipher.doFinal(decode), StandardCharsets.UTF_8);
+    }
 }
