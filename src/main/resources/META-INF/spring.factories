@@ -1,8 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.config.CoreAutoConfig,\
   live.lumia.component.FailMessageRetryTask,\
-  live.lumia.component.RabbitMqSend,\
-  live.lumia.component.KafkaSend,\
   live.lumia.config.message.RabbitRequestLogConfig,\
   live.lumia.config.mp.MybatisMateObjectHandler,\
   live.lumia.config.mp.MybatisPlusConfig,\
@@ -12,4 +10,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.service.BaseSessionService,\
   live.lumia.config.sys.ThreadPoolConfig,\
   live.lumia.config.secret.SecretRequestBodyAdvice,\
-  live.lumia.config.secret.SecretResponseBodyAdvice
+  live.lumia.config.secret.SecretResponseBodyAdvice,\
+  live.lumia.component.RabbitMqSend,\
+  live.lumia.component.KafkaSend
+
+

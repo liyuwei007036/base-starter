@@ -260,13 +260,12 @@ public class FileUtils {
      * @param file
      */
     public static void bytes2File(byte[] bytes, File file) {
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            ByteBuffer buffer = ByteBuffer.wrap(bytes);
-            FileChannel channel = inputStream.getChannel();
-            buffer.flip();
-            channel.write(buffer);
-        } catch (Exception e) {
-            log.error(e);
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            FileChannel channel = randomAccessFile.getChannel();
+            channel.write(ByteBuffer.wrap(bytes));
+        } catch (IOException e) {
+            log.error("转文件出错", e);
             throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
         }
     }

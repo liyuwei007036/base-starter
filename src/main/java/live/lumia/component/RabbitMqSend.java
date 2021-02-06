@@ -13,7 +13,7 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,7 +28,7 @@ import java.util.UUID;
  * @author l5990
  */
 @Slf4j
-@ConditionalOnBean({RabbitTemplate.class, RedissonClient.class})
+@ConditionalOnClass({RabbitTemplate.class, RedissonClient.class})
 @Component
 public class RabbitMqSend {
 
