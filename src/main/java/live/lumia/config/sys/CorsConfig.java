@@ -4,6 +4,7 @@ import live.lumia.config.properties.SessionNameProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -24,6 +25,8 @@ public class CorsConfig {
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setMaxAge(3600L);
         corsConfiguration.addExposedHeader(sessionNameProperties.getName());
+        corsConfiguration.addExposedHeader(HttpHeaders.CONTENT_DISPOSITION);
+        corsConfiguration.addExposedHeader(HttpHeaders.CONTENT_LENGTH);
         return corsConfiguration;
     }
 

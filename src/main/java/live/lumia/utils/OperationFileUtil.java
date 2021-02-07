@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -281,7 +282,7 @@ public class OperationFileUtil {
             try {
                 fileName = Optional.ofNullable(fileName).orElse(separateUuid + "/" + uuid + "." + fileExt);
                 // 开始设置 Http Response
-                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "filename=" + fileName);
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + new String(fileName.getBytes(StandardCharsets.UTF_8)));
                 Calendar cd = Calendar.getInstance();
                 cd.setTimeInMillis(lastModified);
                 SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US);
