@@ -272,14 +272,14 @@ public class OperationFileUtil {
         }
     }
 
-    public void renderFile(HttpServletResponse response, String separateUuid, String uuid, String fileExt, String zoom) {
+    public void renderFile(HttpServletResponse response, String separateUuid, String uuid, String fileExt, String zoom, String fileName) {
         JSONObject info = getFile(separateUuid, uuid, fileExt, zoom);
         Boolean success = info.getBoolean("success");
         if (success) {
             Long lastModified = info.getLong(HttpHeaders.LAST_MODIFIED);
             Long contentLength = info.getLong(HttpHeaders.CONTENT_LENGTH);
             try {
-                String fileName = separateUuid + "/" + uuid + "." + fileExt;
+                fileName = Optional.ofNullable(fileName).orElse(separateUuid + "/" + uuid + "." + fileExt);
                 // 开始设置 Http Response
                 response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "filename=" + fileName);
                 Calendar cd = Calendar.getInstance();
@@ -302,7 +302,6 @@ public class OperationFileUtil {
                     throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
                 }
             } catch (Exception e) {
-
                 log.error("无法取得图片", e);
                 throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
             }
