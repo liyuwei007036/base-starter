@@ -84,7 +84,8 @@ public class SendMailUtil {
             throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
         }
         for (File file : files) {
-            helper.addAttachment(file.getName(), file);
+            FileSystemResource fileSystemResource = new FileSystemResource(file);
+            helper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()), fileSystemResource);
         }
         getMailSender().send(message);
     }
