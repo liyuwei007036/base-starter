@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author l5990
@@ -266,6 +267,31 @@ public class FileUtils {
             channel.write(ByteBuffer.wrap(bytes));
         } catch (IOException e) {
             log.error("转文件出错", e);
+            throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
+        }
+    }
+
+    /**
+     * 功能:压缩多个文件成一个zip文件
+     *
+     * @param srcFile：源文件列表
+     * @param zipFile：压缩后的文件
+     */
+    public static void zipFiles(List<File> srcFile, File zipFile) {
+        byte[] buf = new byte[1024];
+        try (FileOutputStream outputStream = new FileOutputStream(zipFile); ZipOutputStream out = new ZipOutputStream(outputStream)) {
+            //ZipOutputStream类：完成文件或文件夹的压缩
+            for (File file : srcFile) {
+                FileInputStream in = new FileInputStream(file);
+                out.putNextEntry(new ZipEntry(file.getName()));
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                out.closeEntry();
+            }
+        } catch (Exception e) {
+            log.error("压缩文件失败", e);
             throw new BaseException(BaseErrorEnums.SYSTEM_ERROR);
         }
     }

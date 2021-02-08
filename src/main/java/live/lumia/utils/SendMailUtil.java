@@ -7,10 +7,15 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -49,18 +54,14 @@ public class SendMailUtil {
      * @param subject
      * @param content
      */
-    public static void sendHtmlMail(String from, String to, String subject, String content) {
+    public static void sendHtmlMail(String from, String to, String subject, String content) throws MessagingException {
         MimeMessage message = getMailSender().createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(from);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-            getMailSender().send(message);
-        } catch (Exception e) {
-            log.error("【邮件发送失败】", e);
-        }
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        getMailSender().send(message);
     }
 
     /**
@@ -69,29 +70,23 @@ public class SendMailUtil {
      * @param to
      * @param subject
      * @param content
-     * @param f
+     * @param files
      */
-    public static void sendAttachmentMail(String from, String to, String subject, String content, File f) {
+    public static void sendAttachmentMail(String from, String to, String subject, String content, List<File> files) throws MessagingException {
         MimeMessage message = getMailSender().createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(from);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-
-            FileSystemResource file = new FileSystemResource(f);
-            String fileName = file.getFilename();
-            if (StringUtils.isEmpty(fileName)) {
-                throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
-            }
-            helper.addAttachment(fileName, file);
-            //发送多个附件的操纵
-            helper.addAttachment(fileName + "_", file);
-            getMailSender().send(message);
-        } catch (Exception e) {
-            log.error("【邮件发送失败】", e);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        files = files.stream().filter(x -> x.exists() && x.isFile()).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(files)) {
+            throw new BaseException(BaseErrorEnums.FILE_NOT_EXISTS);
         }
+        for (File file : files) {
+            helper.addAttachment(file.getName(), file);
+        }
+        getMailSender().send(message);
     }
 
     /***
@@ -102,21 +97,17 @@ public class SendMailUtil {
      * @param rscPath
      * @param rscId
      */
-    public static void sendInLiResourceMail(String from, String to, String subject, String content, File rscPath, String rscId) {
+    public static void sendInLiResourceMail(String from, String to, String subject, String content, File rscPath, String rscId) throws MessagingException {
         log.info("发送静态邮件开始：{},{},{},{},{}", to, subject, content, rscPath, rscId);
         MimeMessage message = getMailSender().createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(from);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-            FileSystemResource res = new FileSystemResource(rscPath);
-            helper.addInline(rscId, res);
-            getMailSender().send(message);
-            log.info("发送邮件成功");
-        } catch (Exception e) {
-            log.error("发送邮件失败：", e);
-        }
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
+        FileSystemResource res = new FileSystemResource(rscPath);
+        helper.addInline(rscId, res);
+        getMailSender().send(message);
+        log.info("发送邮件成功");
     }
 }
