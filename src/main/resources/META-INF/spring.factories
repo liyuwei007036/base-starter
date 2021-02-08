@@ -4,7 +4,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   live.lumia.config.message.RabbitRequestLogConfig,\
   live.lumia.config.mp.MybatisMateObjectHandler,\
   live.lumia.config.mp.MybatisPlusConfig,\
-  live.lumia.service.MailService,\
   live.lumia.config.sys.CorsConfig,\
   live.lumia.config.sys.LocalDateTimeSerializerConfig,\
   live.lumia.service.BaseSessionService,\
