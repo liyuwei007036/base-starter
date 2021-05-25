@@ -1,33 +1,37 @@
 package live.lumia.utils;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import javax.net.ssl.SSLContext;
+import java.util.Optional;
 
 /**
  * @author l5990
  */
 @Slf4j
-public final class HttpUtils {
-
-    private static final RestTemplate REST_TEMPLATE = new RestTemplate();
+public class HttpUtils {
 
     private static ResponseErrorHandler getResponseErrorHandler() {
         return new ResponseErrorHandler() {
             @Override
             public boolean hasError(ClientHttpResponse clientHttpResponse) {
-                return true;
+                return false;
             }
 
             @Override
@@ -37,52 +41,49 @@ public final class HttpUtils {
         };
     }
 
-    public static String get(String url) {
-        REST_TEMPLATE.setErrorHandler(getResponseErrorHandler());
-        return REST_TEMPLATE.getForEntity(url, String.class).getBody();
-    }
-
-
-
-    /**
-     * 发送post请求
-     *
-     * @param url
-     * @param data
-     * @param head
-     * @return
-     */
-    public static String post(String url, Map<String, Object> data, Map<String, String> head) {
-        REST_TEMPLATE.setErrorHandler(getResponseErrorHandler());
-        REST_TEMPLATE.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        HttpHeaders headers = new HttpHeaders();
-        head.forEach(headers::add);
-        String ct = ObjectUtil.getString(head.get(HttpHeaders.CONTENT_TYPE));
-
-        HttpEntity r;
-        // 根据不同的请求头发送
-        if (MediaType.MULTIPART_FORM_DATA_VALUE.equals(ct) || (MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(ct))) {
-            MultiValueMap<String, Object> postParameters = new LinkedMultiValueMap<>();
-            data.forEach(postParameters::add);
-            r = new HttpEntity<>(postParameters, headers);
-        } else {
-            r = new HttpEntity<>(JSONObject.toJSONString(data), headers);
+    private static RestTemplate getRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(getResponseErrorHandler());
+        try {
+            restTemplate.setRequestFactory(getClientHttpRequestFactory());
+        } catch (Exception e) {
+            log.error("build RestTemplate error", e);
         }
-        return REST_TEMPLATE.postForEntity(url, r, String.class).getBody();
-    }
+        return restTemplate;
 
-    /**
-     * 默认POST 请求
-     *
-     * @param url
-     * @param data
-     * @return
-     */
-    public static String post(String url, Map<String, Object> data) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return post(url, data, headers.toSingleValueMap());
     }
 
 
+    private static ClientHttpRequestFactory getClientHttpRequestFactory() throws Exception {
+        TrustStrategy acceptingTrustStrategy = (x509Certificates, authType) -> true;
+        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+        SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
+        httpClientBuilder.setSSLSocketFactory(connectionSocketFactory);
+        CloseableHttpClient httpClient = httpClientBuilder.build();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setHttpClient(httpClient);
+        factory.setConnectTimeout(60000);
+        return factory;
+    }
+
+
+    public static <T> T exchange(String url, HttpMethod method, Object data, HttpHeaders headers, Class<T> clazz) {
+        RestTemplate restTemplate = getRestTemplate();
+        headers = Optional.ofNullable(headers).orElseGet(() -> {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+            return httpHeaders;
+        });
+        HttpEntity<Object> requestData = new HttpEntity<>(data, headers);
+        return restTemplate.exchange(url, method, requestData, clazz).getBody();
+    }
+
+    public static <T> T exchange(String url, HttpMethod method, Class<T> clazz) {
+        return exchange(url, method, null, null, clazz);
+    }
+
+    public static <T> T exchange(String url, HttpMethod method, String data, Class<T> clazz) {
+        return exchange(url, method, data, null, clazz);
+    }
 }

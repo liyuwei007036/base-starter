@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * ipv4工具类
@@ -106,6 +108,31 @@ public class IPV4Utils {
             return getOperator(ip);
         } catch (Exception e) {
             log.error("根据host获取地理位置失败", e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取本机ip
+     *
+     * @return InetAddress
+     */
+    public static InetAddress getLocalHostLANAddress() {
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    boolean siteLocalAddress = inetAddress.isSiteLocalAddress();
+                    if (siteLocalAddress) {
+                        return inetAddress;
+                    }
+                }
+            }
+            return null;
+        } catch (Exception e) {
             return null;
         }
     }
