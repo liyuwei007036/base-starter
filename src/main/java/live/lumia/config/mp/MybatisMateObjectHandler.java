@@ -17,13 +17,14 @@ public class MybatisMateObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setInsertFieldValByName("version", 0L, metaObject);
-        this.setInsertFieldValByName("deleted", false, metaObject);
-        this.setInsertFieldValByName("createTime", LocalDateTime.now(), metaObject);
+        this.strictInsertFill(metaObject, "version", Long.class, 0L);
+        this.strictInsertFill(metaObject, "deleted", Boolean.class, false);
+        this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setUpdateFieldValByName("lastUpdateTime", LocalDateTime.now(), metaObject);
+        this.strictUpdateFill(metaObject, "lastModifyTime", LocalDateTime.class, LocalDateTime.now());
+        this.strictUpdateFill(metaObject, "lastUpdateTime", LocalDateTime.class, LocalDateTime.now());
     }
 }
