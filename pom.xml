@@ -47,7 +47,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-parent</artifactId>
-                <version>2.3.7.RELEASE</version>
+                <version>2.5.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.14.0</version>
+            <version>3.15.5</version>
             <optional>true</optional>
         </dependency>
 
@@ -97,13 +97,12 @@
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>2.3.5</version>
+            <version>2.4.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
         </dependency>
 
         <!-- 拼音工具依赖包-->
@@ -130,7 +129,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.2.0</version>
+            <version>3.4.3</version>
         </dependency>
 
         <!-- AOP -->
@@ -150,7 +149,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
-            <version>2.2.7</version>
+            <version>2.2.10</version>
         </dependency>
 
         <!-- 邮件-->
@@ -173,7 +172,7 @@
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
             <version>2.4</version>
-            <classifier>jdk15</classifier>	<!-- 就是这句 -->
+            <classifier>jdk15</classifier>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
