@@ -8,6 +8,7 @@ import live.lumia.enums.SessionConstants;
 import live.lumia.error.BaseException;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class LoginUtils {
         String sessionId = controller.getSessionId();
         Map<String, Object> session = new HashMap<>(16);
         session.put(SessionConstants.USER, JSON.toJSONString(account));
-        session.put("createTime", LocalDateTime.now());
+        session.put("createTime", new Date());
         session.put("loginIp", RequestUtils.getIpAddress(controller.getRequest()));
         session.put("loginAgent", RequestUtils.getUserAgent(controller.getRequest()));
         session.put(SessionConstants.USER_ID, JSON.toJSONString(account.getId()));
