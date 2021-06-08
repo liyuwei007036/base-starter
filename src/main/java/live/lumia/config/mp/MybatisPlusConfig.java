@@ -1,11 +1,12 @@
 package live.lumia.config.mp;
 
-import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisPlusVersion;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import live.lumia.config.properties.DbTypeProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,15 +16,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @ConditionalOnClass(MybatisPlusVersion.class)
 @Configuration
+@EnableConfigurationProperties(DbTypeProperties.class)
 public class MybatisPlusConfig {
 
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(DbTypeProperties dbTypeList) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        for (DbType value : DbType.values()) {
-            interceptor.addInnerInterceptor(new PaginationInnerInterceptor(value));
-        }
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(dbTypeList.getTypes()));
         return interceptor;
     }
 }
