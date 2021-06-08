@@ -20,10 +20,10 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisPlusConfig {
 
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(DbTypeProperties dbTypeList) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(DbTypeProperties dbType) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(dbTypeList.getTypes()));
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(dbType.getType()));
         return interceptor;
     }
 }
