@@ -7,10 +7,7 @@ import live.lumia.dto.Account;
 import live.lumia.dto.ResponseInfo;
 import live.lumia.enums.BaseErrorEnums;
 import live.lumia.error.BaseException;
-import live.lumia.utils.IPV4Utils;
-import live.lumia.utils.ObjectUtil;
-import live.lumia.utils.RequestUtils;
-import live.lumia.utils.SpringUtil;
+import live.lumia.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -72,8 +69,8 @@ public class PermissionAspect {
                     }
                     Account currentUser = controller.getCurrentUser();
                     if (Objects.nonNull(currentUser)) {
-                        String curIpAddress = RequestUtils.getIpAddress(controller.getRequest());
-                        String curUserAgent = RequestUtils.getUserAgent(controller.getRequest());
+                        String curIpAddress = RequestUtils.getIpAddress(GlobalRequestUtils.getRequest());
+                        String curUserAgent = RequestUtils.getUserAgent(GlobalRequestUtils.getRequest());
                         String loginIp = controller.getSessionAttr("loginIp").toString();
                         String loginAgent = controller.getSessionAttr("loginAgent").toString();
                         if (!curIpAddress.equals(loginIp) || !curUserAgent.equals(loginAgent)) {
@@ -114,10 +111,10 @@ public class PermissionAspect {
         StringBuilder info = new StringBuilder();
         info.append(line).append("【------------------------ ").append(success).append(" REQUEST START-------------------------】").append(line);
         info.append("url: ").append(controller.getCurUrl()).append(line);
-        String ipAddress = RequestUtils.getIpAddress(controller.getRequest());
+        String ipAddress = RequestUtils.getIpAddress(GlobalRequestUtils.getRequest());
         info.append("requestIp: ").append(ipAddress).append(" ").append(IPV4Utils.getLocationAndOperator(ipAddress)).append(line);
         info.append("requestArgs: ").append(JSON.toJSONString(ARGS.get())).append(line);
-        info.append("requestUserAgent: ").append(RequestUtils.getUserAgent(controller.getRequest())).append(line);
+        info.append("requestUserAgent: ").append(RequestUtils.getUserAgent(GlobalRequestUtils.getRequest())).append(line);
         info.append("requestUser: ").append(JSON.toJSONString(controller.getCurrentUser())).append(line);
         info.append("response: ").append(msg).append(line);
         info.append("【------------------------ ").append(success).append(" REQUEST END----------------------------】").append(line);

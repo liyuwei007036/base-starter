@@ -87,7 +87,7 @@ public class BaseSessionService {
      * @return
      */
     public Map<String, Object> getSessionMapBySessionId(String sessionId, long timeOut) {
-        if (StringUtils.isEmpty(sessionId)) {
+        if (!StringUtils.hasText(sessionId)) {
             return Collections.emptyMap();
         }
         Map<String, Object> map = null;

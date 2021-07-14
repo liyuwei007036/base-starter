@@ -26,8 +26,8 @@ public class LoginUtils {
         Map<String, Object> session = new HashMap<>(16);
         session.put(SessionConstants.USER, JSON.toJSONString(account));
         session.put("createTime", new Date());
-        session.put("loginIp", RequestUtils.getIpAddress(controller.getRequest()));
-        session.put("loginAgent", RequestUtils.getUserAgent(controller.getRequest()));
+        session.put("loginIp", RequestUtils.getIpAddress(GlobalRequestUtils.getRequest()));
+        session.put("loginAgent", RequestUtils.getUserAgent(GlobalRequestUtils.getRequest()));
         session.put(SessionConstants.USER_ID, JSON.toJSONString(account.getId()));
         session.put(SessionConstants.USER_NAME, account.getName());
         session.put(SessionConstants.USER_ACCOUNT, account.getAccount());

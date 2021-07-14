@@ -6,6 +6,7 @@ import live.lumia.config.properties.SessionNameProperties;
 import live.lumia.dto.Account;
 import live.lumia.enums.SessionConstants;
 import live.lumia.service.BaseSessionService;
+import live.lumia.utils.GlobalRequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,22 +32,15 @@ public abstract class BaseController {
 
 
     private static final ThreadLocal<String> SESSION_ID = new ThreadLocal<>();
-    private static final ThreadLocal<HttpServletRequest> LOCAL_REQUEST = new ThreadLocal<>();
-    private static final ThreadLocal<HttpServletResponse> LOCAL_RESPONSE = new ThreadLocal<>();
-    private static final ThreadLocal<Map<String, Object>> TMP_SESSION_MAP = new ThreadLocal<>();
 
 
     public void removeThread() {
         SESSION_ID.remove();
-        LOCAL_REQUEST.remove();
-        LOCAL_RESPONSE.remove();
-        TMP_SESSION_MAP.remove();
+
     }
 
     @ModelAttribute
-    public void setHttp(HttpServletRequest request, HttpServletResponse response) {
-        LOCAL_REQUEST.set(request);
-        LOCAL_RESPONSE.set(response);
+    public void setHttp() {
         loadSessionId();
     }
 
@@ -55,9 +49,9 @@ public abstract class BaseController {
     }
 
     public void loadSessionId() {
-        SESSION_ID.set(getSessionId(LOCAL_REQUEST.get(), getSessionType()));
+        SESSION_ID.set(getSessionId(GlobalRequestUtils.getRequest(), getSessionType()));
         Map<String, Object> map = baseSessionService.getSessionMapBySessionId(SESSION_ID.get(), this.getTimeOut());
-        TMP_SESSION_MAP.set(map);
+        map.forEach(GlobalRequestUtils::setData);
         checkSession();
     }
 
@@ -70,7 +64,7 @@ public abstract class BaseController {
      */
     private String getSessionId(HttpServletRequest request, String sessionType) {
         String sessionId = request.getHeader(sessionType);
-        if (!StringUtils.isEmpty(sessionId)) {
+        if (StringUtils.hasText(sessionId)) {
             sessionId = sessionId.toLowerCase().trim();
         }
         return sessionId;
@@ -104,40 +98,27 @@ public abstract class BaseController {
     public void setSessionAttr(String key, Object value) {
         checkSession();
         Optional.ofNullable(value).ifPresent(x -> {
-            Map<String, Object> sessionMap = TMP_SESSION_MAP.get();
-            sessionMap.put(key, x);
-            TMP_SESSION_MAP.set(sessionMap);
+            GlobalRequestUtils.setData(key, value);
             baseSessionService.setSessionValue(SESSION_ID.get(), key, x, getTimeOut());
         });
     }
 
     private void checkSession() {
-        boolean addSession = true;
-        if (!StringUtils.isEmpty(SESSION_ID.get()) && userHasLogin()) {
-            addSession = false;
-        }
+        boolean addSession = StringUtils.isEmpty(SESSION_ID.get()) || !userHasLogin();
         if (addSession) {
             String sessionId = UUID.randomUUID().toString().toLowerCase();
             SESSION_ID.set(sessionId);
-            this.getResponse().setHeader(getSessionType(), sessionId);
+            GlobalRequestUtils.getResponse().setHeader(getSessionType(), sessionId);
         }
     }
 
 
     public Account getCurrentUser() {
-        return getSessionAttr(SessionConstants.USER, Account.class);
+        return GlobalRequestUtils.getData(SessionConstants.USER, Account.class);
     }
 
     public boolean userHasLogin() {
         return Objects.nonNull(getCurrentUser());
-    }
-
-    public HttpServletRequest getRequest() {
-        return LOCAL_REQUEST.get();
-    }
-
-    public HttpServletResponse getResponse() {
-        return LOCAL_RESPONSE.get();
     }
 
 
@@ -149,14 +130,10 @@ public abstract class BaseController {
      * @return
      */
     public <T> T getSessionAttr(String key, Class<T> clazz) {
-        if (StringUtils.isEmpty(SESSION_ID.get())) {
+        if (!StringUtils.hasText(SESSION_ID.get())) {
             return null;
         }
-        Object session = TMP_SESSION_MAP.get().get(key);
-        if (session == null) {
-            return null;
-        }
-        return JSON.parseObject(session.toString(), clazz);
+        return GlobalRequestUtils.getData(key, clazz);
     }
 
 
@@ -167,10 +144,10 @@ public abstract class BaseController {
      * @return
      */
     public Object getSessionAttr(String key) {
-        if (StringUtils.isEmpty(SESSION_ID.get())) {
+        if (!StringUtils.hasText(SESSION_ID.get())) {
             return null;
         }
-        return TMP_SESSION_MAP.get().get(key);
+        return GlobalRequestUtils.getData(key, Object.class);
     }
 
     public BaseSessionService getSessionService() {
@@ -196,13 +173,10 @@ public abstract class BaseController {
 
 
     public String getCurUrl() {
-        HttpServletRequest request = LOCAL_REQUEST.get();
-        if (Objects.isNull(request)) {
-            return null;
-        }
+        HttpServletRequest request = GlobalRequestUtils.getRequest();
         String reqStr = request.getRequestURL().toString();
         String queryStr = request.getQueryString();
-        if (!StringUtils.isEmpty(queryStr)) {
+        if (StringUtils.hasText(queryStr)) {
             reqStr = reqStr + "?" + queryStr;
         }
         return reqStr;
